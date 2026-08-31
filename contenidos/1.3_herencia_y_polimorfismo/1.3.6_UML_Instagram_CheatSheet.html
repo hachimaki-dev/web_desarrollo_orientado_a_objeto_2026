@@ -1,0 +1,890 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>1.3.6 UML Instagram & Cheat Sheet Java OOP — Profe Carlitos</title>
+  <meta name="description" content="Diagrama UML caso Instagram, diseño de menú de consola y Cheat Sheet maestro de Java OOP">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .doc-container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 24px 100px;
+    }
+    .doc-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-header {
+      margin: 48px 0 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    /* UML Diagram Component */
+    .uml-wrapper {
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+    .uml-tree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      min-width: 720px;
+    }
+    .uml-box {
+      background: var(--bg);
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      width: 290px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      text-align: left;
+    }
+    .uml-box.parent {
+      border-color: var(--accent-lavanda);
+      background: #FFFFFF;
+    }
+    .uml-box.child {
+      border-color: var(--accent-celeste);
+      background: #FFFFFF;
+    }
+    .uml-header {
+      padding: 10px 14px;
+      text-align: center;
+      font-weight: 800;
+      border-bottom: 1px solid var(--line);
+    }
+    .uml-box.parent .uml-header {
+      background: var(--pastel-lavanda);
+      color: var(--accent-lavanda);
+    }
+    .uml-box.child .uml-header {
+      background: var(--pastel-celeste);
+      color: var(--accent-celeste);
+    }
+    .uml-stereotype {
+      font-size: 11px;
+      font-weight: 500;
+      display: block;
+      color: var(--ink-soft);
+    }
+    .uml-section {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      line-height: 1.6;
+    }
+    .uml-section:last-child {
+      border-bottom: none;
+    }
+    .uml-section .visibility {
+      font-weight: 700;
+      margin-right: 4px;
+      display: inline-block;
+      width: 12px;
+    }
+    .uml-section .vis-private { color: #D9534F; }
+    .uml-section .vis-public { color: #2D6A4F; }
+    .uml-section .vis-protected { color: #E67E22; }
+
+    .uml-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      width: 100%;
+    }
+    .uml-arrow-up {
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-bottom: 12px solid var(--ink);
+    }
+    .uml-line-v {
+      width: 2px;
+      height: 20px;
+      background: var(--ink);
+    }
+    .uml-line-h {
+      height: 2px;
+      background: var(--ink);
+      width: 82%;
+    }
+    .uml-children-row {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+      gap: 16px;
+    }
+    .uml-child-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+    }
+
+    /* Menu Design Specs */
+    .menu-card {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    .menu-opt-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: var(--ink);
+      color: #FFF;
+      font-weight: 800;
+      font-size: 13px;
+      margin-right: 8px;
+    }
+
+    /* Cheat Sheet Layout */
+    .cs-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 20px 0 28px;
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      padding: 10px 0;
+    }
+    .cs-tab-btn {
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.15s;
+    }
+    .cs-tab-btn:hover { background: var(--bg-muted); }
+    .cs-tab-btn.active {
+      background: var(--ink);
+      color: #FFF;
+      border-color: var(--ink);
+    }
+
+    .concept-card {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .concept-card h3 {
+      font-size: 20px;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .table-spec {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .table-spec th, .table-spec td {
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    .table-spec th {
+      background: var(--bg-muted);
+      font-weight: 700;
+    }
+    .table-spec tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="doc-container">
+
+    <header class="doc-header">
+      <div style="font-size:42px; margin-bottom:12px;">👽</div>
+      <div class="kicker">Unidad 1.3 · Documentación y Referencia · 1.3.6</div>
+      <h1 style="font-size:clamp(30px,3.8vw,46px);">Diagrama UML Caso Instagram & Cheat Sheet Java OOP</h1>
+      <p class="lead">
+        Diseño orientado a objetos para una aplicación similar a Instagram (jerarquía, reglas del dominio y menú interactivo de consola) junto a la guía de referencia rápida definitiva para el desarrollo en Java.
+      </p>
+    </header>
+
+    <!-- NAVEGACIÓN RÁPIDA -->
+    <div class="cs-nav">
+      <button class="cs-tab-btn" :class="{active: activeTab==='uml'}" @click="activeTab='uml'">📐 Diagrama UML & Clases</button>
+      <button class="cs-tab-btn" :class="{active: activeTab==='menu'}" @click="activeTab='menu'">🖥️ Menú de Consola</button>
+      <button class="cs-tab-btn" :class="{active: activeTab==='scanner'}" @click="activeTab='scanner'">⌨️ Scanner & Primitivos</button>
+      <button class="cs-tab-btn" :class="{active: activeTab==='cheatsheet'}" @click="activeTab='cheatsheet'">📚 Cheat Sheet POO Completo</button>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- PESTAÑA 1: DIAGRAMA UML Y ESPECIFICACIÓN DE CLASES               -->
+    <!-- ================================================================= -->
+    <section v-show="activeTab==='uml'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-lavanda);">📐</div>
+        <h2 style="margin:0; font-size:24px;">Diagrama de Clases UML — Caso "Instagram POO"</h2>
+      </div>
+
+      <p>
+        En este modelo, <strong><code>Publicacion</code></strong> actúa como la <em>clase padre base</em> que abstrae los datos y comportamientos comunes a cualquier elemento publicado en el feed. Las clases derivadas (<strong><code>Historia</code></strong>, <strong><code>Reel</code></strong> y <strong><code>Post</code></strong>) heredan su estructura y sobreescriben el método polimórfico <code>mostrarDetalle()</code> con sus reglas de dominio específicas.
+      </p>
+
+      <!-- DIAGRAMA UML VISUAL -->
+      <div class="uml-wrapper">
+        <div class="uml-tree">
+          
+          <!-- PADRE: PUBLICACION -->
+          <div class="uml-box parent">
+            <div class="uml-header">
+              <span class="uml-stereotype">&lt;&lt;abstract / base&gt;&gt;</span>
+              Publicacion
+            </div>
+            <div class="uml-section">
+              <div><span class="visibility vis-private">-</span> id : String</div>
+              <div><span class="visibility vis-private">-</span> autor : String</div>
+              <div><span class="visibility vis-private">-</span> fechaCreacion : String</div>
+              <div><span class="visibility vis-private">-</span> likes : int</div>
+              <div><span class="visibility vis-protected">#</span> estaActiva : boolean</div>
+            </div>
+            <div class="uml-section">
+              <div><span class="visibility vis-public">+</span> Publicacion(id, autor)</div>
+              <div><span class="visibility vis-public">+</span> darLike() : void</div>
+              <div><span class="visibility vis-public">+</span> mostrarDetalle() : void</div>
+              <div><span class="visibility vis-public">+</span> validarAutor(autor) : boolean</div>
+              <div><span class="visibility vis-public">+</span> getId() : String</div>
+              <div><span class="visibility vis-public">+</span> getLikes() : int</div>
+              <div><span class="visibility vis-public">+</span> isEstaActiva() : boolean</div>
+            </div>
+          </div>
+
+          <!-- CONECTOR HERENCIA -->
+          <div class="uml-connector">
+            <div class="uml-arrow-up"></div>
+            <div class="uml-line-v"></div>
+            <div class="uml-line-h"></div>
+          </div>
+
+          <!-- HIJOS EN FILA -->
+          <div class="uml-children-row">
+            
+            <!-- HIJO 1: HISTORIA -->
+            <div class="uml-child-col">
+              <div class="uml-line-v"></div>
+              <div class="uml-box child">
+                <div class="uml-header">
+                  <span class="uml-stereotype">&lt;&lt;extends Publicacion&gt;&gt;</span>
+                  Historia
+                </div>
+                <div class="uml-section">
+                  <div><span class="visibility vis-private">-</span> duracionHoras : int = 24</div>
+                  <div><span class="visibility vis-private">-</span> esMejoresAmigos : boolean</div>
+                  <div><span class="visibility vis-private">-</span> vistas : int</div>
+                </div>
+                <div class="uml-section">
+                  <div><span class="visibility vis-public">+</span> Historia(id, autor, mejoresAmigos)</div>
+                  <div><span class="visibility vis-public">+</span> @Override mostrarDetalle() : void</div>
+                  <div><span class="visibility vis-public">+</span> registrarVista() : void</div>
+                  <div><span class="visibility vis-public">+</span> caducar() : void</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HIJO 2: REEL -->
+            <div class="uml-child-col">
+              <div class="uml-line-v"></div>
+              <div class="uml-box child">
+                <div class="uml-header">
+                  <span class="uml-stereotype">&lt;&lt;extends Publicacion&gt;&gt;</span>
+                  Reel
+                </div>
+                <div class="uml-section">
+                  <div><span class="visibility vis-private">-</span> duracionSegundos : int</div>
+                  <div><span class="visibility vis-private">-</span> audioNombre : String</div>
+                  <div><span class="visibility vis-private">-</span> reproducciones : int</div>
+                </div>
+                <div class="uml-section">
+                  <div><span class="visibility vis-public">+</span> Reel(id, autor, duracion, audio)</div>
+                  <div><span class="visibility vis-public">+</span> @Override mostrarDetalle() : void</div>
+                  <div><span class="visibility vis-public">+</span> reproducir() : void</div>
+                  <div><span class="visibility vis-public">+</span> setDuracion(segundos) : void</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- HIJO 3: POST -->
+            <div class="uml-child-col">
+              <div class="uml-line-v"></div>
+              <div class="uml-box child">
+                <div class="uml-header">
+                  <span class="uml-stereotype">&lt;&lt;extends Publicacion&gt;&gt;</span>
+                  Post
+                </div>
+                <div class="uml-section">
+                  <div><span class="visibility vis-private">-</span> pieDeFoto : String</div>
+                  <div><span class="visibility vis-private">-</span> ubicacion : String</div>
+                  <div><span class="visibility vis-private">-</span> comentariosHabilitados : boolean</div>
+                </div>
+                <div class="uml-section">
+                  <div><span class="visibility vis-public">+</span> Post(id, autor, pieFoto, ubic)</div>
+                  <div><span class="visibility vis-public">+</span> @Override mostrarDetalle() : void</div>
+                  <div><span class="visibility vis-public">+</span> editarPieDeFoto(nuevoTexto) : void</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ESPECIFICACIÓN DE REGLAS DE DOMINIO -->
+      <div class="section-header" style="margin-top:36px;">
+        <div class="section-icon" style="background:var(--pastel-menta);">📋</div>
+        <h3 style="margin:0; font-size:20px;">Reglas de Dominio e Invariantes por Clase</h3>
+      </div>
+
+      <div class="grid">
+        <div class="card card-lavanda">
+          <strong>1. Reglas de Publicacion (Padre)</strong>
+          <p>• <strong>Invariante de Likes:</strong> El contador nunca puede ser negativo. <code>darLike()</code> incrementa en 1.</p>
+          <p>• <strong>Autor Obligatorio:</strong> No se permiten autores vacíos o nulos (longitud > 2 caracteres).</p>
+          <p>• <strong>ID Inmutable:</strong> El identificador único se asigna al construir el objeto y no tiene setter público.</p>
+        </div>
+
+        <div class="card card-celeste">
+          <strong>2. Reglas de Historia (Hijo)</strong>
+          <p>• <strong>Vigencia Temporal:</strong> Nace activa con duración de 24 hrs. Al llamar a <code>caducar()</code>, <code>estaActiva = false</code>.</p>
+          <p>• <strong>Visualización Restringida:</strong> Si <code>esMejoresAmigos == true</code>, solo usuarios autorizados pueden acceder al contenido.</p>
+          <p>• <strong>Métricas:</strong> Cada llamada a <code>registrarVista()</code> incrementa el contador de vistas si la historia está activa.</p>
+        </div>
+
+        <div class="card card-durazno">
+          <strong>3. Reglas de Reel (Hijo)</strong>
+          <p>• <strong>Rango de Duración:</strong> Mínimo 3 segundos, máximo 90 segundos. Si se ingresa un valor fuera de rango, se ajusta al límite más cercano o se rechaza.</p>
+          <p>• <strong>Audio por defecto:</strong> Si el nombre del audio viene vacío, se asigna <code>"Audio original de " + autor</code>.</p>
+          <p>• <strong>Reproducción:</strong> <code>reproducir()</code> simula la reproducción y suma +1 a <code>reproducciones</code>.</p>
+        </div>
+
+        <div class="card card-rosa">
+          <strong>4. Reglas de Post Tradicional (Hijo)</strong>
+          <p>• <strong>Límite de Texto:</strong> El <code>pieDeFoto</code> tiene un límite máximo de 2200 caracteres.</p>
+          <p>• <strong>Comentarios:</strong> Si <code>comentariosHabilitados == false</code>, el detalle debe indicar explícitamente "Comentarios desactivados".</p>
+          <p>• <strong>Ubicación Opcional:</strong> Si no se define ubicación, se almacena como <code>"Sin ubicación"</code>.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- PESTAÑA 2: DISEÑO DEL MENÚ DE CONSOLA                             -->
+    <!-- ================================================================= -->
+    <section v-show="activeTab==='menu'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-celeste);">🖥️</div>
+        <h2 style="margin:0; font-size:24px;">Diseño del Menú Interactivo de Consola</h2>
+      </div>
+
+      <p>
+        El programa de consola se construye siguiendo el patrón estructurado: <strong>Scanner + Variable de control (while) + Switch por opciones + Colección polimórfica (<code>ArrayList&lt;Publicacion&gt;</code>)</strong>.
+      </p>
+
+      <!-- ESPECIFICACIÓN DE OPCIONES -->
+      <div class="menu-card">
+        <span class="menu-opt-badge">Opción 1</span> <strong style="font-size:16px;">Crear Publicación (Submenú por tipo)</strong>
+        <p style="margin:8px 0 0; color:var(--ink-soft);">
+          Despliega un submenú para elegir qué tipo de publicación instanciar: <code>1) Historia</code>, <code>2) Reel</code> o <code>3) Post</code>.
+          Solicita los datos comunes al padre (autor) y luego los atributos específicos del hijo (duración, audio, pie de foto, etc.). 
+          Instancia el objeto correspondiente y lo agrega a la lista polimórfica: <code>publicaciones.add(nuevaPub);</code>
+        </p>
+      </div>
+
+      <div class="menu-card">
+        <span class="menu-opt-badge">Opción 2</span> <strong style="font-size:16px;">Listar Feed Completo (Polimorfismo en acción)</strong>
+        <p style="margin:8px 0 0; color:var(--ink-soft);">
+          Recorre la colección completa con un loop <code>for-each</code> de tipo padre <code>for (Publicacion p : publicaciones)</code>. 
+          Ejecuta <code>p.mostrarDetalle()</code>. Gracias a la ligadura dinámica (Polimorfismo), cada publicación imprime su formato personalizado sin necesidad de <code>if-else</code> por tipo.
+        </p>
+      </div>
+
+      <div class="menu-card">
+        <span class="menu-opt-badge">Opción 3</span> <strong style="font-size:16px;">Interactuar con una Publicación (Dar Like / Reproducir)</strong>
+        <p style="margin:8px 0 0; color:var(--ink-soft);">
+          Pide al usuario el <code>id</code> o índice de la publicación. Busca el objeto en la lista y le aplica la operación <code>p.darLike()</code>. Si es un Reel, permite adicionalmente llamar a su método específico de reproducción.
+        </p>
+      </div>
+
+      <div class="menu-card">
+        <span class="menu-opt-badge">Opción 4</span> <strong style="font-size:16px;">Filtrar Publicaciones por Tipo</strong>
+        <p style="margin:8px 0 0; color:var(--ink-soft);">
+          Permite al usuario ver únicamente Historias activas, solo Reels o solo Posts tradicionales, verificando la instancia mediante <code>instanceof</code> o métodos de estado.
+        </p>
+      </div>
+
+      <div class="menu-card">
+        <span class="menu-opt-badge">Opción 5</span> <strong style="font-size:16px;">Salir del Sistema</strong>
+        <p style="margin:8px 0 0; color:var(--ink-soft);">
+          Cambia la bandera booleana de control del ciclo <code>mantenerMenu = false;</code>, imprime un mensaje de despedida y cierra los recursos.
+        </p>
+      </div>
+
+      <!-- EJEMPLO DE ESTRUCTURA MAIN.JAVA -->
+      <div class="section-header" style="margin-top:36px;">
+        <div class="section-icon" style="background:var(--pastel-amarillo);">💻</div>
+        <h3 style="margin:0; font-size:20px;">Esqueleto de Implementación Java (Main.java)</h3>
+      </div>
+
+      <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+        boolean ejecutando = true;
+
+        while (ejecutando) {
+            System.out.println("\n=== INSTAGRAM CONSOLE APP ===");
+            System.out.println("1. Crear publicación");
+            System.out.println("2. Ver Feed completo (Polimorfismo)");
+            System.out.println("3. Dar Like a una publicación");
+            System.out.println("4. Salir");
+            System.out.print("Seleccione una opción: ");
+
+            String opcion = scanner.nextLine().trim();
+
+            switch (opcion) {
+                case "1":
+                    crearPublicacion(scanner, feed);
+                    break;
+                case "2":
+                    mostrarFeed(feed);
+                    break;
+                case "3":
+                    darLikePublicacion(scanner, feed);
+                    break;
+                case "4":
+                    System.out.println("¡Hasta pronto! 🛸");
+                    ejecutando = false;
+                    break;
+                default:
+                    System.out.println("Opción no válida. Intente nuevamente.");
+                    break;
+            }
+        }
+    }
+
+    private static void mostrarFeed(ArrayList&lt;Publicacion&gt; feed) {
+        if (feed.isEmpty()) {
+            System.out.println("El feed está vacío. ¡Crea una publicación primero!");
+            return;
+        }
+        System.out.println("\n--- FEED DE PUBLICACIONES ---");
+        // POLIMORFISMO: Una sola llamada a método padre ejecuta la versión del hijo correspondiente
+        for (Publicacion pub : feed) {
+            pub.mostrarDetalle();
+            System.out.println("---------------------------");
+        }
+    }
+}</code></pre>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- PESTAÑA 3: SCANNER Y TIPOS PRIMITIVOS                             -->
+    <!-- ================================================================= -->
+    <section v-show="activeTab==='scanner'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-menta);">⌨️</div>
+        <h2 style="margin:0; font-size:24px;">Scanner & Primitivos en Consola</h2>
+      </div>
+
+      <!-- PROBLEMA DEL SCANNER -->
+      <div class="callout callout-durazno">
+        <h4 style="margin:0 0 6px;">⚠️ El Problema Clásico del Salto de Línea en Scanner</h4>
+        <p style="margin:0;">
+          Cuando utilizas <code>scanner.nextInt()</code> o <code>scanner.nextDouble()</code>, Java lee el número pero <strong>deja el carácter de salto de línea (<code>\n</code>) pendiente en el buffer</strong>. 
+          Al hacer inmediatamente después un <code>scanner.nextLine()</code>, este consume ese <code>\n</code> residual y se salta la lectura.
+        </p>
+      </div>
+
+      <div class="grid">
+        <div class="card card-rosa">
+          <strong style="color:var(--accent-rosa);">❌ Enfoque Problemático</strong>
+          <pre class="code-block" style="font-size:12px;"><code class="language-java">System.out.print("Edad: ");
+int edad = scanner.nextInt(); // Deja \n en buffer
+
+System.out.print("Nombre: ");
+String nombre = scanner.nextLine(); 
+// ¡ERROR! Lee el \n y queda vacío ""</code></pre>
+        </div>
+
+        <div class="card card-menta">
+          <strong style="color:var(--accent-menta);">✅ Enfoque Recomendado (Profe Carlitos)</strong>
+          <pre class="code-block" style="font-size:12px;"><code class="language-java">System.out.print("Edad: ");
+// Leer siempre como línea de texto completa y parsear
+int edad = Integer.parseInt(scanner.nextLine());
+
+System.out.print("Nombre: ");
+String nombre = scanner.nextLine(); 
+// ¡Funciona perfecto siempre!</code></pre>
+        </div>
+      </div>
+
+      <!-- MÉTODOS SCANNER -->
+      <div class="section-header" style="margin-top:36px;">
+        <div class="section-icon" style="background:var(--pastel-celeste);">📖</div>
+        <h3 style="margin:0; font-size:20px;">Métodos Clave de <code>java.util.Scanner</code></h3>
+      </div>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th>Método</th>
+            <th>Retorno</th>
+            <th>Uso y Comportamiento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>scanner.nextLine()</code></td>
+            <td><code>String</code></td>
+            <td>Lee toda la línea hasta presionar Enter. Limpia el buffer por completo. <strong>(Recomendado)</strong></td>
+          </tr>
+          <tr>
+            <td><code>scanner.next()</code></td>
+            <td><code>String</code></td>
+            <td>Lee únicamente la siguiente palabra (hasta encontrar un espacio o salto de línea).</td>
+          </tr>
+          <tr>
+            <td><code>scanner.hasNextLine()</code></td>
+            <td><code>boolean</code></td>
+            <td>Verifica si existe otra línea disponible para leer en el flujo de entrada.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- TABLA DE TIPOS PRIMITIVOS -->
+      <div class="section-header" style="margin-top:36px;">
+        <div class="section-icon" style="background:var(--pastel-lavanda);">🔢</div>
+        <h3 style="margin:0; font-size:20px;">Tipos Primitivos vs Wrappers vs String</h3>
+      </div>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th>Tipo Primitivo</th>
+            <th>Tamaño</th>
+            <th>Clase Wrapper</th>
+            <th>Método de Conversión desde String</th>
+            <th>Valor por Defecto</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>int</code></td>
+            <td>32 bits</td>
+            <td><code>Integer</code></td>
+            <td><code>Integer.parseInt(texto)</code></td>
+            <td><code>0</code></td>
+          </tr>
+          <tr>
+            <td><code>double</code></td>
+            <td>64 bits</td>
+            <td><code>Double</code></td>
+            <td><code>Double.parseDouble(texto)</code></td>
+            <td><code>0.0</code></td>
+          </tr>
+          <tr>
+            <td><code>boolean</code></td>
+            <td>1 bit</td>
+            <td><code>Boolean</code></td>
+            <td><code>Boolean.parseBoolean(texto)</code></td>
+            <td><code>false</code></td>
+          </tr>
+          <tr>
+            <td><code>char</code></td>
+            <td>16 bits</td>
+            <td><code>Character</code></td>
+            <td><code>texto.charAt(0)</code></td>
+            <td><code>'\u0000'</code></td>
+          </tr>
+          <tr>
+            <td><code>long</code></td>
+            <td>64 bits</td>
+            <td><code>Long</code></td>
+            <td><code>Long.parseLong(texto)</code></td>
+            <td><code>0L</code></td>
+          </tr>
+          <tr>
+            <td><em>(Objeto)</em> <code>String</code></td>
+            <td>Variable</td>
+            <td><code>String</code></td>
+            <td>No requiere (ya es String)</td>
+            <td><code>null</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- PESTAÑA 4: CHEAT SHEET MAESTRO DE POO EN JAVA                     -->
+    <!-- ================================================================= -->
+    <section v-show="activeTab==='cheatsheet'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-durazno);">📚</div>
+        <h2 style="margin:0; font-size:24px;">Cheat Sheet Maestro: Conceptos Fundamentales de Java OOP</h2>
+      </div>
+
+      <!-- 1. PARADIGMA OO -->
+      <div class="concept-card">
+        <h3><span class="tag tag-base">1</span> Paradigma Orientado a Objetos (POO)</h3>
+        <p>
+          Forma de diseñar software modelando el dominio del problema como un conjunto de <strong>objetos interactivos</strong> que poseen estado (atributos) y comportamiento (métodos), protegiendo sus propias reglas en lugar de tener funciones globales que manipulen datos sueltos.
+        </p>
+      </div>
+
+      <!-- 2. CLASES Y ABSTRACCIÓN -->
+      <div class="concept-card">
+        <h3><span class="tag tag-base">2</span> Clases y Abstracción</h3>
+        <p>
+          • <strong>Abstracción:</strong> Seleccionar únicamente los atributos y operaciones relevantes para el sistema, ignorando los detalles innecesarios.<br>
+          • <strong>Clase:</strong> El molde o plano de diseño que define la estructura.<br>
+          • <strong>Objeto (Instancia):</strong> La entidad concreta creada en memoria con la palabra clave <code>new</code>.
+        </p>
+        <pre class="code-block"><code class="language-java">Personaje p1 = new Personaje("Steve", 100); // p1 es la instancia concreta</code></pre>
+      </div>
+
+      <!-- 3. MÉTODOS -->
+      <div class="concept-card">
+        <h3><span class="tag tag-base">3</span> Métodos (Anatomía, this y Sobrecarga)</h3>
+        <p>
+          Un bloque de código que ejecuta una acción específica del objeto.<br>
+          • <strong>Firma del Método:</strong> Nombre + tipos de parámetros.<br>
+          • <strong>Palabra clave <code>this</code>:</strong> Referencia a la instancia actual del objeto que ejecuta el código.<br>
+          • <strong>Sobrecarga (Overload):</strong> Mismo nombre de método en la misma clase con distintos parámetros.
+        </p>
+        <pre class="code-block"><code class="language-java">public void setVida(int vida) {
+    this.vida = (vida < 0) ? 0 : vida; // this.vida es el atributo, vida es el parámetro
+}</code></pre>
+      </div>
+
+      <!-- 4. ENCAPSULAMIENTO -->
+      <div class="concept-card">
+        <h3><span class="tag tag-base">4</span> Encapsulamiento & Modificadores de Acceso</h3>
+        <p>
+          Ocultar el estado interno de un objeto para evitar modificaciones directas no autorizadas o inválidas. Se logra declarando atributos <code>private</code> y exponiendo <code>getters</code> y <code>setters</code> con validaciones (manteniendo las <em>invariantes</em>).
+        </p>
+        <table class="table-spec">
+          <thead>
+            <tr>
+              <th>Modificador</th>
+              <th>Misma Clase</th>
+              <th>Mismo Paquete</th>
+              <th>Clases Hijas (Subclases)</th>
+              <th>Mundo Exterior</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>private</code></td>
+              <td>✓ Sí</td>
+              <td>✗ No</td>
+              <td>✗ No</td>
+              <td>✗ No</td>
+            </tr>
+            <tr>
+              <td><em>(default / package)</em></td>
+              <td>✓ Sí</td>
+              <td>✓ Sí</td>
+              <td>✗ No</td>
+              <td>✗ No</td>
+            </tr>
+            <tr>
+              <td><code>protected</code></td>
+              <td>✓ Sí</td>
+              <td>✓ Sí</td>
+              <td>✓ Sí</td>
+              <td>✗ No</td>
+            </tr>
+            <tr>
+              <td><code>public</code></td>
+              <td>✓ Sí</td>
+              <td>✓ Sí</td>
+              <td>✓ Sí</td>
+              <td>✓ Sí</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5. HERENCIA -->
+      <div class="concept-card">
+        <h3><span class="tag tag-inter">5</span> Herencia (<code>extends</code> y <code>super</code>)</h3>
+        <p>
+          Mecanismo que permite a una clase hija heredar atributos y métodos de una clase padre, promoviendo la reutilización de código y la creación de jerarquías lógicas (relación <em>"es-un"</em>).
+        </p>
+        <pre class="code-block"><code class="language-java">public class Zombie extends Character {
+    public Zombie(String nombre) {
+        super(nombre, 80); // Llama al constructor de Character
+    }
+}</code></pre>
+      </div>
+
+      <!-- 6. POLIMORFISMO -->
+      <div class="concept-card">
+        <h3><span class="tag tag-inter">6</span> Polimorfismo & <code>@Override</code></h3>
+        <p>
+          Capacidad de tratar objetos de diferentes clases hijas a través de una referencia de tipo padre, ejecutando la versión especializada del método en tiempo de ejecución (ligadura dinámica).
+        </p>
+        <pre class="code-block"><code class="language-java">Character c = new Zombie(); // Variable de tipo Padre, Objeto tipo Hijo
+c.atacar(); // Ejecuta Zombie.atacar(), NO Character.atacar()</code></pre>
+      </div>
+
+      <!-- 7. CLASES ABSTRACTAS E INTERFACES -->
+      <div class="concept-card">
+        <h3><span class="tag tag-avanzado">7</span> Clases Abstractas vs Interfaces</h3>
+        <table class="table-spec">
+          <thead>
+            <tr>
+              <th>Característica</th>
+              <th>Clase Abstracta (<code>abstract class</code>)</th>
+              <th>Interfaz (<code>interface</code>)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Propósito</strong></td>
+              <td>Base común para clases estrechamente emparentadas con estado compartido.</td>
+              <td>Contrato de comportamiento que cualquier clase puede cumplir (capacidad).</td>
+            </tr>
+            <tr>
+              <td><strong>Instanciación</strong></td>
+              <td>No se puede instanciar directamente con <code>new</code>.</td>
+              <td>No se puede instanciar directamente con <code>new</code>.</td>
+            </tr>
+            <tr>
+              <td><strong>Herencia múltiple</strong></td>
+              <td>No (Java solo permite heredar de 1 sola clase: <code>extends</code>).</td>
+              <td>Sí (Una clase puede implementar múltiples interfaces: <code>implements</code>).</td>
+            </tr>
+            <tr>
+              <td><strong>Atributos</strong></td>
+              <td>Puede tener atributos de instancia de cualquier tipo y visibilidad.</td>
+              <td>Solo constantes (<code>public static final</code>).</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 8. MANEJO DE EXCEPCIONES -->
+      <div class="concept-card">
+        <h3><span class="tag tag-inter">8</span> Manejo de Excepciones (<code>try-catch-finally</code>)</h3>
+        <p>
+          Estructura para capturar y controlar errores en tiempo de ejecución sin que el programa colapse abruptamente.
+        </p>
+        <pre class="code-block"><code class="language-java">try {
+    System.out.print("Ingrese número: ");
+    int opcion = Integer.parseInt(scanner.nextLine());
+} catch (NumberFormatException e) {
+    System.out.println("Error: Debe ingresar un número entero válido.");
+} finally {
+    // Código que se ejecuta SIEMPRE (haya o no excepción)
+}</code></pre>
+      </div>
+
+      <!-- 9. COLECCIONES -->
+      <div class="concept-card">
+        <h3><span class="tag tag-inter">9</span> Colecciones (<code>ArrayList&lt;T&gt;</code>)</h3>
+        <p>
+          Estructuras de datos dinámicas que crecen y se reducen automáticamente en memoria según se añadan o eliminen elementos.
+        </p>
+        <pre class="code-block"><code class="language-java">ArrayList&lt;Publicacion&gt; lista = new ArrayList&lt;&gt;();
+
+lista.add(new Historia("H1", "carlos")); // Agregar elemento
+Publicacion p = lista.get(0);            // Obtener por índice
+int total = lista.size();                // Cantidad de elementos
+lista.remove(0);                         // Eliminar por índice o referencia
+boolean vacia = lista.isEmpty();         // Verificar si está vacía</code></pre>
+      </div>
+    </section>
+
+    <!-- FOOTER CIERRE -->
+    <div style="margin-top:60px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:42px; margin-bottom:12px;">🛸</div>
+      <h3>Material Pedagógico — Desarrollo Orientado a Objetos 2026</h3>
+      <p class="lead" style="margin:0 auto;">Diseñado por el Profe Carlitos (HachiMaki-dev) para acompañar tus clases y proyectos prácticos.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      activeTab: 'uml'
+    };
+  },
+  mounted() {
+    this.highlightCode();
+  },
+  watch: {
+    activeTab() {
+      this.$nextTick(() => {
+        this.highlightCode();
+      });
+    }
+  },
+  methods: {
+    highlightCode() {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code:not(.hljs)').forEach(block => {
+          hljs.highlightElement(block);
+        });
+      }
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

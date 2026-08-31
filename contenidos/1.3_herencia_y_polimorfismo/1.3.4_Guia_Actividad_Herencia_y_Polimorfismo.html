@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía de Actividad — Herencia y Polimorfismo · Profe Carlitos</title>
+  <meta name="description" content="Guía paso a paso para implementar polimorfismo en Java">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .guide-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .guide-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-divider {
+      margin: 48px 0 32px;
+      padding: 16px 0;
+      border-top: 2px solid var(--line);
+    }
+    .reflection-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 800px;
+    }
+    .reflection-box p { margin: 0; color: var(--accent-amarillo); font-size: 15px; }
+    .reflection-box strong { color: var(--accent-amarillo); }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="guide-container">
+
+    <header class="guide-header">
+      <div style="font-size:40px; margin-bottom:12px;">👽</div>
+      <div class="kicker">Guía de actividad · 1.3.4</div>
+      <h1 style="font-size:clamp(32px,4vw,48px);">Herencia y Polimorfismo</h1>
+      <p class="lead">Guía paso a paso para implementar polimorfismo en el proyecto de tu sección.</p>
+
+      <div class="section-tabs">
+        <button class="section-tab" :class="{active: section==='002D'}" @click="section='002D'">
+          Sección 002D — Minecraft
+        </button>
+        <button class="section-tab" :class="{active: section==='004D'}" @click="section='004D'">
+          Sección 004D — Programadores
+        </button>
+      </div>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- PASO 1 -->
+    <!-- ============================================== -->
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <div class="step-title">Identifica tu jerarquía de clases</div>
+      </div>
+
+      <div v-if="section==='002D'">
+        <p>Abre tu proyecto. Deberías tener estos archivos:</p>
+        <ul>
+          <li><code>Character.java</code> — clase padre</li>
+          <li><code>Zombie.java</code> — extiende Character</li>
+          <li><code>Dragon.java</code> — extiende Character</li>
+          <li><code>Creeper.java</code> — extiende Character</li>
+          <li><code>Enderman.java</code> — extiende Character</li>
+        </ul>
+        <p>Verifica que cada clase hija tiene <code>extends Character</code> en su declaración.</p>
+        <pre class="code-block"><code class="language-java">// Ejemplo: Zombie.java
+public class Zombie extends Character {
+    boolean canInffectVillager = true;
+}</code></pre>
+      </div>
+
+      <div v-if="section==='004D'">
+        <p>Abre tu proyecto. Deberías tener estos archivos:</p>
+        <ul>
+          <li><code>Personaje.java</code> — clase padre</li>
+          <li><code>Hacker.java</code> — extiende Personaje</li>
+          <li><code>Programador.java</code> — extiende Personaje</li>
+          <li><code>GameDev.java</code> — extiende Personaje</li>
+        </ul>
+        <p>Verifica que cada clase hija tiene <code>extends Personaje</code> en su declaración.</p>
+        <pre class="code-block"><code class="language-java">// Ejemplo: Hacker.java
+public class Hacker extends Personaje {
+    int inteligencia;
+}</code></pre>
+      </div>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta de reflexión:</strong> ¿Qué atributos y métodos heredan las clases hijas del padre? Haz una lista mental antes de continuar.</p>
+      </div>
+
+      <div class="step-check">
+        <input type="checkbox" id="step1"> <label for="step1">Identifiqué mi jerarquía y verifiqué el <code>extends</code> en cada clase hija.</label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 2 -->
+    <!-- ============================================== -->
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <div class="step-title">Agrega un método al padre</div>
+      </div>
+
+      <p>El padre necesita un método que las clases hijas puedan sobreescribir. Este método define el "contrato": todas las clases hijas tendrán este comportamiento, pero cada una lo implementará a su manera.</p>
+
+      <div v-if="section==='002D'">
+        <p>Abre <code>Character.java</code> y agrega el método <code>atacar()</code>:</p>
+        <pre class="code-block"><code class="language-java">// En Character.java, agrega este método:
+public String atacar() {
+    return "El personaje realiza un ataque básico";
+}</code></pre>
+        <p>Este es el comportamiento por defecto. Si una clase hija no sobreescribe <code>atacar()</code>, usará esta versión.</p>
+      </div>
+
+      <div v-if="section==='004D'">
+        <p>Abre <code>Personaje.java</code> y agrega el método <code>trabajar()</code>:</p>
+        <pre class="code-block"><code class="language-java">// En Personaje.java, agrega este método:
+public String trabajar() {
+    return "El personaje realiza una tarea general";
+}</code></pre>
+        <p>Este es el comportamiento por defecto. Si una clase hija no sobreescribe <code>trabajar()</code>, usará esta versión.</p>
+      </div>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta:</strong> ¿Por qué el método retorna un <code>String</code> en vez de hacer <code>System.out.println</code> directamente? Piensa en quién debería decidir cuándo y cómo mostrar la información.</p>
+      </div>
+
+      <div class="step-check">
+        <input type="checkbox" id="step2"> <label for="step2">Agregué el método al padre y el código compila sin errores.</label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 3 -->
+    <!-- ============================================== -->
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <div class="step-title">Sobreescribe el método en cada clase hija</div>
+      </div>
+
+      <p>Ahora cada clase hija define su propia versión del método. Usa <code>@Override</code> para indicar que estás redefiniendo un método heredado.</p>
+
+      <div v-if="section==='002D'">
+        <p>Agrega <code>atacar()</code> con <code>@Override</code> en cada clase hija:</p>
+        <pre class="code-block"><code class="language-java">// Zombie.java
+public class Zombie extends Character {
+    boolean canInffectVillager = true;
+
+    @Override
+    public String atacar() {
+        return "Zombie muerde e infecta";
+    }
+}
+
+// Dragon.java
+public class Dragon extends Character {
+    boolean endCrystalCanHeal = true;
+
+    @Override
+    public String atacar() {
+        return "Dragon lanza una bola de fuego";
+    }
+}
+
+// Creeper.java
+public class Creeper extends Character {
+    boolean isWeakToCat = true;
+
+    @Override
+    public String atacar() {
+        return "Creeper explota causando daño en area";
+    }
+}
+
+// Enderman.java
+public class Enderman extends Character {
+    boolean isWeakToWater = true;
+
+    @Override
+    public String atacar() {
+        return "Enderman se teletransporta y golpea";
+    }
+}</code></pre>
+      </div>
+
+      <div v-if="section==='004D'">
+        <p>Agrega <code>trabajar()</code> con <code>@Override</code> en cada clase hija:</p>
+        <pre class="code-block"><code class="language-java">// Hacker.java
+public class Hacker extends Personaje {
+    int inteligencia;
+
+    @Override
+    public String trabajar() {
+        return "Hacker analiza vulnerabilidades del sistema";
+    }
+}
+
+// Programador.java
+public class Programador extends Personaje {
+    int lenguajes_dominados;
+
+    @Override
+    public String trabajar() {
+        return "Programador escribe codigo limpio y eficiente";
+    }
+}
+
+// GameDev.java
+public class GameDev extends Personaje {
+    int inspiracion;
+
+    @Override
+    public String trabajar() {
+        return "GameDev diseña mecanicas de juego";
+    }
+}</code></pre>
+      </div>
+
+      <div class="callout callout-menta">
+        <p style="margin:0;"><strong>Recuerda:</strong> la firma del método debe ser exactamente igual a la del padre: mismo nombre, mismos parámetros, mismo tipo de retorno. <code>@Override</code> te protege si cometes un error.</p>
+      </div>
+
+      <div class="step-check">
+        <input type="checkbox" id="step3"> <label for="step3">Todas las clases hijas tienen el <code>@Override</code> y el código compila.</label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 4 -->
+    <!-- ============================================== -->
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">4</div>
+        <div class="step-title">Prueba el polimorfismo</div>
+      </div>
+
+      <p>Ahora viene lo importante: probar que Java ejecuta la versión correcta del método según el tipo real del objeto.</p>
+
+      <div v-if="section==='002D'">
+        <p>En <code>Main.java</code>, crea objetos usando la variable de tipo padre:</p>
+        <pre class="code-block"><code class="language-java">// En Main.java, dentro de main o en un método de prueba:
+Character mob1 = new Zombie();
+Character mob2 = new Dragon();
+Character mob3 = new Creeper();
+Character mob4 = new Enderman();
+
+System.out.println(mob1.atacar());
+System.out.println(mob2.atacar());
+System.out.println(mob3.atacar());
+System.out.println(mob4.atacar());</code></pre>
+        <p>Resultado esperado:</p>
+        <pre class="code-block"><code>Zombie muerde e infecta
+Dragon lanza una bola de fuego
+Creeper explota causando daño en area
+Enderman se teletransporta y golpea</code></pre>
+      </div>
+
+      <div v-if="section==='004D'">
+        <p>En <code>Main.java</code>, crea objetos usando la variable de tipo padre:</p>
+        <pre class="code-block"><code class="language-java">// En Main.java, dentro de main o en un método de prueba:
+Personaje p1 = new Hacker();
+Personaje p2 = new Programador();
+Personaje p3 = new GameDev();
+
+System.out.println(p1.trabajar());
+System.out.println(p2.trabajar());
+System.out.println(p3.trabajar());</code></pre>
+        <p>Resultado esperado:</p>
+        <pre class="code-block"><code>Hacker analiza vulnerabilidades del sistema
+Programador escribe codigo limpio y eficiente
+GameDev diseña mecanicas de juego</code></pre>
+      </div>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta clave:</strong> La variable <code v-if="section==='002D'">mob1</code><code v-if="section==='004D'">p1</code> es de tipo <code v-if="section==='002D'">Character</code><code v-if="section==='004D'">Personaje</code>, pero el objeto real es un <code v-if="section==='002D'">Zombie</code><code v-if="section==='004D'">Hacker</code>. ¿Cuál versión del método se ejecuta? ¿La del padre o la del hijo? ¿Por qué?</p>
+      </div>
+
+      <div class="step-check">
+        <input type="checkbox" id="step4"> <label for="step4">Ejecuté el código y cada objeto ejecutó su propia versión del método.</label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 5 -->
+    <!-- ============================================== -->
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">5</div>
+        <div class="step-title">Verifica con un array</div>
+      </div>
+
+      <p>El verdadero poder del polimorfismo se ve cuando tratas múltiples objetos diferentes con un solo loop.</p>
+
+      <div v-if="section==='002D'">
+        <pre class="code-block"><code class="language-java">// Crea un array de tipo Character con objetos de distintos tipos
+Character[] mobs = {
+    new Zombie(),
+    new Dragon(),
+    new Creeper(),
+    new Enderman()
+};
+
+// Un solo loop para todos
+for (Character mob : mobs) {
+    System.out.println(mob.atacar());
+}</code></pre>
+      </div>
+
+      <div v-if="section==='004D'">
+        <pre class="code-block"><code class="language-java">// Crea un array de tipo Personaje con objetos de distintos tipos
+Personaje[] equipo = {
+    new Hacker(),
+    new Programador(),
+    new GameDev()
+};
+
+// Un solo loop para todos
+for (Personaje p : equipo) {
+    System.out.println(p.trabajar());
+}</code></pre>
+      </div>
+
+      <div class="reflection-box">
+        <p><strong>Piensa:</strong> Si mañana agregas una nueva clase hija (por ejemplo, <code v-if="section==='002D'">Skeleton</code><code v-if="section==='004D'">DBA</code>), ¿necesitas cambiar el loop? ¿Por qué sí o por qué no?</p>
+      </div>
+
+      <div class="step-check">
+        <input type="checkbox" id="step5"> <label for="step5">Probé con un array y el loop ejecutó el método correcto de cada objeto.</label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 6 -->
+    <!-- ============================================== -->
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">6</div>
+        <div class="step-title">Agrega toString()</div>
+      </div>
+
+      <p>Sobreescribe <code>toString()</code> en la clase padre para que cuando imprimas un objeto, muestre información útil en vez de la referencia de memoria.</p>
+
+      <div v-if="section==='002D'">
+        <pre class="code-block"><code class="language-java">// En Character.java
+@Override
+public String toString() {
+    return mostrarNombre() + " | HP: " + mostrarVida() + " | MP: " + mostrarPM();
+}</code></pre>
+        <p>Prueba:</p>
+        <pre class="code-block"><code class="language-java">Character z = new Zombie();
+z.validarNombre("Steve");
+z.asignarVida(100);
+System.out.println(z);
+// → "STEVE | HP: 100 | MP: 0"</code></pre>
+      </div>
+
+      <div v-if="section==='004D'">
+        <pre class="code-block"><code class="language-java">// En Personaje.java
+@Override
+public String toString() {
+    return mostrarNombre() + " | HP: " + getVida() + " | Vivo: " + esta_vivo;
+}</code></pre>
+        <p>Prueba:</p>
+        <pre class="code-block"><code class="language-java">Personaje h = new Hacker();
+h.validarNombre("Neo");
+h.setVida(80);
+System.out.println(h);
+// → "NEO | HP: 80 | Vivo: true"</code></pre>
+      </div>
+
+      <div class="step-check">
+        <input type="checkbox" id="step6"> <label for="step6">Implementé <code>toString()</code> y al imprimir el objeto muestra los datos correctamente.</label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 7 — Desafío -->
+    <!-- ============================================== -->
+    <div class="step-block" style="border-color: var(--pastel-lavanda);">
+      <div class="step-header">
+        <div class="step-number" style="background: var(--accent-lavanda);">7</div>
+        <div class="step-title">Desafío adicional <span class="tag tag-avanzado">🟣 Avanzado</span></div>
+      </div>
+
+      <div v-if="section==='002D'">
+        <p>Agrega un segundo método polimórfico: <code>habilidadEspecial()</code>. Cada mob tiene una habilidad única:</p>
+        <ul>
+          <li><strong>Zombie:</strong> infecta a aldeanos cercanos</li>
+          <li><strong>Dragon:</strong> regenera salud con cristales del End</li>
+          <li><strong>Creeper:</strong> se camufla en hierba</li>
+          <li><strong>Enderman:</strong> se teletransporta para esquivar</li>
+        </ul>
+        <p>Implementa el método en el padre y sobreescríbelo en cada hijo. Prueba con un array y un loop.</p>
+      </div>
+
+      <div v-if="section==='004D'">
+        <p>Agrega un segundo método polimórfico: <code>herramientaFavorita()</code>. Cada tipo de programador usa herramientas diferentes:</p>
+        <ul>
+          <li><strong>Hacker:</strong> Kali Linux y Wireshark</li>
+          <li><strong>Programador:</strong> IntelliJ IDEA y Git</li>
+          <li><strong>GameDev:</strong> Unity y Blender</li>
+        </ul>
+        <p>Implementa el método en el padre y sobreescríbelo en cada hijo. Prueba con un array y un loop.</p>
+      </div>
+
+      <div class="step-check">
+        <input type="checkbox" id="step7"> <label for="step7">Implementé el segundo método polimórfico y funciona correctamente.</label>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- CIERRE -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div style="text-align:center; padding: 24px 0;">
+      <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+      <h3>Actividad completada</h3>
+      <p class="lead" style="margin:0 auto;">Si completaste los pasos 1 a 6, tienes polimorfismo funcionando en tu proyecto. Continúa con los ejercicios generales (1.3.5) para verificar tu comprensión.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+createApp({
+  data() {
+    return { section: '002D' };
+  },
+  mounted() {
+    this.$nextTick(() => this.highlight());
+  },
+  watch: {
+    section() {
+      this.$nextTick(() => this.highlight());
+    }
+  },
+  methods: {
+    highlight() {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code:not(.hljs)').forEach(block => {
+          hljs.highlightElement(block);
+        });
+      }
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

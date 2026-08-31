@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicios Generales — Herencia y Polimorfismo · Profe Carlitos</title>
+  <meta name="description" content="Ejercicios interactivos de herencia y polimorfismo en Java">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .exercises-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .exercises-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 48px 0 24px;
+      padding: 12px 0;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ws-wrapper { overflow-x: auto; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="exercises-container">
+
+    <header class="exercises-header">
+      <div style="font-size:40px; margin-bottom:12px;">👽</div>
+      <div class="kicker">Ejercicios generales · 1.3.5</div>
+      <h1 style="font-size:clamp(32px,4vw,48px);">Herencia y Polimorfismo</h1>
+      <p class="lead">Ejercicios para verificar tu comprensión. Cada actividad indica su nivel de dificultad e incluye retroalimentación inmediata.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;">
+        <span class="tag tag-base">🟢 Base — Reconocer e identificar</span>
+        <span class="tag tag-inter">🔵 Intermedio — Aplicar y analizar</span>
+        <span class="tag tag-avanzado">🟣 Avanzado — Evaluar y crear</span>
+      </div>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 1: ALTERNATIVAS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-celeste);">📝</div>
+      Preguntas de alternativas
+    </div>
+
+    <quiz-question
+      v-bind="quizzes.q1"
+    ></quiz-question>
+
+    <quiz-question
+      v-bind="quizzes.q2"
+    ></quiz-question>
+
+    <quiz-question
+      v-bind="quizzes.q3"
+    ></quiz-question>
+
+    <quiz-question
+      v-bind="quizzes.q4"
+    ></quiz-question>
+
+    <quiz-question
+      v-bind="quizzes.q5"
+    ></quiz-question>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 2: VERDADERO / FALSO -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-menta);">✓✗</div>
+      Verdadero o Falso
+    </div>
+
+    <quiz-question v-bind="vf.v1"></quiz-question>
+    <quiz-question v-bind="vf.v2"></quiz-question>
+    <quiz-question v-bind="vf.v3"></quiz-question>
+    <quiz-question v-bind="vf.v4"></quiz-question>
+    <quiz-question v-bind="vf.v5"></quiz-question>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 3: TÉRMINOS PAREADOS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-durazno);">🔗</div>
+      Términos pareados
+    </div>
+
+    <matching-pairs
+      v-bind="matching"
+    ></matching-pairs>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 4: ENCUENTRA EL ERROR -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-rosa);">🐛</div>
+      Encuentra el error
+    </div>
+
+    <code-error v-bind="errors.e1"></code-error>
+    <code-error v-bind="errors.e2"></code-error>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 5: COMPLETA EL CÓDIGO -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-lavanda);">✏️</div>
+      Completa el código
+    </div>
+
+    <code-fill v-bind="fills.f1"></code-fill>
+    <code-fill v-bind="fills.f2"></code-fill>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 6: ORDENA LOS PASOS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-amarillo);">🔢</div>
+      Ordena los pasos
+    </div>
+
+    <order-steps v-bind="orderData"></order-steps>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 7: SELECCIÓN MÚLTIPLE -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-celeste);">☑️</div>
+      Selección múltiple
+    </div>
+
+    <multi-select v-bind="multiSel.m1"></multi-select>
+    <multi-select v-bind="multiSel.m2"></multi-select>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 8: SOPA DE LETRAS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-menta);">🔍</div>
+      Sopa de letras
+    </div>
+
+    <p style="font-size:15px; color:var(--ink-soft); margin-bottom:16px;">Encuentra los 10 términos de OOP en la grilla. Haz clic en la primera letra, arrastra hasta la última y suelta.</p>
+
+    <div class="ws-wrapper">
+      <word-search
+        title="Términos de Herencia y Polimorfismo"
+        :grid-size="14"
+        :words="wsWords"
+        level="base"
+      ></word-search>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 9: CRUCIGRAMA -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-rosa);">📐</div>
+      Crucigrama
+    </div>
+
+    <crossword-puzzle
+      title="Conceptos de Herencia y Polimorfismo"
+      :grid-data="crossword.grid"
+      :across-clues="crossword.across"
+      :down-clues="crossword.down"
+      level="inter"
+    ></crossword-puzzle>
+
+    <!-- ============================================== -->
+    <!-- CIERRE -->
+    <!-- ============================================== -->
+    <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+      <h3>Ejercicios completados</h3>
+      <p class="lead" style="margin:0 auto;">Revisa tus respuestas y reintenta los ejercicios donde no acertaste. Si completaste todo correctamente, tienes una buena comprensión de herencia y polimorfismo.</p>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../shared/activity-engine.js"></script>
+<script>
+const { createApp } = Vue;
+
+// Helper for crossword cells
+function c(letter, number) {
+  return number ? { letter, number } : { letter };
+}
+
+const app = createApp({
+  data() {
+    return {
+      // ===== QUIZZES (alternativas) =====
+      quizzes: {
+        q1: {
+          question: '¿Qué significa polimorfismo en programación orientada a objetos?',
+          options: [
+            { text: 'Que una clase puede tener muchos atributos', correct: false },
+            { text: 'Que un mismo método puede comportarse diferente según el objeto que lo ejecuta', correct: true },
+            { text: 'Que una clase puede heredar de múltiples padres', correct: false },
+            { text: 'Que los métodos pueden recibir cualquier tipo de parámetro', correct: false }
+          ],
+          explanation: 'Polimorfismo (muchas formas) permite que un mismo método tenga implementaciones diferentes en cada clase hija.',
+          hint: 'Piensa en el ejemplo de Animal: hablar() produce un resultado diferente en Perro, Gato y Pato.',
+          level: 'base'
+        },
+        q2: {
+          question: '¿Para qué sirve la anotación <code>@Override</code>?',
+          options: [
+            { text: 'Para crear un nuevo método en la clase hija', correct: false },
+            { text: 'Para indicar que estás redefiniendo un método heredado del padre', correct: true },
+            { text: 'Para hacer un método privado', correct: false },
+            { text: 'Para llamar al método del padre', correct: false }
+          ],
+          explanation: '@Override le dice al compilador que estás sobreescribiendo un método del padre. Si el método no existe en el padre, el compilador marca error.',
+          level: 'base'
+        },
+        q3: {
+          question: 'Dado: <code>Animal a = new Gato();</code> y <code>a.hablar();</code><br>Donde Animal.hablar() retorna "..." y Gato.hablar() retorna "Miau".<br>¿Qué se ejecuta?',
+          options: [
+            { text: '"..."', correct: false },
+            { text: '"Miau"', correct: true },
+            { text: 'Error de compilación', correct: false },
+            { text: 'null', correct: false }
+          ],
+          explanation: 'Aunque la variable es de tipo Animal, el objeto real es Gato. Java ejecuta el método de la clase real del objeto.',
+          hint: 'En polimorfismo, el tipo del objeto determina qué versión del método se ejecuta.',
+          level: 'inter'
+        },
+        q4: {
+          question: '¿Cuál de estos fragmentos compila como @Override de <code>public void atacar()</code>?',
+          options: [
+            { text: '<code>@Override public void atacar(int fuerza) { }</code>', correct: false },
+            { text: '<code>@Override public void atacar() { }</code>', correct: true },
+            { text: '<code>@Override private void atacar() { }</code>', correct: false },
+            { text: '<code>@Override public int atacar() { return 0; }</code>', correct: false }
+          ],
+          explanation: 'Un override debe tener exactamente la misma firma: mismo nombre, mismos parámetros, mismo tipo de retorno. Además, no puede reducir el nivel de acceso.',
+          hint: 'La firma del método hijo debe coincidir exactamente con la del padre.',
+          level: 'inter'
+        },
+        q5: {
+          question: '¿Qué imprime este código?<br><code>Character[] mobs = {new Zombie(), new Dragon()};</code><br><code>for (Character m : mobs) { System.out.println(m.atacar()); }</code><br>Donde Zombie.atacar() retorna "Muerde" y Dragon.atacar() retorna "Fuego".',
+          options: [
+            { text: 'Muerde, luego Fuego', correct: true },
+            { text: 'El personaje ataca (dos veces)', correct: false },
+            { text: 'Error: no se puede guardar Zombie en variable Character', correct: false },
+            { text: 'Fuego, luego Muerde', correct: false }
+          ],
+          explanation: 'El array es de tipo Character, pero cada posición contiene un objeto diferente. El for-each ejecuta atacar() del objeto real.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== VERDADERO / FALSO =====
+      vf: {
+        v1: {
+          question: '<strong>Verdadero o falso:</strong> @Override es obligatorio para sobreescribir un método.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Java permite sobreescribir sin @Override. Pero siempre hay que usarlo porque protege de errores y hace el código más claro.',
+          level: 'base'
+        },
+        v2: {
+          question: '<strong>Verdadero o falso:</strong> Si una clase hija no sobreescribe un método del padre, usa la versión del padre.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Correcto. Eso es herencia: la clase hija hereda todos los métodos públicos y protegidos del padre.',
+          level: 'base'
+        },
+        v3: {
+          question: '<strong>Verdadero o falso:</strong> Un método <code>static</code> puede participar en polimorfismo.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Los métodos static pertenecen a la clase, no al objeto. El polimorfismo depende del tipo real del objeto.',
+          hint: 'Polimorfismo funciona con instancias (objetos), no con la clase misma.',
+          level: 'inter'
+        },
+        v4: {
+          question: '<strong>Verdadero o falso:</strong> <code>Animal a = new Perro()</code> significa que <code>a</code> solo puede usar métodos definidos en <code>Animal</code>.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Correcto. La variable de tipo Animal solo puede llamar métodos que Animal declara. Pero si Perro los sobreescribe, se ejecuta la versión de Perro.',
+          hint: 'El tipo de la variable determina qué métodos puedes llamar. El tipo del objeto determina cuál versión se ejecuta.',
+          level: 'inter'
+        },
+        v5: {
+          question: '<strong>Verdadero o falso:</strong> <code>super.atacar()</code> dentro de una clase hija ejecuta la versión del método del padre.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Correcto. super permite acceder a la implementación del padre desde la clase hija.',
+          level: 'base'
+        }
+      },
+
+      // ===== TÉRMINOS PAREADOS =====
+      matching: {
+        instruction: 'Conecta cada término con su definición correcta.',
+        pairs: [
+          { term: 'extends', definition: 'Palabra clave que indica que una clase hereda de otra' },
+          { term: '@Override', definition: 'Anotación que marca un método como sobreescritura del padre' },
+          { term: 'super', definition: 'Referencia al objeto padre, permite llamar sus métodos' },
+          { term: 'Polimorfismo', definition: 'Un mismo método se comporta diferente según el objeto' },
+          { term: 'toString()', definition: 'Método heredado de Object para representación en texto' },
+          { term: 'Clase padre', definition: 'La clase de la cual otras heredan atributos y métodos' },
+          { term: 'Clase hija', definition: 'La clase que hereda y puede redefinir comportamientos' },
+          { term: 'Firma del método', definition: 'Nombre + parámetros + tipo de retorno de un método' }
+        ],
+        level: 'base'
+      },
+
+      // ===== ENCUENTRA EL ERROR =====
+      errors: {
+        e1: {
+          instruction: 'Este código intenta sobreescribir <code>hablar()</code> del padre, pero tiene un error. Haz clic en la línea incorrecta.',
+          codeLines: [
+            { text: 'public class Perro extends Animal {', hasError: false },
+            { text: '', hasError: false },
+            { text: '    @Override', hasError: false },
+            { text: '    public void Hablar() {', hasError: true },
+            { text: '        System.out.println("Guau");', hasError: false },
+            { text: '    }', hasError: false },
+            { text: '}', hasError: false }
+          ],
+          explanation: 'El método se llama Hablar con H mayúscula, pero el padre define hablar con h minúscula. Java es case-sensitive: son dos métodos diferentes.',
+          hint: 'Compara el nombre del método con el del padre. Java distingue mayúsculas de minúsculas.',
+          level: 'inter'
+        },
+        e2: {
+          instruction: 'Este código intenta hacer un override, pero no compila. Encuentra la línea con el error.',
+          codeLines: [
+            { text: 'public class Gato extends Animal {', hasError: false },
+            { text: '', hasError: false },
+            { text: '    @Override', hasError: false },
+            { text: '    private void hablar() {', hasError: true },
+            { text: '        System.out.println("Miau");', hasError: false },
+            { text: '    }', hasError: false },
+            { text: '}', hasError: false }
+          ],
+          explanation: 'El método del padre es public, pero el hijo lo declara como private. No se puede reducir el nivel de acceso en un override.',
+          hint: 'Compara el modificador de acceso del hijo con el del padre.',
+          level: 'inter'
+        }
+      },
+
+      // ===== COMPLETA EL CÓDIGO =====
+      fills: {
+        f1: {
+          instruction: 'Completa el código para que <code>Dragon</code> sobreescriba el método <code>atacar()</code> del padre.',
+          segments: [
+            { text: 'public class Dragon ', isBlank: false },
+            { text: '', isBlank: true, answer: 'extends' },
+            { text: ' Character {\n\n    ', isBlank: false },
+            { text: '', isBlank: true, answer: '@Override' },
+            { text: '\n    public String atacar() {\n        return "Dragon lanza fuego";\n    }\n}', isBlank: false }
+          ],
+          explanation: '"extends" establece la herencia y "@Override" indica la sobreescritura del método.',
+          hint: 'Necesitas la palabra clave de herencia y la anotación de sobreescritura.',
+          level: 'base'
+        },
+        f2: {
+          instruction: 'Completa el código para que <code>Hacker</code> sobreescriba <code>trabajar()</code> y llame al método del padre.',
+          segments: [
+            { text: 'public class Hacker extends Personaje {\n\n    @Override\n    public String trabajar() {\n        String base = ', isBlank: false },
+            { text: '', isBlank: true, answer: 'super.trabajar()' },
+            { text: ';\n        return base + " y analiza vulnerabilidades";\n    }\n}', isBlank: false }
+          ],
+          explanation: 'super.trabajar() llama a la versión del padre. El hijo usa ese resultado y le agrega su propia lógica.',
+          hint: 'Para llamar al método del padre desde el hijo, se usa la referencia super.',
+          level: 'inter'
+        }
+      },
+
+      // ===== ORDENA LOS PASOS =====
+      orderData: {
+        instruction: 'Ordena los pasos para implementar polimorfismo correctamente:',
+        steps: [
+          { text: 'Definir el método en la clase padre', correctOrder: 1 },
+          { text: 'Crear las clases hijas con extends', correctOrder: 2 },
+          { text: 'Agregar @Override en cada clase hija', correctOrder: 3 },
+          { text: 'Redefinir el método con la implementación propia', correctOrder: 4 },
+          { text: 'Crear objetos hijo con variable de tipo padre', correctOrder: 5 },
+          { text: 'Llamar al método — Java ejecuta la versión del objeto real', correctOrder: 6 }
+        ],
+        explanation: 'Primero se establece el contrato en el padre, luego cada hijo define su versión, y finalmente se usa polimorfismo al declarar variables del tipo padre.',
+        level: 'inter'
+      },
+
+      // ===== SELECCIÓN MÚLTIPLE =====
+      multiSel: {
+        m1: {
+          question: '¿Cuáles afirmaciones sobre <code>@Override</code> son correctas?',
+          options: [
+            { text: 'Produce error de compilación si el método no existe en el padre', correct: true },
+            { text: 'Es obligatorio para que el polimorfismo funcione', correct: false },
+            { text: 'Hace el código más claro y seguro', correct: true },
+            { text: 'Solo funciona con métodos public', correct: false },
+            { text: 'Protege contra errores de tipeo en el nombre del método', correct: true }
+          ],
+          explanation: '@Override verifica que el método existe en el padre, protege contra errores de tipeo, y documenta la intención. No es obligatorio pero siempre debe usarse.',
+          level: 'inter'
+        },
+        m2: {
+          question: '¿Qué condiciones debe cumplir un método para ser un <code>@Override</code> válido?',
+          options: [
+            { text: 'Mismo nombre que el método del padre', correct: true },
+            { text: 'Mismos parámetros que el método del padre', correct: true },
+            { text: 'Mismo tipo de retorno que el método del padre', correct: true },
+            { text: 'Mismo modificador de acceso o mayor', correct: true },
+            { text: 'Debe tener la misma implementación que el padre', correct: false }
+          ],
+          explanation: 'Un override válido mantiene la firma completa y no reduce el acceso. La implementación puede ser diferente — esa es toda la idea.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== SOPA DE LETRAS =====
+      wsWords: ['POLIMORFISMO', 'HERENCIA', 'OVERRIDE', 'EXTENDS', 'SUPER', 'CLASE', 'METODO', 'OBJETO', 'PADRE', 'HIJO'],
+
+      // ===== CRUCIGRAMA =====
+      // Layout (7 rows × 8 cols):
+      //
+      //   Col:  0  1  2  3  4  5  6  7
+      // Row 0:  O  V  E  R  R  I  D  E     ← 1-Across: OVERRIDE
+      // Row 1:  ■  ■  X  ■  ■  ■  ■  ■
+      // Row 2:  S  U  T  E  N  D  S  ■     ← 3-Across: EXTENDS (col 1-6... no)
+      //
+      // Simpler layout:
+      //   Col:  0  1  2  3  4  5  6  7
+      // Row 0:  O  V  E  R  R  I  D  E     ← 1-Across: OVERRIDE, 1-Down: starts O
+      // Row 1:  B  ■  ■  ■  ■  ■  ■  ■
+      // Row 2:  J  ■  E  X  T  E  N  D  S  ← 2-Across: EXTENDS (but needs col adjustments)
+      //
+      // Even simpler — 5×8 grid:
+      crossword: {
+        grid: (function() {
+          function c(letter, number) {
+            return number ? { letter, number } : { letter };
+          }
+          var E = null;
+          return [
+            // Row 0: OVERRIDE (1-Across), col 0 = 1-Down start
+            [ c('O',1), c('V'),  c('E'), c('R'), c('R'), c('I'), c('D'), c('E') ],
+            // Row 1
+            [ c('B'),   E,       E,      E,      E,      E,      E,      c('X',2) ],
+            // Row 2: col 1-7 = EXTENDS (3-Across)
+            [ c('J'),   c('E',3),c('X'), c('T'), c('E'), c('N'), c('D'), c('T') ],
+            // Row 3
+            [ c('E'),   E,       E,      E,      E,      E,      E,      c('E') ],
+            // Row 4: SUPER (4-Across)
+            [ c('T'),   c('S',4),c('U'), c('P'), c('E'), c('R'), E,      c('N') ],
+            // Row 5
+            [ c('O'),   E,       E,      E,      E,      E,      E,      c('D') ],
+            // Row 6
+            [ E,        E,       E,      E,      E,      E,      E,      c('S') ],
+          ];
+        })(),
+        across: [
+          { number: 1, clue: 'Anotación que indica sobreescritura de un método heredado (sin el @)' },
+          { number: 3, clue: 'Palabra clave para que una clase herede de otra' },
+          { number: 4, clue: 'Referencia que permite llamar al método del padre desde el hijo' }
+        ],
+        down: [
+          { number: 1, clue: 'Instancia de una clase, con datos y comportamientos propios' },
+          { number: 2, clue: 'Palabra clave para que una clase herede de otra (hacia abajo)' }
+        ]
+      }
+    };
+  }
+});
+
+ActivityEngine.register(app);
+app.mount('#app');
+</script>
+</body>
+</html>

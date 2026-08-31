@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Polimorfismo — Java OOP · Profe Carlitos</title>
+  <meta name="description" content="Presentación: Polimorfismo en Java — Desarrollo Orientado a Objetos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow: hidden; }
+    .diagram-box {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      margin: 4px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 140px;
+    }
+    .diagram-box.parent { background: var(--pastel-lavanda); }
+    .diagram-box.child { background: var(--pastel-celeste); }
+    .diagram-arrow {
+      display: block;
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+    }
+    .diagram-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      align-items: start;
+      max-width: 1000px;
+    }
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--ink-muted);
+      padding-top: 30px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      max-width: 900px;
+    }
+    @media (max-width: 760px) {
+      .summary-grid, .vs-grid { grid-template-columns: 1fr; }
+      .vs-divider { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="app">
+
+<header class="topbar">
+  <div class="topbar-brand"><span class="alien">👽</span> Java · Polimorfismo</div>
+  <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
+  <div class="progress-bar" :style="{width: ((current+1)/total*100)+'%'}"></div>
+</header>
+
+<main class="slide-area">
+
+  <!-- SLIDE 0: Portada -->
+  <section v-if="current===0" data-slide class="slide" style="text-align:center;">
+    <div style="font-size:64px; margin-bottom:16px;">👽</div>
+    <div class="kicker">Desarrollo Orientado a Objetos · 2026</div>
+    <h1>Polimorfismo</h1>
+    <p class="lead" style="margin:0 auto;">Un mismo mensaje, comportamientos diferentes según el objeto que lo recibe.</p>
+  </section>
+
+  <!-- SLIDE 1: Dónde estamos -->
+  <section v-else-if="current===1" data-slide class="slide">
+    <div class="kicker">01 · Contexto</div>
+    <h2>¿Dónde estamos?</h2>
+    <p class="lead">Ya trabajamos con herencia: una clase hija extiende a una clase padre y hereda sus atributos y métodos.</p>
+    <div class="grid">
+      <div class="card card-lavanda">
+        <strong>Lo que ya sabemos</strong>
+        <p><code>extends</code> permite que una clase hija herede de una clase padre.</p>
+      </div>
+      <div class="card card-celeste">
+        <strong>Lo que falta</strong>
+        <p>¿Qué pasa cuando la clase hija necesita hacer lo mismo, pero de manera diferente?</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 2: Repaso herencia con código -->
+  <section v-else-if="current===2" data-slide class="slide">
+    <div class="kicker">02 · Repaso rápido</div>
+    <h2>Herencia: lo esencial</h2>
+    <p>La clase hija hereda todo lo <code>public</code> y <code>protected</code> del padre. No necesita reescribirlo.</p>
+    <pre class="code-block"><code class="language-java">public class Animal {
+    private String nombre;
+
+    public String getNombre() {
+        return nombre;
+    }
+
+    public void hablar() {
+        System.out.println("...");
+    }
+}
+
+public class Perro extends Animal {
+    // Perro ya tiene getNombre() y hablar()
+    // heredados de Animal
+}</code></pre>
+    <p class="small">Perro hereda <code>getNombre()</code> y <code>hablar()</code> sin escribir nada.</p>
+  </section>
+
+  <!-- SLIDE 3: El problema -->
+  <section v-else-if="current===3" data-slide class="slide">
+    <div class="kicker">03 · El problema</div>
+    <h2>Todos hablan igual</h2>
+    <p class="lead">Si <code>Perro</code>, <code>Gato</code> y <code>Pato</code> heredan de <code>Animal</code>, los tres ejecutan el mismo <code>hablar()</code>.</p>
+    <pre class="code-block"><code class="language-java">Animal perro = new Perro();
+Animal gato  = new Gato();
+Animal pato  = new Pato();
+
+perro.hablar();  // "..."
+gato.hablar();   // "..."
+pato.hablar();   // "..."</code></pre>
+    <div class="rule">
+      <p>Problema: en el mundo real, un perro ladra, un gato maúlla y un pato grazna. Necesitamos que cada uno haga lo suyo.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 4: Definición de polimorfismo -->
+  <section v-else-if="current===4" data-slide class="slide">
+    <div class="kicker">04 · Definición</div>
+    <h2>Polimorfismo</h2>
+    <p class="lead">Del griego: <em>poly</em> (muchas) + <em>morphé</em> (formas).</p>
+    <div class="callout callout-lavanda">
+      <p style="margin:0; font-size:18px; font-weight:600;">En programación orientada a objetos: un mismo método puede comportarse de forma diferente según la clase del objeto que lo ejecuta.</p>
+    </div>
+    <p>El método tiene el mismo nombre y la misma firma, pero cada clase hija define su propia versión.</p>
+    <p>Java decide en tiempo de ejecución cuál versión usar, basándose en el tipo real del objeto.</p>
+  </section>
+
+  <!-- SLIDE 5: @Override -->
+  <section v-else-if="current===5" data-slide class="slide">
+    <div class="kicker">05 · @Override</div>
+    <h2>Sobreescribir un método heredado</h2>
+    <p>La clase hija puede <strong>redefinir</strong> un método del padre. Para indicarlo, usamos la anotación <code>@Override</code>.</p>
+    <pre class="code-block"><code class="language-java">public class Perro extends Animal {
+
+    @Override
+    public void hablar() {
+        System.out.println("Guau guau");
+    }
+}</code></pre>
+    <div class="grid">
+      <div class="card card-menta">
+        <strong>¿Qué hace @Override?</strong>
+        <p>Le dice al compilador: "estoy redefiniendo un método que ya existe en el padre". Si el método no existe en el padre, el compilador marca error.</p>
+      </div>
+      <div class="card card-durazno">
+        <strong>¿Es obligatorio?</strong>
+        <p>Técnicamente no. Pero siempre hay que usarlo. Protege de errores de tipeo y hace el código más claro.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 6: Ejemplo completo genérico -->
+  <section v-else-if="current===6" data-slide class="slide">
+    <div class="kicker">06 · Ejemplo completo</div>
+    <h2>Cada animal habla a su manera</h2>
+    <pre class="code-block"><code class="language-java">public class Animal {
+    public void hablar() {
+        System.out.println("...");
+    }
+}
+
+public class Perro extends Animal {
+    @Override
+    public void hablar() {
+        System.out.println("Guau guau");
+    }
+}
+
+public class Gato extends Animal {
+    @Override
+    public void hablar() {
+        System.out.println("Miau");
+    }
+}
+
+public class Pato extends Animal {
+    @Override
+    public void hablar() {
+        System.out.println("Cuac cuac");
+    }
+}</code></pre>
+  </section>
+
+  <!-- SLIDE 7: Qué ejecuta Java -->
+  <section v-else-if="current===7" data-slide class="slide">
+    <div class="kicker">07 · Ejecución</div>
+    <h2>¿Qué método se ejecuta?</h2>
+    <pre class="code-block"><code class="language-java">Animal a1 = new Perro();
+Animal a2 = new Gato();
+Animal a3 = new Pato();
+
+a1.hablar();  // → "Guau guau"
+a2.hablar();  // → "Miau"
+a3.hablar();  // → "Cuac cuac"</code></pre>
+    <div class="rule">
+      <p>La variable es de tipo <code>Animal</code>, pero el objeto real es <code>Perro</code>, <code>Gato</code> o <code>Pato</code>. Java ejecuta el método de la clase real del objeto, no el de la variable.</p>
+    </div>
+    <p>Esto es polimorfismo: el mismo código (<code>a.hablar()</code>) produce resultados diferentes según el objeto.</p>
+  </section>
+
+  <!-- SLIDE 8: Diagrama de jerarquía genérico -->
+  <section v-else-if="current===8" data-slide class="slide">
+    <div class="kicker">08 · Jerarquía</div>
+    <h2>Diagrama de clases</h2>
+    <p>La clase padre define el contrato (el método existe). Cada clase hija define su implementación.</p>
+    <div style="text-align:center; margin: 24px 0;">
+      <div class="diagram-box parent">Animal<br><span class="small" style="color:var(--ink-soft)">hablar() → "..."</span></div>
+      <div class="diagram-arrow">▼ extends</div>
+      <div class="diagram-row">
+        <div class="diagram-box child">Perro<br><span class="small" style="color:var(--ink-soft)">hablar() → "Guau"</span></div>
+        <div class="diagram-box child">Gato<br><span class="small" style="color:var(--ink-soft)">hablar() → "Miau"</span></div>
+        <div class="diagram-box child">Pato<br><span class="small" style="color:var(--ink-soft)">hablar() → "Cuac"</span></div>
+      </div>
+    </div>
+    <p class="small">El tipo de la variable determina qué métodos puedes llamar. El tipo del objeto determina cuál versión se ejecuta.</p>
+  </section>
+
+  <!-- SLIDE 9: Transición a proyectos -->
+  <section v-else-if="current===9" data-slide class="slide" style="text-align:center;">
+    <div style="font-size:48px; margin-bottom:16px;">🛸</div>
+    <div class="kicker">Aterrizando al proyecto</div>
+    <h2>Veamos cómo aplica en nuestro código</h2>
+    <p class="lead" style="margin:0 auto;">Ahora vamos a ver el polimorfismo aplicado a los proyectos de cada sección.</p>
+  </section>
+
+  <!-- SLIDE 10: 002D — Estado actual -->
+  <section v-else-if="current===10" data-slide class="slide">
+    <div class="kicker">10 · Sección 002D — Minecraft</div>
+    <h2>Estado actual del código</h2>
+    <p>La sección 002D tiene esta jerarquía:</p>
+    <div style="text-align:center; margin: 20px 0;">
+      <div class="diagram-box parent">Character<br><span class="small" style="color:var(--ink-soft)">name, hit_points, magic_points</span></div>
+      <div class="diagram-arrow">▼ extends</div>
+      <div class="diagram-row">
+        <div class="diagram-box child">Zombie</div>
+        <div class="diagram-box child">Dragon</div>
+        <div class="diagram-box child">Creeper</div>
+        <div class="diagram-box child">Enderman</div>
+      </div>
+    </div>
+    <p>Las clases hijas existen y heredan de <code>Character</code>. Pero todas se comportan exactamente igual: no tienen métodos propios que las distingan.</p>
+  </section>
+
+  <!-- SLIDE 11: 002D — Con polimorfismo -->
+  <section v-else-if="current===11" data-slide class="slide">
+    <div class="kicker">11 · Sección 002D — Polimorfismo aplicado</div>
+    <h2>Cada mob ataca diferente</h2>
+    <p>Agregamos <code>atacar()</code> al padre y lo sobreescribimos en cada hijo:</p>
+    <pre class="code-block"><code class="language-java">// En Character.java
+public String atacar() {
+    return "El personaje ataca";
+}
+
+// En Zombie.java
+@Override
+public String atacar() {
+    return "Zombie muerde e infecta";
+}
+
+// En Dragon.java
+@Override
+public String atacar() {
+    return "Dragon lanza fuego";
+}
+
+// En Creeper.java
+@Override
+public String atacar() {
+    return "Creeper explota (y muere)";
+}
+
+// En Enderman.java
+@Override
+public String atacar() {
+    return "Enderman se teletransporta y golpea";
+}</code></pre>
+  </section>
+
+  <!-- SLIDE 12: 002D — Ejecución -->
+  <section v-else-if="current===12" data-slide class="slide">
+    <div class="kicker">12 · Sección 002D — Probando</div>
+    <h2>Polimorfismo en acción</h2>
+    <pre class="code-block"><code class="language-java">Character mob1 = new Zombie();
+Character mob2 = new Dragon();
+Character mob3 = new Creeper();
+
+System.out.println(mob1.atacar());
+// → "Zombie muerde e infecta"
+
+System.out.println(mob2.atacar());
+// → "Dragon lanza fuego"
+
+System.out.println(mob3.atacar());
+// → "Creeper explota (y muere)"</code></pre>
+    <div class="rule">
+      <p>La variable es de tipo <code>Character</code>, pero cada objeto ejecuta su propia versión de <code>atacar()</code>.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 13: 004D — Estado actual -->
+  <section v-else-if="current===13" data-slide class="slide">
+    <div class="kicker">13 · Sección 004D — Programadores</div>
+    <h2>Estado actual del código</h2>
+    <p>La sección 004D tiene esta jerarquía:</p>
+    <div style="text-align:center; margin: 20px 0;">
+      <div class="diagram-box parent">Personaje<br><span class="small" style="color:var(--ink-soft)">nombre, vida, esta_vivo</span></div>
+      <div class="diagram-arrow">▼ extends</div>
+      <div class="diagram-row">
+        <div class="diagram-box child">Hacker<br><span class="small" style="color:var(--ink-soft)">inteligencia</span></div>
+        <div class="diagram-box child">Programador<br><span class="small" style="color:var(--ink-soft)">lenguajes_dominados</span></div>
+        <div class="diagram-box child">GameDev<br><span class="small" style="color:var(--ink-soft)">inspiracion</span></div>
+      </div>
+    </div>
+    <p>Igual que en la 002D: las clases hijas heredan todo de <code>Personaje</code>, pero no tienen comportamientos propios.</p>
+  </section>
+
+  <!-- SLIDE 14: 004D — Con polimorfismo -->
+  <section v-else-if="current===14" data-slide class="slide">
+    <div class="kicker">14 · Sección 004D — Polimorfismo aplicado</div>
+    <h2>Cada programador trabaja diferente</h2>
+    <pre class="code-block"><code class="language-java">// En Personaje.java
+public String trabajar() {
+    return "El personaje trabaja";
+}
+
+// En Hacker.java
+@Override
+public String trabajar() {
+    return "Hacker analiza vulnerabilidades";
+}
+
+// En Programador.java
+@Override
+public String trabajar() {
+    return "Programador escribe código limpio";
+}
+
+// En GameDev.java
+@Override
+public String trabajar() {
+    return "GameDev diseña mecánicas de juego";
+}</code></pre>
+  </section>
+
+  <!-- SLIDE 15: 004D — Ejecución -->
+  <section v-else-if="current===15" data-slide class="slide">
+    <div class="kicker">15 · Sección 004D — Probando</div>
+    <h2>Polimorfismo en acción</h2>
+    <pre class="code-block"><code class="language-java">Personaje p1 = new Hacker();
+Personaje p2 = new Programador();
+Personaje p3 = new GameDev();
+
+System.out.println(p1.trabajar());
+// → "Hacker analiza vulnerabilidades"
+
+System.out.println(p2.trabajar());
+// → "Programador escribe código limpio"
+
+System.out.println(p3.trabajar());
+// → "GameDev diseña mecánicas de juego"</code></pre>
+    <div class="rule">
+      <p>Mismo patrón que en la 002D: la variable es de tipo padre, el comportamiento es el del hijo.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 16: Variable tipo padre -->
+  <section v-else-if="current===16" data-slide class="slide">
+    <div class="kicker">16 · Concepto clave</div>
+    <h2>Variable de tipo padre, objeto de tipo hijo</h2>
+    <p class="lead">Esta es la base del polimorfismo. Es lo que permite tratar objetos diferentes de forma uniforme.</p>
+    <div class="vs-grid">
+      <div>
+        <h4>Sin polimorfismo</h4>
+        <pre class="code-block" style="font-size:13px;"><code class="language-java">Zombie z = new Zombie();
+Dragon d = new Dragon();
+Creeper c = new Creeper();
+
+// Necesitas saber el tipo exacto
+z.atacar();
+d.atacar();
+c.atacar();</code></pre>
+      </div>
+      <div class="vs-divider">vs</div>
+      <div>
+        <h4>Con polimorfismo</h4>
+        <pre class="code-block" style="font-size:13px;"><code class="language-java">Character[] mobs = {
+    new Zombie(),
+    new Dragon(),
+    new Creeper()
+};
+
+// Un solo loop sirve para todos
+for (Character m : mobs) {
+    m.atacar();
+}</code></pre>
+      </div>
+    </div>
+    <p class="small">Con polimorfismo, puedes agregar nuevos tipos sin cambiar el código que los usa.</p>
+  </section>
+
+  <!-- SLIDE 17: Reglas del @Override -->
+  <section v-else-if="current===17" data-slide class="slide">
+    <div class="kicker">17 · Reglas</div>
+    <h2>Reglas para sobreescribir correctamente</h2>
+    <div class="grid">
+      <div class="card card-menta">
+        <strong>Misma firma</strong>
+        <p>El método hijo debe tener exactamente el mismo nombre, mismos parámetros y mismo tipo de retorno que el padre.</p>
+      </div>
+      <div class="card card-celeste">
+        <strong>Mismo o mayor acceso</strong>
+        <p>Si el padre dice <code>public</code>, el hijo no puede decir <code>private</code>. Puede mantener o ampliar el acceso, nunca restringirlo.</p>
+      </div>
+      <div class="card card-durazno">
+        <strong>@Override siempre</strong>
+        <p>Aunque no es obligatorio, úsalo siempre. Si escribes mal el nombre del método, el compilador te avisará.</p>
+      </div>
+      <div class="card card-lavanda">
+        <strong>No se aplica a static</strong>
+        <p>Los métodos <code>static</code> pertenecen a la clase, no al objeto. No participan en polimorfismo.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 18: Error común 1 -->
+  <section v-else-if="current===18" data-slide class="slide">
+    <div class="kicker">18 · Error frecuente</div>
+    <h2>Cambiar la firma del método</h2>
+    <p>Si la firma no coincide exactamente, no es un override — es un método nuevo.</p>
+    <pre class="code-block"><code class="language-java">// En Animal:
+public void hablar() { ... }
+
+// En Perro (ERROR: parámetro extra):
+@Override
+public void hablar(String idioma) {   // ✗ Esto NO compila
+    System.out.println("Guau");
+}</code></pre>
+    <div class="callout callout-durazno">
+      <p style="margin:0;">El compilador marca error porque <code>hablar(String)</code> no existe en <code>Animal</code>. La anotación <code>@Override</code> te protegió de este error silencioso.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 19: Error común 2 -->
+  <section v-else-if="current===19" data-slide class="slide">
+    <div class="kicker">19 · Error frecuente</div>
+    <h2>Olvidar @Override (y escribir mal el nombre)</h2>
+    <pre class="code-block"><code class="language-java">// En Animal:
+public void hablar() { ... }
+
+// En Perro (sin @Override):
+public void Hablar() {   // ← Mayúscula en "H"
+    System.out.println("Guau");
+}
+
+// Esto compila sin error. Pero hablar() sigue
+// ejecutando la versión del padre.
+// Hablar() es un método NUEVO, no una sobreescritura.</code></pre>
+    <div class="rule">
+      <p>Sin <code>@Override</code>, Java no sabe que querías sobreescribir. El error pasa desapercibido y el polimorfismo no funciona.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 20: super -->
+  <section v-else-if="current===20" data-slide class="slide">
+    <div class="kicker">20 · super</div>
+    <h2>Llamar al método del padre desde el hijo</h2>
+    <p>A veces la clase hija quiere hacer lo que hace el padre, y además agregar algo propio. Para eso se usa <code>super</code>.</p>
+    <pre class="code-block"><code class="language-java">public class Dragon extends Character {
+
+    @Override
+    public String atacar() {
+        String ataqueBase = super.atacar();
+        return ataqueBase + " y además lanza fuego";
+    }
+}</code></pre>
+    <div class="callout callout-celeste">
+      <p style="margin:0;"><code>super.atacar()</code> ejecuta la versión del padre. El hijo puede usar ese resultado y extenderlo.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 21: toString -->
+  <section v-else-if="current===21" data-slide class="slide">
+    <div class="kicker">21 · Caso real: toString()</div>
+    <h2>Un override que usarán siempre</h2>
+    <p>Todas las clases en Java heredan de <code>Object</code>. <code>Object</code> tiene un método <code>toString()</code> que retorna algo como <code>Character@1a2b3c</code>.</p>
+    <pre class="code-block"><code class="language-java">public class Character {
+    private String name;
+    private int hit_points;
+
+    @Override
+    public String toString() {
+        return name + " (HP: " + hit_points + ")";
+    }
+}
+
+// Ahora:
+Character c = new Character();
+System.out.println(c);
+// → "Steve (HP: 100)" en vez de "Character@1a2b3c"</code></pre>
+    <div class="rule">
+      <p><code>toString()</code> es probablemente el override más común en Java. Lo van a usar en casi todas las clases que creen.</p>
+    </div>
+  </section>
+
+  <!-- SLIDE 22: Resumen visual -->
+  <section v-else-if="current===22" data-slide class="slide">
+    <div class="kicker">22 · Resumen</div>
+    <h2>Mapa conceptual</h2>
+    <div class="summary-grid">
+      <div class="card card-lavanda">
+        <strong>Herencia</strong>
+        <p>La clase hija recibe atributos y métodos del padre (<code>extends</code>).</p>
+      </div>
+      <div class="card card-celeste">
+        <strong>Override</strong>
+        <p>La clase hija redefine un método heredado (<code>@Override</code>).</p>
+      </div>
+      <div class="card card-menta">
+        <strong>Polimorfismo</strong>
+        <p>El mismo método produce comportamientos diferentes según el objeto real.</p>
+      </div>
+      <div class="card card-durazno">
+        <strong>Variable tipo padre</strong>
+        <p><code>Animal a = new Perro()</code> permite tratar objetos diferentes de forma uniforme.</p>
+      </div>
+      <div class="card card-rosa">
+        <strong>super</strong>
+        <p>Permite llamar al método del padre desde el hijo para extenderlo.</p>
+      </div>
+      <div class="card card-amarillo">
+        <strong>toString()</strong>
+        <p>Override de <code>Object</code> para definir cómo se muestra un objeto como texto.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SLIDE 23: Regla de diseño -->
+  <section v-else-if="current===23" data-slide class="slide">
+    <div class="kicker">23 · Mirada de diseño</div>
+    <h2>¿Por qué importa el polimorfismo?</h2>
+    <p class="lead">Polimorfismo permite escribir código que trabaja con el tipo padre, sin importar cuántos tipos hijos existan o se creen después.</p>
+    <div class="rule">
+      <p><strong>Sin polimorfismo:</strong> cada vez que agregas un nuevo tipo de mob, debes modificar el código que los usa (agregar un <code>if</code> o un <code>case</code> para el tipo nuevo).</p>
+    </div>
+    <div class="rule">
+      <p><strong>Con polimorfismo:</strong> el código que usa <code>Character</code> no necesita cambiar. El nuevo mob solo necesita implementar sus propios métodos.</p>
+    </div>
+    <p>Esto se conecta con un principio de diseño llamado <strong>Open/Closed</strong>: abierto para extensión, cerrado para modificación.</p>
+  </section>
+
+  <!-- SLIDE 24: Cierre -->
+  <section v-else-if="current===24" data-slide class="slide" style="text-align:center;">
+    <div style="font-size:48px; margin-bottom:16px;">🛸</div>
+    <div class="kicker">Cierre</div>
+    <h2>El código no necesita saber quién eres.<br>Solo necesita saber qué puedes hacer.</h2>
+    <p class="lead" style="margin:12px auto 0;">Próximo paso: implementar polimorfismo en tu proyecto con la guía de actividad.</p>
+  </section>
+
+</main>
+
+<footer class="controls-bar">
+  <button class="btn" @click="prev">← Anterior</button>
+  <div class="dots">
+    <span v-for="i in total" :key="i" class="dot" :class="{active: current===i-1}" @click="goTo(i-1)"></span>
+  </div>
+  <button class="btn" @click="next">Siguiente →</button>
+</footer>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+createApp({
+  data() {
+    return { current: 0, total: 25 };
+  },
+  computed: {
+    progressWidth() { return ((this.current + 1) / this.total * 100) + '%'; }
+  },
+  methods: {
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    goTo(i) { if (i >= 0 && i < this.total) this.current = i; },
+    highlightCode() {
+      this.$nextTick(() => {
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code:not(.hljs)').forEach(block => hljs.highlightElement(block));
+        }
+      });
+    }
+  },
+  watch: {
+    current() { this.highlightCode(); }
+  },
+  mounted() {
+    this.highlightCode();
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); this.next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); this.prev(); }
+      if (e.key === 'Home') { e.preventDefault(); this.current = 0; }
+      if (e.key === 'End') { e.preventDefault(); this.current = this.total - 1; }
+    });
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
