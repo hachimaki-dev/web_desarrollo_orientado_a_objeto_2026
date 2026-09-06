@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheat Sheet Java Completo — Profe Carlitos</title>
+  <meta name="description" content="Guía de referencia rápida completa de Java: primitivos, Scanner, casteo, POO, control, excepciones y colecciones">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .doc-container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 48px 24px 100px;
+    }
+    .doc-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-header {
+      margin: 48px 0 20px;
+      padding-bottom: 12px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .cs-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 20px 0 28px;
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      padding: 10px 0;
+    }
+    .cs-tab-btn {
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.15s;
+    }
+    .cs-tab-btn:hover { background: var(--bg-muted); }
+    .cs-tab-btn.active {
+      background: var(--ink);
+      color: #FFF;
+      border-color: var(--ink);
+    }
+    .concept-card {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+    .concept-card h3 {
+      font-size: 20px;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .table-spec {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    .table-spec th, .table-spec td {
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      text-align: left;
+    }
+    .table-spec th {
+      background: var(--bg-muted);
+      font-weight: 700;
+    }
+    .table-spec tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="doc-container">
+
+    <header class="doc-header">
+      <div style="font-size:42px; margin-bottom:12px;">👽</div>
+      <div class="kicker">Unidad 1.4 · Referencia Completa · 1.4.5</div>
+      <h1 style="font-size:clamp(30px,3.8vw,46px);">Cheat Sheet Java Completo</h1>
+      <p class="lead">
+        Guía de referencia rápida que cubre todo lo aprendido en el curso: desde tipos primitivos hasta colecciones y manejo de excepciones.
+      </p>
+    </header>
+
+    <!-- NAVEGACIÓN RÁPIDA -->
+    <div class="cs-nav">
+      <button class="cs-tab-btn" :class="{active: tab==='primitivos'}" @click="tab='primitivos'">🔢 Primitivos</button>
+      <button class="cs-tab-btn" :class="{active: tab==='scanner'}" @click="tab='scanner'">⌨️ Scanner</button>
+      <button class="cs-tab-btn" :class="{active: tab==='casteo'}" @click="tab='casteo'">🔄 Casteo</button>
+      <button class="cs-tab-btn" :class="{active: tab==='control'}" @click="tab='control'">🔀 Control</button>
+      <button class="cs-tab-btn" :class="{active: tab==='repeticion'}" @click="tab='repeticion'">🔁 Repetición</button>
+      <button class="cs-tab-btn" :class="{active: tab==='poo'}" @click="tab='poo'">🏗️ 4 Pilares POO</button>
+      <button class="cs-tab-btn" :class="{active: tab==='colecciones'}" @click="tab='colecciones'">📦 Colecciones</button>
+      <button class="cs-tab-btn" :class="{active: tab==='excepciones'}" @click="tab='excepciones'">🛡️ Excepciones</button>
+    </div>
+
+    <!-- ================================================================= -->
+    <!-- TAB: PRIMITIVOS & VARIABLES -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='primitivos'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-celeste);">🔢</div>
+        <h2 style="margin:0; font-size:24px;">Tipos Primitivos y Variables</h2>
+      </div>
+
+      <div class="concept-card">
+        <h3>Declaración de variables</h3>
+        <pre class="code-block"><code class="language-java">// Sintaxis: tipo nombre = valor;
+int edad = 25;
+double precio = 9990.5;
+boolean activo = true;
+char inicial = 'C';
+String nombre = "Carlos"; // String es un objeto, no primitivo</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Tabla de tipos primitivos</h3>
+        <table class="table-spec">
+          <thead>
+            <tr>
+              <th>Tipo</th>
+              <th>Tamaño</th>
+              <th>Rango / Ejemplo</th>
+              <th>Wrapper</th>
+              <th>Valor por defecto</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>int</code></td><td>32 bits</td><td>-2,147M a 2,147M</td><td><code>Integer</code></td><td><code>0</code></td></tr>
+            <tr><td><code>double</code></td><td>64 bits</td><td>Decimales de alta precisión</td><td><code>Double</code></td><td><code>0.0</code></td></tr>
+            <tr><td><code>boolean</code></td><td>1 bit</td><td><code>true</code> o <code>false</code></td><td><code>Boolean</code></td><td><code>false</code></td></tr>
+            <tr><td><code>char</code></td><td>16 bits</td><td>Un carácter Unicode: <code>'A'</code></td><td><code>Character</code></td><td><code>'\u0000'</code></td></tr>
+            <tr><td><code>long</code></td><td>64 bits</td><td>Enteros muy grandes</td><td><code>Long</code></td><td><code>0L</code></td></tr>
+            <tr><td><code>float</code></td><td>32 bits</td><td>Decimales de menor precisión</td><td><code>Float</code></td><td><code>0.0f</code></td></tr>
+            <tr><td><em>Objeto</em> <code>String</code></td><td>Variable</td><td>Texto entre comillas dobles</td><td>—</td><td><code>null</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="concept-card">
+        <h3>Métodos útiles de String</h3>
+        <table class="table-spec">
+          <thead><tr><th>Método</th><th>Retorno</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>.length()</code></td><td><code>int</code></td><td>Cantidad de caracteres</td></tr>
+            <tr><td><code>.equals(otro)</code></td><td><code>boolean</code></td><td>Compara contenido (no usar <code>==</code>)</td></tr>
+            <tr><td><code>.equalsIgnoreCase(otro)</code></td><td><code>boolean</code></td><td>Compara sin distinguir mayúsculas</td></tr>
+            <tr><td><code>.trim()</code></td><td><code>String</code></td><td>Elimina espacios al inicio y final</td></tr>
+            <tr><td><code>.toUpperCase()</code></td><td><code>String</code></td><td>Convierte a mayúsculas</td></tr>
+            <tr><td><code>.toLowerCase()</code></td><td><code>String</code></td><td>Convierte a minúsculas</td></tr>
+            <tr><td><code>.contains(texto)</code></td><td><code>boolean</code></td><td>Verifica si contiene el texto</td></tr>
+            <tr><td><code>.isEmpty()</code></td><td><code>boolean</code></td><td><code>true</code> si la cadena está vacía</td></tr>
+            <tr><td><code>.charAt(i)</code></td><td><code>char</code></td><td>Carácter en la posición i</td></tr>
+            <tr><td><code>.substring(ini, fin)</code></td><td><code>String</code></td><td>Subcadena entre ini y fin</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB: SCANNER & ENTRADA -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='scanner'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-menta);">⌨️</div>
+        <h2 style="margin:0; font-size:24px;">Scanner y Entrada de Datos</h2>
+      </div>
+
+      <div class="concept-card">
+        <h3>Configuración básica</h3>
+        <pre class="code-block"><code class="language-java">import java.util.Scanner;
+
+Scanner scanner = new Scanner(System.in);
+
+// Leer texto
+System.out.print("Nombre: ");
+String nombre = scanner.nextLine();
+
+// Leer número (enfoque recomendado)
+System.out.print("Edad: ");
+int edad = Integer.parseInt(scanner.nextLine());
+
+// Leer decimal
+System.out.print("Precio: ");
+double precio = Double.parseDouble(scanner.nextLine());
+
+// Leer booleano
+System.out.print("¿Activo? (true/false): ");
+boolean activo = Boolean.parseBoolean(scanner.nextLine());</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>El problema del salto de línea</h3>
+        <div class="grid">
+          <div class="card card-rosa">
+            <strong>Enfoque problemático</strong>
+            <pre class="code-block" style="font-size:12px;"><code class="language-java">int edad = scanner.nextInt(); // Deja \n
+String nombre = scanner.nextLine();
+// Lee el \n residual → queda vacío ""</code></pre>
+          </div>
+          <div class="card card-menta">
+            <strong>Enfoque recomendado</strong>
+            <pre class="code-block" style="font-size:12px;"><code class="language-java">int edad = Integer.parseInt(scanner.nextLine());
+String nombre = scanner.nextLine();
+// Funciona perfectamente</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="concept-card">
+        <h3>Métodos de Scanner</h3>
+        <table class="table-spec">
+          <thead><tr><th>Método</th><th>Retorno</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>nextLine()</code></td><td><code>String</code></td><td>Lee toda la línea. Limpia el buffer. <strong>(Recomendado)</strong></td></tr>
+            <tr><td><code>next()</code></td><td><code>String</code></td><td>Lee una palabra (hasta el espacio)</td></tr>
+            <tr><td><code>nextInt()</code></td><td><code>int</code></td><td>Lee un entero. <strong>Deja \n en buffer.</strong></td></tr>
+            <tr><td><code>nextDouble()</code></td><td><code>double</code></td><td>Lee un decimal. <strong>Deja \n en buffer.</strong></td></tr>
+            <tr><td><code>hasNextLine()</code></td><td><code>boolean</code></td><td>Verifica si hay otra línea disponible</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="concept-card">
+        <h3>Tabla de conversión desde String</h3>
+        <table class="table-spec">
+          <thead><tr><th>Tipo destino</th><th>Método de conversión</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>int</code></td><td><code>Integer.parseInt(texto)</code></td><td><code>Integer.parseInt("42")</code> → <code>42</code></td></tr>
+            <tr><td><code>double</code></td><td><code>Double.parseDouble(texto)</code></td><td><code>Double.parseDouble("3.14")</code> → <code>3.14</code></td></tr>
+            <tr><td><code>boolean</code></td><td><code>Boolean.parseBoolean(texto)</code></td><td><code>Boolean.parseBoolean("true")</code> → <code>true</code></td></tr>
+            <tr><td><code>long</code></td><td><code>Long.parseLong(texto)</code></td><td><code>Long.parseLong("123456789")</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB: CASTEO & CONVERSIÓN -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='casteo'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-durazno);">🔄</div>
+        <h2 style="margin:0; font-size:24px;">Casteo y Conversión de Tipos</h2>
+      </div>
+
+      <div class="concept-card">
+        <h3>Casting implícito (Widening)</h3>
+        <p>De un tipo menor a uno mayor. Java lo hace automáticamente. No hay pérdida de datos.</p>
+        <pre class="code-block"><code class="language-java">int entero = 42;
+double decimal = entero;  // int → double automáticamente
+System.out.println(decimal); // 42.0
+
+// Orden de widening:
+// byte → short → int → long → float → double</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Casting explícito (Narrowing)</h3>
+        <p>De un tipo mayor a uno menor. Requiere paréntesis con el tipo destino. Puede haber pérdida de datos.</p>
+        <pre class="code-block"><code class="language-java">double decimal = 9.99;
+int entero = (int) decimal;  // Trunca la parte decimal
+System.out.println(entero);  // 9 (no redondea, trunca)
+
+long grande = 1234567890L;
+int normal = (int) grande;   // Cuidado con el rango</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Conversión de tipos de objetos (POO)</h3>
+        <pre class="code-block"><code class="language-java">// Upcasting (implícito) — hijo → padre
+Publicacion pub = new Historia("H1", "carlos", true);
+// Historia "sube" a Publicacion. Siempre seguro.
+
+// Downcasting (explícito) — padre → hijo
+if (pub instanceof Historia) {
+    Historia h = (Historia) pub;  // Cast explícito
+    h.registrarVista();           // Ahora accedes a métodos de Historia
+}
+// Siempre verificar con instanceof antes del downcasting</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Conversión entre String y números</h3>
+        <table class="table-spec">
+          <thead><tr><th>De</th><th>A</th><th>Método</th></tr></thead>
+          <tbody>
+            <tr><td><code>String</code></td><td><code>int</code></td><td><code>Integer.parseInt("42")</code></td></tr>
+            <tr><td><code>String</code></td><td><code>double</code></td><td><code>Double.parseDouble("3.14")</code></td></tr>
+            <tr><td><code>int</code></td><td><code>String</code></td><td><code>String.valueOf(42)</code> o <code>"" + 42</code></td></tr>
+            <tr><td><code>double</code></td><td><code>String</code></td><td><code>String.valueOf(3.14)</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB: ESTRUCTURAS DE CONTROL -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='control'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-rosa);">🔀</div>
+        <h2 style="margin:0; font-size:24px;">Estructuras de Condición</h2>
+      </div>
+
+      <div class="concept-card">
+        <h3>if / else if / else</h3>
+        <pre class="code-block"><code class="language-java">int nota = 65;
+
+if (nota >= 60) {
+    System.out.println("Aprobado");
+} else if (nota >= 40) {
+    System.out.println("Suficiente");
+} else {
+    System.out.println("Reprobado");
+}</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>switch</h3>
+        <pre class="code-block"><code class="language-java">String opcion = scanner.nextLine().trim();
+
+switch (opcion) {
+    case "1":
+        System.out.println("Opción uno");
+        break;
+    case "2":
+        System.out.println("Opción dos");
+        break;
+    default:
+        System.out.println("Opción no válida");
+        break;
+}
+// Sin break, la ejecución "cae" al siguiente case</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Operador ternario</h3>
+        <pre class="code-block"><code class="language-java">// condicion ? valorSiTrue : valorSiFalse
+String estado = (edad >= 18) ? "Mayor de edad" : "Menor de edad";
+
+// Equivale a:
+String estado;
+if (edad >= 18) {
+    estado = "Mayor de edad";
+} else {
+    estado = "Menor de edad";
+}</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Operadores de comparación y lógicos</h3>
+        <table class="table-spec">
+          <thead><tr><th>Operador</th><th>Significado</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>==</code></td><td>Igual a (primitivos)</td><td><code>edad == 18</code></td></tr>
+            <tr><td><code>!=</code></td><td>Distinto de</td><td><code>edad != 0</code></td></tr>
+            <tr><td><code>&gt;</code> <code>&lt;</code></td><td>Mayor / menor</td><td><code>precio > 1000</code></td></tr>
+            <tr><td><code>&gt;=</code> <code>&lt;=</code></td><td>Mayor o igual / menor o igual</td><td><code>nota >= 60</code></td></tr>
+            <tr><td><code>.equals()</code></td><td>Comparar contenido de Strings</td><td><code>nombre.equals("Ana")</code></td></tr>
+            <tr><td><code>&amp;&amp;</code></td><td>AND lógico</td><td><code>edad > 18 &amp;&amp; activo</code></td></tr>
+            <tr><td><code>||</code></td><td>OR lógico</td><td><code>edad < 12 || edad > 65</code></td></tr>
+            <tr><td><code>!</code></td><td>NOT lógico</td><td><code>!activo</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB: ESTRUCTURAS DE REPETICIÓN -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='repeticion'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-amarillo);">🔁</div>
+        <h2 style="margin:0; font-size:24px;">Estructuras de Repetición</h2>
+      </div>
+
+      <div class="concept-card">
+        <h3>while</h3>
+        <p>Repite mientras la condición sea <code>true</code>. Evalúa la condición <strong>antes</strong> de cada iteración.</p>
+        <pre class="code-block"><code class="language-java">boolean ejecutando = true;
+while (ejecutando) {
+    // Mostrar menú, leer opción...
+    if (opcion.equals("salir")) {
+        ejecutando = false;
+    }
+}</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>do-while</h3>
+        <p>Igual que while, pero ejecuta el bloque <strong>al menos una vez</strong> antes de evaluar la condición.</p>
+        <pre class="code-block"><code class="language-java">String respuesta;
+do {
+    System.out.print("¿Desea continuar? (si/no): ");
+    respuesta = scanner.nextLine();
+} while (respuesta.equals("si"));</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>for (contador)</h3>
+        <p>Para cuando sabes cuántas veces repetir.</p>
+        <pre class="code-block"><code class="language-java">// Estructura: for (inicio; condición; incremento)
+for (int i = 0; i < 5; i++) {
+    System.out.println("Iteración: " + i); // 0, 1, 2, 3, 4
+}
+
+// Recorrer un ArrayList por índice
+for (int i = 0; i < feed.size(); i++) {
+    System.out.println(i + ". " + feed.get(i).getId());
+}</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>for-each (enhanced for)</h3>
+        <p>Para recorrer colecciones sin manejar índices.</p>
+        <pre class="code-block"><code class="language-java">// Estructura: for (Tipo variable : coleccion)
+for (Publicacion pub : feed) {
+    pub.mostrarDetalle();
+}
+
+// Equivalente con for tradicional:
+for (int i = 0; i < feed.size(); i++) {
+    feed.get(i).mostrarDetalle();
+}</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>break y continue</h3>
+        <pre class="code-block"><code class="language-java">// break: sale del bucle inmediatamente
+for (Publicacion pub : feed) {
+    if (pub.getId().equals("R1")) {
+        System.out.println("Encontrado");
+        break; // Deja de buscar
+    }
+}
+
+// continue: salta a la siguiente iteración
+for (Publicacion pub : feed) {
+    if (!pub.isEstaActiva()) {
+        continue; // Salta las inactivas
+    }
+    pub.mostrarDetalle(); // Solo muestra las activas
+}</code></pre>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB: 4 PILARES POO -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='poo'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-lavanda);">🏗️</div>
+        <h2 style="margin:0; font-size:24px;">Los 4 Pilares de la POO</h2>
+      </div>
+
+      <!-- PILAR 1: ABSTRACCIÓN -->
+      <div class="concept-card">
+        <h3><span class="tag tag-base">1</span> Abstracción</h3>
+        <p>Seleccionar solo los atributos y operaciones relevantes para el sistema, ignorando detalles innecesarios.</p>
+        <pre class="code-block"><code class="language-java">// De todas las características de una publicación de Instagram,
+// abstraemos solo las relevantes para nuestro sistema:
+public class Publicacion {
+    private String id;           // Identificador único
+    private String autor;        // Quién publicó
+    private String fechaCreacion;
+    private int likes;           // Contador de likes
+    protected boolean estaActiva;
+
+    // Constructor, getters, métodos...
+}</code></pre>
+      </div>
+
+      <!-- PILAR 2: ENCAPSULAMIENTO -->
+      <div class="concept-card">
+        <h3><span class="tag tag-base">2</span> Encapsulamiento</h3>
+        <p>Ocultar el estado interno con <code>private</code> y exponer acceso controlado con getters/setters que validan.</p>
+        <table class="table-spec" style="margin-bottom:16px;">
+          <thead>
+            <tr><th>Modificador</th><th>Misma Clase</th><th>Mismo Paquete</th><th>Subclases</th><th>Mundo</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><code>private</code></td><td>✓</td><td>✗</td><td>✗</td><td>✗</td></tr>
+            <tr><td><em>(default)</em></td><td>✓</td><td>✓</td><td>✗</td><td>✗</td></tr>
+            <tr><td><code>protected</code></td><td>✓</td><td>✓</td><td>✓</td><td>✗</td></tr>
+            <tr><td><code>public</code></td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+          </tbody>
+        </table>
+        <pre class="code-block"><code class="language-java">private int likes; // No se puede acceder directamente desde fuera
+
+public void darLike() {
+    this.likes++; // Validado: solo incrementa, nunca se puede poner negativo
+}
+
+public int getLikes() {
+    return this.likes; // Solo lectura
+}</code></pre>
+      </div>
+
+      <!-- PILAR 3: HERENCIA -->
+      <div class="concept-card">
+        <h3><span class="tag tag-inter">3</span> Herencia (<code>extends</code> + <code>super</code>)</h3>
+        <p>Una clase hija hereda atributos y métodos de una clase padre. Relación "es-un".</p>
+        <pre class="code-block"><code class="language-java">public class Historia extends Publicacion {
+    private int duracionHoras = 24;
+    private boolean esMejoresAmigos;
+    private int vistas;
+
+    public Historia(String id, String autor, boolean mejoresAmigos) {
+        super(id, autor); // Llama al constructor del padre
+        this.esMejoresAmigos = mejoresAmigos;
+    }
+}
+
+// Historia ES UNA Publicacion
+// Historia hereda: id, autor, likes, darLike(), etc.</code></pre>
+      </div>
+
+      <!-- PILAR 4: POLIMORFISMO -->
+      <div class="concept-card">
+        <h3><span class="tag tag-inter">4</span> Polimorfismo (<code>@Override</code>)</h3>
+        <p>Un mismo método produce comportamientos diferentes según el objeto que lo ejecuta. El tipo de la variable determina qué métodos puedes llamar; el tipo del objeto determina cuál versión se ejecuta.</p>
+        <pre class="code-block"><code class="language-java">// La clase hija redefine el método del padre
+public class Reel extends Publicacion {
+    @Override
+    public void mostrarDetalle() {
+        System.out.println("[REEL] " + getAutor());
+        System.out.println("Duración: " + duracionSegundos + "s");
+        System.out.println("Audio: " + audioNombre);
+    }
+}
+
+// Polimorfismo en acción:
+Publicacion pub = new Reel("R1", "ana", 60, "Audio Viral");
+pub.mostrarDetalle(); // Ejecuta la versión de Reel, no de Publicacion
+
+// Con colecciones:
+ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+for (Publicacion p : feed) {
+    p.mostrarDetalle(); // Cada objeto ejecuta SU versión
+}</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Referencia rápida: <code>this</code> vs <code>super</code></h3>
+        <table class="table-spec">
+          <thead><tr><th>Palabra clave</th><th>Uso</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>this</code></td><td>Referencia al objeto actual</td><td><code>this.likes = likes;</code></td></tr>
+            <tr><td><code>this()</code></td><td>Llamar otro constructor de la misma clase</td><td><code>this("default", 0);</code></td></tr>
+            <tr><td><code>super</code></td><td>Referencia al padre</td><td><code>super.mostrarDetalle();</code></td></tr>
+            <tr><td><code>super()</code></td><td>Llamar al constructor del padre</td><td><code>super(id, autor);</code></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB: COLECCIONES -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='colecciones'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-celeste);">📦</div>
+        <h2 style="margin:0; font-size:24px;">Colecciones</h2>
+      </div>
+
+      <div class="concept-card">
+        <h3>ArrayList&lt;T&gt; — Lista dinámica</h3>
+        <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+
+ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+
+feed.add(new Historia("H1", "carlos", true));   // Agregar
+Publicacion pub = feed.get(0);                   // Obtener
+feed.set(0, new Post("P1", "ana", "Hola", "")); // Reemplazar
+feed.remove(0);                                  // Eliminar
+int total = feed.size();                         // Cantidad
+boolean vacia = feed.isEmpty();                  // ¿Vacía?</code></pre>
+        <table class="table-spec" style="margin-top:16px;">
+          <thead><tr><th>Método</th><th>Retorno</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>add(elem)</code></td><td><code>boolean</code></td><td>Agrega al final</td></tr>
+            <tr><td><code>get(i)</code></td><td><code>T</code></td><td>Obtiene en posición i</td></tr>
+            <tr><td><code>set(i, elem)</code></td><td><code>T</code></td><td>Reemplaza en posición i</td></tr>
+            <tr><td><code>remove(i)</code></td><td><code>T</code></td><td>Elimina en posición i</td></tr>
+            <tr><td><code>size()</code></td><td><code>int</code></td><td>Cantidad de elementos</td></tr>
+            <tr><td><code>isEmpty()</code></td><td><code>boolean</code></td><td>¿Sin elementos?</td></tr>
+            <tr><td><code>contains(obj)</code></td><td><code>boolean</code></td><td>¿Existe el elemento?</td></tr>
+            <tr><td><code>indexOf(obj)</code></td><td><code>int</code></td><td>Posición, o -1</td></tr>
+            <tr><td><code>clear()</code></td><td><code>void</code></td><td>Elimina todo</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="concept-card">
+        <h3>HashMap&lt;K, V&gt; — Mapa clave-valor</h3>
+        <pre class="code-block"><code class="language-java">import java.util.HashMap;
+
+HashMap&lt;String, Publicacion&gt; indice = new HashMap&lt;&gt;();
+
+indice.put("H1", new Historia("H1", "carlos", true)); // Agregar
+Publicacion pub = indice.get("H1");                    // Obtener
+boolean existe = indice.containsKey("H1");             // ¿Existe?
+indice.remove("H1");                                   // Eliminar
+int total = indice.size();                             // Cantidad</code></pre>
+        <table class="table-spec" style="margin-top:16px;">
+          <thead><tr><th>Método</th><th>Retorno</th><th>Descripción</th></tr></thead>
+          <tbody>
+            <tr><td><code>put(clave, valor)</code></td><td><code>V</code></td><td>Agrega o reemplaza</td></tr>
+            <tr><td><code>get(clave)</code></td><td><code>V</code></td><td>Obtiene, o null</td></tr>
+            <tr><td><code>getOrDefault(k, def)</code></td><td><code>V</code></td><td>Obtiene, o valor por defecto</td></tr>
+            <tr><td><code>containsKey(k)</code></td><td><code>boolean</code></td><td>¿Existe la clave?</td></tr>
+            <tr><td><code>remove(k)</code></td><td><code>V</code></td><td>Elimina el par</td></tr>
+            <tr><td><code>keySet()</code></td><td><code>Set&lt;K&gt;</code></td><td>Todas las claves</td></tr>
+            <tr><td><code>values()</code></td><td><code>Collection&lt;V&gt;</code></td><td>Todos los valores</td></tr>
+            <tr><td><code>entrySet()</code></td><td><code>Set&lt;Entry&gt;</code></td><td>Todos los pares</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="concept-card">
+        <h3>Patrones comunes con colecciones</h3>
+        <pre class="code-block"><code class="language-java">// BÚSQUEDA LINEAL
+Publicacion encontrada = null;
+for (Publicacion pub : feed) {
+    if (pub.getId().equals(idBuscado)) {
+        encontrada = pub;
+        break;
+    }
+}
+
+// FILTRADO
+ArrayList&lt;Publicacion&gt; resultado = new ArrayList&lt;&gt;();
+for (Publicacion pub : feed) {
+    if (pub instanceof Reel) {
+        resultado.add(pub);
+    }
+}
+
+// ACUMULACIÓN
+int totalLikes = 0;
+for (Publicacion pub : feed) {
+    totalLikes += pub.getLikes();
+}
+double promedio = (double) totalLikes / feed.size();</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>ArrayList vs HashMap</h3>
+        <table class="table-spec">
+          <thead><tr><th>Aspecto</th><th>ArrayList</th><th>HashMap</th></tr></thead>
+          <tbody>
+            <tr><td>Acceso</td><td>Por índice (posición)</td><td>Por clave</td></tr>
+            <tr><td>Orden</td><td>Mantiene el de inserción</td><td>No garantiza orden</td></tr>
+            <tr><td>Duplicados</td><td>Permite</td><td>Claves únicas</td></tr>
+            <tr><td>Búsqueda</td><td>Lineal (recorrer)</td><td>Directa por clave</td></tr>
+            <tr><td>Uso típico</td><td>Listas, feeds, colecciones</td><td>Índices, diccionarios, conteos</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================================================================= -->
+    <!-- TAB: EXCEPCIONES -->
+    <!-- ================================================================= -->
+    <section v-show="tab==='excepciones'">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-rosa);">🛡️</div>
+        <h2 style="margin:0; font-size:24px;">Manejo de Excepciones</h2>
+      </div>
+
+      <div class="concept-card">
+        <h3>Estructura try-catch-finally</h3>
+        <pre class="code-block"><code class="language-java">try {
+    // Código que podría fallar
+    int numero = Integer.parseInt(scanner.nextLine());
+    System.out.println("Número: " + numero);
+
+} catch (NumberFormatException e) {
+    // Se ejecuta SOLO si ocurre esa excepción
+    System.out.println("Error: no es un número válido.");
+
+} finally {
+    // Se ejecuta SIEMPRE (opcional)
+    System.out.println("Fin del intento.");
+}
+// El programa continúa aquí</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Excepciones comunes</h3>
+        <table class="table-spec">
+          <thead><tr><th>Excepción</th><th>Causa</th><th>Ejemplo</th></tr></thead>
+          <tbody>
+            <tr><td><code>NumberFormatException</code></td><td>Convertir texto no numérico</td><td><code>Integer.parseInt("abc")</code></td></tr>
+            <tr><td><code>IndexOutOfBoundsException</code></td><td>Índice fuera de rango en lista</td><td><code>lista.get(10)</code> con 3 elementos</td></tr>
+            <tr><td><code>NullPointerException</code></td><td>Método sobre referencia null</td><td><code>null.length()</code></td></tr>
+            <tr><td><code>ArithmeticException</code></td><td>División entera por cero</td><td><code>10 / 0</code></td></tr>
+            <tr><td><code>ArrayIndexOutOfBoundsException</code></td><td>Índice fuera de rango en array</td><td><code>arr[5]</code> con arr.length=3</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="concept-card">
+        <h3>Múltiples catch</h3>
+        <pre class="code-block"><code class="language-java">try {
+    int i = Integer.parseInt(scanner.nextLine());
+    Publicacion pub = feed.get(i);
+    pub.mostrarDetalle();
+} catch (NumberFormatException e) {
+    System.out.println("Error: debe ingresar un número.");
+} catch (IndexOutOfBoundsException e) {
+    System.out.println("Error: índice fuera de rango.");
+}
+// Regla: las excepciones más específicas van PRIMERO</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Patrón: Pedir dato hasta que sea válido</h3>
+        <pre class="code-block"><code class="language-java">public static int pedirEntero(Scanner scanner, String mensaje) {
+    while (true) {
+        try {
+            System.out.print(mensaje);
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Error: debe ingresar un número entero.");
+        }
+    }
+}</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Patrón: Menú defensivo</h3>
+        <pre class="code-block"><code class="language-java">while (ejecutando) {
+    try {
+        // Mostrar opciones...
+        String opcion = scanner.nextLine().trim();
+        switch (opcion) {
+            case "1": /* acción */ break;
+            case "2": /* acción */ break;
+            default: System.out.println("Opción no válida.");
+        }
+    } catch (Exception e) {
+        System.out.println("Error: " + e.getMessage());
+    }
+}
+// El menú NUNCA se rompe ante entradas inválidas</code></pre>
+      </div>
+
+      <div class="concept-card">
+        <h3>Buenas prácticas</h3>
+        <div class="grid">
+          <div class="card card-menta">
+            <strong>Sí hacer</strong>
+            <p>Capturar excepciones específicas.</p>
+            <p>Dar mensajes claros al usuario.</p>
+            <p>Combinar <code>if</code> + <code>try-catch</code>.</p>
+            <p>Extraer validación a métodos auxiliares.</p>
+          </div>
+          <div class="card card-rosa">
+            <strong>No hacer</strong>
+            <p>Dejar bloques catch vacíos.</p>
+            <p>Capturar Exception genérico primero.</p>
+            <p>Usar excepciones para flujo normal.</p>
+            <p>Ignorar o suprimir errores.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <div style="margin-top:60px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:42px; margin-bottom:12px;">🛸</div>
+      <h3>Cheat Sheet Java Completo — Desarrollo Orientado a Objetos 2026</h3>
+      <p class="lead" style="margin:0 auto;">Referencia rápida diseñada por el Profe Carlitos (HachiMaki-dev). Cubre desde tipos primitivos hasta colecciones y excepciones.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+createApp({
+  data() {
+    return {
+      tab: 'primitivos'
+    };
+  },
+  mounted() {
+    this.highlightCode();
+  },
+  watch: {
+    tab() {
+      this.$nextTick(() => {
+        this.highlightCode();
+      });
+    }
+  },
+  methods: {
+    highlightCode() {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code:not(.hljs)').forEach(block => {
+          hljs.highlightElement(block);
+        });
+      }
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicios Generales — Colecciones y Excepciones · Profe Carlitos</title>
+  <meta name="description" content="Ejercicios interactivos de colecciones y manejo de excepciones en Java">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .exercises-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .exercises-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 48px 0 24px;
+      padding: 12px 0;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .ws-wrapper { overflow-x: auto; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="exercises-container">
+
+    <header class="exercises-header">
+      <div style="font-size:40px; margin-bottom:12px;">👽</div>
+      <div class="kicker">Ejercicios generales · 1.4.4</div>
+      <h1 style="font-size:clamp(32px,4vw,48px);">Colecciones y Excepciones</h1>
+      <p class="lead">Ejercicios para verificar tu comprensión. Cada actividad indica su nivel de dificultad e incluye retroalimentación inmediata.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;">
+        <span class="tag tag-base">🟢 Base — Reconocer e identificar</span>
+        <span class="tag tag-inter">🔵 Intermedio — Aplicar y analizar</span>
+        <span class="tag tag-avanzado">🟣 Avanzado — Evaluar y crear</span>
+      </div>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 1: ALTERNATIVAS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-celeste);">📝</div>
+      Preguntas de alternativas
+    </div>
+
+    <quiz-question v-bind="quizzes.q1"></quiz-question>
+    <quiz-question v-bind="quizzes.q2"></quiz-question>
+    <quiz-question v-bind="quizzes.q3"></quiz-question>
+    <quiz-question v-bind="quizzes.q4"></quiz-question>
+    <quiz-question v-bind="quizzes.q5"></quiz-question>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 2: VERDADERO / FALSO -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-menta);">✓✗</div>
+      Verdadero o Falso
+    </div>
+
+    <quiz-question v-bind="vf.v1"></quiz-question>
+    <quiz-question v-bind="vf.v2"></quiz-question>
+    <quiz-question v-bind="vf.v3"></quiz-question>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 3: TÉRMINOS PAREADOS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-durazno);">🔗</div>
+      Términos pareados
+    </div>
+
+    <matching-pairs v-bind="matching"></matching-pairs>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 4: ENCUENTRA EL ERROR -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-rosa);">🐛</div>
+      Encuentra el error
+    </div>
+
+    <code-error v-bind="errors.e1"></code-error>
+    <code-error v-bind="errors.e2"></code-error>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 5: COMPLETA EL CÓDIGO -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-lavanda);">✏️</div>
+      Completa el código
+    </div>
+
+    <code-fill v-bind="fills.f1"></code-fill>
+    <code-fill v-bind="fills.f2"></code-fill>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 6: ORDENA LOS PASOS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-amarillo);">🔢</div>
+      Ordena los pasos
+    </div>
+
+    <order-steps v-bind="orderData"></order-steps>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 7: SELECCIÓN MÚLTIPLE -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-celeste);">☑️</div>
+      Selección múltiple
+    </div>
+
+    <multi-select v-bind="multiSel.m1"></multi-select>
+    <multi-select v-bind="multiSel.m2"></multi-select>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 8: SOPA DE LETRAS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-menta);">🔍</div>
+      Sopa de letras
+    </div>
+
+    <p style="font-size:15px; color:var(--ink-soft); margin-bottom:16px;">Encuentra los 10 términos de colecciones y excepciones en la grilla. Haz clic en la primera letra, arrastra hasta la última y suelta.</p>
+
+    <div class="ws-wrapper">
+      <word-search
+        title="Términos de Colecciones y Excepciones"
+        :grid-size="14"
+        :words="wsWords"
+        level="base"
+      ></word-search>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 9: CRUCIGRAMA -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-rosa);">📐</div>
+      Crucigrama
+    </div>
+
+    <crossword-puzzle
+      title="Conceptos de Colecciones y Excepciones"
+      :grid-data="crossword.grid"
+      :across-clues="crossword.across"
+      :down-clues="crossword.down"
+      level="inter"
+    ></crossword-puzzle>
+
+    <!-- ============================================== -->
+    <!-- CIERRE -->
+    <!-- ============================================== -->
+    <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+      <h3>Ejercicios completados</h3>
+      <p class="lead" style="margin:0 auto;">Revisa tus respuestas y reintenta los ejercicios donde no acertaste. Si completaste todo correctamente, tienes una buena comprensión de colecciones y manejo de excepciones.</p>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../shared/activity-engine.js"></script>
+<script>
+const { createApp } = Vue;
+
+const app = createApp({
+  data() {
+    return {
+      // ===== QUIZZES (alternativas) =====
+      quizzes: {
+        q1: {
+          question: '¿Qué método de <code>ArrayList</code> agrega un elemento al final de la lista?',
+          options: [
+            { text: '<code>insert(elemento)</code>', correct: false },
+            { text: '<code>add(elemento)</code>', correct: true },
+            { text: '<code>put(elemento)</code>', correct: false },
+            { text: '<code>append(elemento)</code>', correct: false }
+          ],
+          explanation: 'El método add() agrega un elemento al final del ArrayList. put() es de HashMap, insert() no existe en ArrayList, y append() es de Python.',
+          hint: 'Piensa en el nombre en inglés de "agregar".',
+          level: 'base'
+        },
+        q2: {
+          question: '¿Qué excepción se lanza cuando se ejecuta <code>Integer.parseInt("abc")</code>?',
+          options: [
+            { text: '<code>NullPointerException</code>', correct: false },
+            { text: '<code>ArithmeticException</code>', correct: false },
+            { text: '<code>NumberFormatException</code>', correct: true },
+            { text: '<code>IndexOutOfBoundsException</code>', correct: false }
+          ],
+          explanation: 'NumberFormatException se lanza cuando se intenta convertir un String que no tiene formato numérico válido.',
+          hint: 'El nombre de la excepción describe el problema: el formato del número es incorrecto.',
+          level: 'base'
+        },
+        q3: {
+          question: '¿Qué imprime este código?<br><code>ArrayList&lt;String&gt; lista = new ArrayList&lt;&gt;();</code><br><code>lista.add("A"); lista.add("B"); lista.add("C");</code><br><code>System.out.println(lista.get(1));</code>',
+          options: [
+            { text: '"A"', correct: false },
+            { text: '"B"', correct: true },
+            { text: '"C"', correct: false },
+            { text: 'Error: IndexOutOfBoundsException', correct: false }
+          ],
+          explanation: 'Los índices de ArrayList comienzan en 0. Posición 0 = "A", posición 1 = "B", posición 2 = "C".',
+          hint: 'Los índices en Java comienzan en 0, igual que los arrays.',
+          level: 'base'
+        },
+        q4: {
+          question: '¿Qué excepción se lanza al ejecutar <code>lista.get(10)</code> en un ArrayList con solo 3 elementos?',
+          options: [
+            { text: '<code>NullPointerException</code>', correct: false },
+            { text: '<code>NumberFormatException</code>', correct: false },
+            { text: '<code>ArrayIndexOutOfBoundsException</code>', correct: false },
+            { text: '<code>IndexOutOfBoundsException</code>', correct: true }
+          ],
+          explanation: 'ArrayList lanza IndexOutOfBoundsException (no ArrayIndexOutOfBoundsException, que es para arrays primitivos). El índice 10 no existe si la lista tiene solo 3 elementos (índices 0, 1, 2).',
+          hint: 'ArrayList y array usan excepciones con nombres similares pero no idénticos.',
+          level: 'inter'
+        },
+        q5: {
+          question: '¿Qué imprime este código?<br><pre style="text-align:left;font-size:13px;background:var(--bg-muted);padding:8px;border-radius:6px;margin:8px 0;">try {\n    System.out.print("A");\n    int x = Integer.parseInt("abc");\n    System.out.print("B");\n} catch (NumberFormatException e) {\n    System.out.print("C");\n} finally {\n    System.out.print("D");\n}\nSystem.out.print("E");</pre>',
+          options: [
+            { text: 'ABCDE', correct: false },
+            { text: 'ACDE', correct: true },
+            { text: 'ACD', correct: false },
+            { text: 'ACE', correct: false }
+          ],
+          explanation: '"A" se imprime. parseInt falla, "B" se salta. Se ejecuta catch ("C"). finally siempre se ejecuta ("D"). El programa continúa con "E".',
+          hint: 'Recuerda: (1) try se ejecuta hasta el error, (2) catch se ejecuta si hay error, (3) finally SIEMPRE se ejecuta, (4) el programa continúa después.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== VERDADERO / FALSO =====
+      vf: {
+        v1: {
+          question: '<strong>Verdadero o falso:</strong> <code>ArrayList</code> puede almacenar tipos primitivos como <code>int</code> directamente.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'ArrayList solo almacena objetos, no primitivos. Para int se usa la clase wrapper Integer: ArrayList<Integer>. Java convierte automáticamente (autoboxing).',
+          level: 'base'
+        },
+        v2: {
+          question: '<strong>Verdadero o falso:</strong> El bloque <code>finally</code> se ejecuta solo cuando ocurre una excepción.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'finally se ejecuta SIEMPRE, haya o no excepción. Es el lugar ideal para código de limpieza que debe ejecutarse sin importar qué.',
+          hint: 'El nombre "finally" sugiere que es lo último que pasa, sin condiciones.',
+          level: 'inter'
+        },
+        v3: {
+          question: '<strong>Verdadero o falso:</strong> En un <code>HashMap</code>, si se hace <code>put("clave", "valor2")</code> y la clave ya existía con "valor1", el mapa ahora tiene dos entradas con esa clave.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Las claves en HashMap son únicas. Si haces put con una clave existente, el valor anterior se reemplaza por el nuevo. El mapa sigue teniendo una sola entrada para esa clave.',
+          hint: 'Piensa en un diccionario: ¿puede una palabra tener dos definiciones al mismo tiempo en la misma entrada?',
+          level: 'inter'
+        }
+      },
+
+      // ===== TÉRMINOS PAREADOS =====
+      matching: {
+        instruction: 'Conecta cada término con su definición correcta.',
+        pairs: [
+          { term: 'ArrayList', definition: 'Lista dinámica ordenada por posición (índice)' },
+          { term: 'HashMap', definition: 'Estructura de pares clave-valor con claves únicas' },
+          { term: 'try', definition: 'Bloque que contiene código que podría lanzar una excepción' },
+          { term: 'catch', definition: 'Bloque que se ejecuta cuando ocurre una excepción específica' },
+          { term: 'finally', definition: 'Bloque que se ejecuta siempre, haya o no excepción' },
+          { term: 'NumberFormatException', definition: 'Excepción al convertir un texto no numérico con parseInt' },
+          { term: 'IndexOutOfBoundsException', definition: 'Excepción al acceder a un índice fuera del rango de la lista' },
+          { term: 'getOrDefault()', definition: 'Método de HashMap que retorna un valor por defecto si la clave no existe' }
+        ],
+        level: 'base'
+      },
+
+      // ===== ENCUENTRA EL ERROR =====
+      errors: {
+        e1: {
+          instruction: 'Este código intenta crear un <code>ArrayList</code>, pero tiene un error. Haz clic en la línea incorrecta.',
+          codeLines: [
+            { text: 'import java.util.ArrayList;', hasError: false },
+            { text: '', hasError: false },
+            { text: 'public class Main {', hasError: false },
+            { text: '    public static void main(String[] args) {', hasError: false },
+            { text: '        ArrayList<int> numeros = new ArrayList<>();', hasError: true },
+            { text: '        numeros.add(42);', hasError: false },
+            { text: '        numeros.add(15);', hasError: false },
+            { text: '        System.out.println(numeros.size());', hasError: false },
+            { text: '    }', hasError: false },
+            { text: '}', hasError: false }
+          ],
+          explanation: 'ArrayList no acepta tipos primitivos como int. Debe usarse la clase wrapper Integer: ArrayList<Integer>.',
+          hint: 'Las colecciones en Java solo trabajan con objetos, no con tipos primitivos.',
+          level: 'inter'
+        },
+        e2: {
+          instruction: 'Este código intenta manejar excepciones, pero tiene un problema lógico. Haz clic en la línea incorrecta.',
+          codeLines: [
+            { text: 'try {', hasError: false },
+            { text: '    int indice = Integer.parseInt(scanner.nextLine());', hasError: false },
+            { text: '    Publicacion pub = feed.get(indice);', hasError: false },
+            { text: '    pub.mostrarDetalle();', hasError: false },
+            { text: '} catch (Exception e) {', hasError: true },
+            { text: '    System.out.println("Error general.");', hasError: false },
+            { text: '} catch (NumberFormatException e) {', hasError: false },
+            { text: '    System.out.println("No es un número.");', hasError: false },
+            { text: '} catch (IndexOutOfBoundsException e) {', hasError: false },
+            { text: '    System.out.println("Índice fuera de rango.");', hasError: false },
+            { text: '}', hasError: false }
+          ],
+          explanation: 'Exception es la clase padre de NumberFormatException e IndexOutOfBoundsException. Al ponerla primero en el catch, atrapa TODOS los errores y las siguientes cláusulas catch nunca se alcanzan. Las excepciones más específicas deben ir primero.',
+          hint: 'Los bloques catch se evalúan en orden. Si el primero atrapa todo, los demás son inalcanzables.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== COMPLETA EL CÓDIGO =====
+      fills: {
+        f1: {
+          instruction: 'Completa el código para recorrer un <code>ArrayList&lt;Publicacion&gt;</code> con un for-each polimórfico.',
+          segments: [
+            { text: 'ArrayList<Publicacion> feed = new ArrayList<>();\n// ... agregar publicaciones ...\n\n', isBlank: false },
+            { text: '', isBlank: true, answer: 'for' },
+            { text: ' (Publicacion pub : ', isBlank: false },
+            { text: '', isBlank: true, answer: 'feed' },
+            { text: ') {\n    pub.mostrarDetalle();\n}', isBlank: false }
+          ],
+          explanation: 'El for-each itera sobre cada elemento de la colección feed, asignándolo a la variable pub de tipo Publicacion.',
+          hint: 'La sintaxis del for-each es: for (Tipo variable : coleccion)',
+          level: 'base'
+        },
+        f2: {
+          instruction: 'Completa el código para manejar el error al convertir la entrada del usuario a número entero.',
+          segments: [
+            { text: 'System.out.print("Ingrese un número: ");\n', isBlank: false },
+            { text: '', isBlank: true, answer: 'try' },
+            { text: ' {\n    int numero = Integer.parseInt(scanner.nextLine());\n    System.out.println("Número: " + numero);\n} ', isBlank: false },
+            { text: '', isBlank: true, answer: 'catch' },
+            { text: ' (NumberFormatException e) {\n    System.out.println("Error: entrada no válida.");\n}', isBlank: false }
+          ],
+          explanation: 'try encierra el código que podría fallar. catch captura la excepción específica NumberFormatException.',
+          hint: 'Necesitas los dos bloques de la estructura de manejo de excepciones.',
+          level: 'inter'
+        }
+      },
+
+      // ===== ORDENA LOS PASOS =====
+      orderData: {
+        instruction: 'Ordena los pasos para implementar un menú defensivo con colecciones y manejo de errores:',
+        steps: [
+          { text: 'Importar ArrayList y Scanner', correctOrder: 1 },
+          { text: 'Declarar la colección y la variable de control del bucle', correctOrder: 2 },
+          { text: 'Iniciar el bucle while con la condición de ejecución', correctOrder: 3 },
+          { text: 'Mostrar las opciones del menú al usuario', correctOrder: 4 },
+          { text: 'Leer la opción del usuario con scanner.nextLine()', correctOrder: 5 },
+          { text: 'Envolver el switch en un bloque try-catch', correctOrder: 6 },
+          { text: 'En cada case, validar datos antes de operar sobre la colección', correctOrder: 7 }
+        ],
+        explanation: 'Primero se preparan las estructuras de datos, luego el bucle del menú, y dentro de él se maneja cada opción con validación.',
+        level: 'inter'
+      },
+
+      // ===== SELECCIÓN MÚLTIPLE =====
+      multiSel: {
+        m1: {
+          question: '¿Cuáles de estos son métodos válidos de <code>ArrayList</code>?',
+          options: [
+            { text: '<code>add(elemento)</code>', correct: true },
+            { text: '<code>get(indice)</code>', correct: true },
+            { text: '<code>put(clave, valor)</code>', correct: false },
+            { text: '<code>size()</code>', correct: true },
+            { text: '<code>remove(indice)</code>', correct: true },
+            { text: '<code>containsKey(clave)</code>', correct: false }
+          ],
+          explanation: 'put() y containsKey() son métodos de HashMap, no de ArrayList. Los métodos de ArrayList trabajan con índices y elementos directamente.',
+          level: 'inter'
+        },
+        m2: {
+          question: '¿Cuáles son buenas prácticas de manejo de excepciones?',
+          options: [
+            { text: 'Capturar excepciones específicas en vez de Exception genérico', correct: true },
+            { text: 'Dejar bloques catch vacíos para que el programa no se detenga', correct: false },
+            { text: 'Dar mensajes claros al usuario sobre qué salió mal', correct: true },
+            { text: 'Usar try-catch para reemplazar validaciones con if', correct: false },
+            { text: 'Poner las excepciones más específicas antes en el orden de catch', correct: true },
+            { text: 'Combinar validación preventiva (if) con reactiva (try-catch)', correct: true }
+          ],
+          explanation: 'Catch vacíos ocultan errores. Try-catch no debe reemplazar validaciones simples con if. Las buenas prácticas incluyen ser específico, dar mensajes claros, y combinar ambos enfoques.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== SOPA DE LETRAS =====
+      wsWords: ['ARRAYLIST', 'HASHMAP', 'EXCEPCION', 'TRYCATCH', 'FINALLY', 'COLECCION', 'WRAPPER', 'INDICE', 'GENERICS', 'ITERATOR'],
+
+      // ===== CRUCIGRAMA =====
+      crossword: {
+        grid: (function() {
+          function c(letter, number) {
+            return number ? { letter, number } : { letter };
+          }
+          var E = null;
+          return [
+            // Row 0: ARRAYLIST (1-Across)
+            [ c('A',1), c('R'), c('R'), c('A'), c('Y'), c('L'), c('I'), c('S'), c('T') ],
+            // Row 1
+            [ c('D',2), E,      E,      E,      E,      E,      E,      c('I',3),  E  ],
+            // Row 2: CATCH (4-Across)
+            [ c('D'),   c('C',4),c('A'), c('T'), c('C'), c('H'), E,      c('Z'),  E  ],
+            // Row 3
+            [ E,        c('A'),  E,      c('R',5),E,      c('A',6),E,     c('E'),  E  ],
+            // Row 4
+            [ E,        c('T'),  E,      c('Y'),  E,      c('S'),  E,     E,       E  ],
+            // Row 5: FINALLY (7-Across, starts col 1)
+            [ E,        c('C',7),E,      E,       c('F',8),c('I'), c('N'),c('A'),  c('L'),c('L'),c('Y') ],
+            // Row 6
+            [ E,        c('H'),  E,      E,       E,      c('M'),  E,     E,       E  ],
+            // Row 7
+            [ E,        E,       E,      E,       E,      c('A'),  E,     E,       E  ],
+            // Row 8
+            [ E,        E,       E,      E,       E,      c('P'),  E,     E,       E  ],
+          ];
+        })(),
+        across: [
+          { number: 1, clue: 'Lista dinámica de Java que crece automáticamente (dos palabras juntas)' },
+          { number: 4, clue: 'Bloque que captura una excepción después de try' },
+          { number: 7, clue: 'Bloque que se ejecuta siempre, haya o no excepción' }
+        ],
+        down: [
+          { number: 2, clue: 'Método de ArrayList que agrega un elemento (en inglés, pasado participio sin "ed")' },
+          { number: 3, clue: 'Método de ArrayList que retorna la cantidad de elementos' },
+          { number: 5, clue: 'Palabra clave del bloque que intenta ejecutar código que podría fallar' },
+          { number: 6, clue: 'Estructura de pares clave-valor en Java (dos palabras juntas)' },
+          { number: 8, clue: 'Bloque que se ejecuta siempre al final de un try-catch' }
+        ]
+      }
+    };
+  }
+});
+
+ActivityEngine.register(app);
+app.mount('#app');
+</script>
+</body>
+</html>

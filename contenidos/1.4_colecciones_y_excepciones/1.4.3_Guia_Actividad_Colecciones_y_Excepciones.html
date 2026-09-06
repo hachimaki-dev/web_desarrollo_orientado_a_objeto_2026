@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía de Actividad — Colecciones y Excepciones · Profe Carlitos</title>
+  <meta name="description" content="Guía paso a paso para implementar colecciones y manejo de excepciones en el proyecto Instagram POO">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .guide-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .guide-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-divider {
+      margin: 48px 0 32px;
+      padding: 16px 0;
+      border-top: 2px solid var(--line);
+    }
+    .reflection-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 800px;
+    }
+    .reflection-box p { margin: 0; color: var(--accent-amarillo); font-size: 15px; }
+    .reflection-box strong { color: var(--accent-amarillo); }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="guide-container">
+
+    <header class="guide-header">
+      <div style="font-size:40px; margin-bottom:12px;">👽</div>
+      <div class="kicker">Guía de actividad · 1.4.3</div>
+      <h1 style="font-size:clamp(32px,4vw,48px);">Colecciones y Excepciones</h1>
+      <p class="lead">Guía paso a paso para agregar colecciones y manejo de errores al proyecto Instagram POO.</p>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- REQUISITOS PREVIOS -->
+    <!-- ============================================== -->
+    <div class="callout callout-lavanda" style="margin-bottom:32px;">
+      <h4 style="margin:0 0 8px;">Requisitos previos</h4>
+      <p style="margin:0;">Antes de comenzar, asegúrate de tener las clases <code>Publicacion</code> (padre), <code>Historia</code>, <code>Reel</code> y <code>Post</code> (hijas) implementadas y funcionando. Si no las tienes, revisa la guía 1.3.4 y el diagrama UML 1.3.6.</p>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 1 -->
+    <!-- ============================================== -->
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <div class="step-title">Crea la colección polimórfica en Main.java</div>
+      </div>
+
+      <p>Abre tu archivo <code>Main.java</code>. Al inicio del método <code>main</code>, declara una lista que almacene publicaciones de cualquier tipo:</p>
+
+      <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+        boolean ejecutando = true;
+
+        // El menú se construirá en los pasos siguientes
+    }
+}</code></pre>
+
+      <div class="callout callout-menta">
+        <p style="margin:0;"><strong>¿Por qué <code>ArrayList&lt;Publicacion&gt;</code>?</strong> Al declarar la lista con el tipo padre, puede almacenar objetos de cualquier clase hija: Historia, Reel o Post. Esto es polimorfismo aplicado a colecciones.</p>
+      </div>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta:</strong> ¿Qué pasaría si declaras <code>ArrayList&lt;Historia&gt;</code> en vez de <code>ArrayList&lt;Publicacion&gt;</code>? ¿Podrías agregar un Reel?</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 2 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <div class="step-title">Implementa el menú principal con while + switch</div>
+      </div>
+
+      <p>Dentro del <code>main</code>, agrega el bucle del menú. Por ahora, solo muestra las opciones:</p>
+
+      <pre class="code-block"><code class="language-java">while (ejecutando) {
+    System.out.println("\n=== INSTAGRAM CONSOLE APP ===");
+    System.out.println("1. Crear publicación");
+    System.out.println("2. Ver Feed completo");
+    System.out.println("3. Dar Like a una publicación");
+    System.out.println("4. Buscar publicación por ID");
+    System.out.println("5. Estadísticas del Feed");
+    System.out.println("6. Salir");
+    System.out.print("Seleccione una opción: ");
+
+    String opcion = scanner.nextLine().trim();
+
+    switch (opcion) {
+        case "1":
+            crearPublicacion(scanner, feed);
+            break;
+        case "2":
+            mostrarFeed(feed);
+            break;
+        case "3":
+            darLike(scanner, feed);
+            break;
+        case "4":
+            buscarPorId(scanner, feed);
+            break;
+        case "5":
+            mostrarEstadisticas(feed);
+            break;
+        case "6":
+            System.out.println("¡Hasta pronto! 🛸");
+            ejecutando = false;
+            break;
+        default:
+            System.out.println("Opción no válida. Intente nuevamente.");
+            break;
+    }
+}</code></pre>
+
+      <p>Cada <code>case</code> llama a un método estático que implementarás en los siguientes pasos.</p>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 3 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <div class="step-title">Implementa "Crear publicación" con submenú</div>
+      </div>
+
+      <p>Crea el método que muestra un submenú para elegir el tipo de publicación y solicita los datos específicos:</p>
+
+      <pre class="code-block"><code class="language-java">private static void crearPublicacion(Scanner scanner, ArrayList&lt;Publicacion&gt; feed) {
+    System.out.println("\n--- Tipo de publicación ---");
+    System.out.println("1. Historia");
+    System.out.println("2. Reel");
+    System.out.println("3. Post");
+    System.out.print("Seleccione: ");
+    String tipo = scanner.nextLine().trim();
+
+    // Datos comunes (del padre)
+    System.out.print("ID: ");
+    String id = scanner.nextLine();
+    System.out.print("Autor: ");
+    String autor = scanner.nextLine();
+
+    switch (tipo) {
+        case "1":
+            System.out.print("¿Mejores amigos? (true/false): ");
+            boolean mejoresAmigos = Boolean.parseBoolean(scanner.nextLine());
+            feed.add(new Historia(id, autor, mejoresAmigos));
+            System.out.println("Historia creada.");
+            break;
+
+        case "2":
+            int duracion = 15;
+            try {
+                System.out.print("Duración en segundos (3-90): ");
+                duracion = Integer.parseInt(scanner.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Duración no válida. Se usará 15 segundos.");
+            }
+            System.out.print("Nombre del audio: ");
+            String audio = scanner.nextLine();
+            feed.add(new Reel(id, autor, duracion, audio));
+            System.out.println("Reel creado.");
+            break;
+
+        case "3":
+            System.out.print("Pie de foto: ");
+            String pieFoto = scanner.nextLine();
+            System.out.print("Ubicación: ");
+            String ubicacion = scanner.nextLine();
+            feed.add(new Post(id, autor, pieFoto, ubicacion));
+            System.out.println("Post creado.");
+            break;
+
+        default:
+            System.out.println("Tipo no válido.");
+            break;
+    }
+}</code></pre>
+
+      <div class="callout callout-durazno">
+        <p style="margin:0;"><strong>Observa:</strong> Al crear el Reel, se usa <code>try-catch</code> para manejar el caso en que el usuario escriba texto en vez de un número. Si falla, se asigna un valor por defecto.</p>
+      </div>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta:</strong> ¿Por qué <code>feed.add(new Historia(...))</code> funciona si la lista es de tipo <code>Publicacion</code> y estamos agregando una <code>Historia</code>?</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 4 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">4</div>
+        <div class="step-title">Implementa "Ver Feed" con for-each polimórfico</div>
+      </div>
+
+      <pre class="code-block"><code class="language-java">private static void mostrarFeed(ArrayList&lt;Publicacion&gt; feed) {
+    if (feed.isEmpty()) {
+        System.out.println("El feed está vacío. Crea una publicación primero.");
+        return;
+    }
+
+    System.out.println("\n--- FEED DE PUBLICACIONES ---");
+    for (int i = 0; i &lt; feed.size(); i++) {
+        System.out.println("[" + i + "]");
+        feed.get(i).mostrarDetalle();
+        System.out.println("---------------------------");
+    }
+    System.out.println("Total de publicaciones: " + feed.size());
+}</code></pre>
+
+      <div class="callout callout-menta">
+        <p style="margin:0;"><strong>Polimorfismo en acción:</strong> <code>mostrarDetalle()</code> ejecuta la versión correcta según el tipo real del objeto: Historia muestra duración y vistas, Reel muestra audio y reproducciones, Post muestra pie de foto y ubicación.</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 5 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">5</div>
+        <div class="step-title">Implementa "Dar Like" con validación completa</div>
+      </div>
+
+      <p>Este método combina <strong>validación preventiva</strong> (if para lista vacía y rango) con <strong>validación reactiva</strong> (try-catch para parseo):</p>
+
+      <pre class="code-block"><code class="language-java">private static void darLike(Scanner scanner, ArrayList&lt;Publicacion&gt; feed) {
+    if (feed.isEmpty()) {
+        System.out.println("El feed está vacío.");
+        return;
+    }
+
+    // Mostrar opciones disponibles
+    System.out.println("\n--- Publicaciones disponibles ---");
+    for (int i = 0; i &lt; feed.size(); i++) {
+        System.out.println(i + ". [" + feed.get(i).getId() + "] por " + feed.get(i).getAutor());
+    }
+
+    try {
+        System.out.print("Índice de la publicación: ");
+        int indice = Integer.parseInt(scanner.nextLine());
+
+        if (indice &lt; 0 || indice &gt;= feed.size()) {
+            System.out.println("Índice fuera de rango. Rango válido: 0 a " + (feed.size() - 1));
+            return;
+        }
+
+        feed.get(indice).darLike();
+        System.out.println("Like registrado. Total de likes: " + feed.get(indice).getLikes());
+
+    } catch (NumberFormatException e) {
+        System.out.println("Error: debe ingresar un número entero.");
+    }
+}</code></pre>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta:</strong> ¿Qué pasaría si no tuvieras el <code>try-catch</code> y el usuario escribe "abc" como índice?</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 6 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">6</div>
+        <div class="step-title">Implementa "Buscar publicación por ID"</div>
+      </div>
+
+      <p>Patrón de <strong>búsqueda lineal</strong>: recorrer la lista comparando hasta encontrar.</p>
+
+      <pre class="code-block"><code class="language-java">private static void buscarPorId(Scanner scanner, ArrayList&lt;Publicacion&gt; feed) {
+    if (feed.isEmpty()) {
+        System.out.println("El feed está vacío.");
+        return;
+    }
+
+    System.out.print("Ingrese el ID a buscar: ");
+    String idBuscado = scanner.nextLine().trim();
+
+    // Búsqueda lineal
+    Publicacion encontrada = null;
+    for (Publicacion pub : feed) {
+        if (pub.getId().equals(idBuscado)) {
+            encontrada = pub;
+            break; // Ya la encontramos, no es necesario seguir
+        }
+    }
+
+    if (encontrada != null) {
+        System.out.println("\nPublicación encontrada:");
+        encontrada.mostrarDetalle();
+    } else {
+        System.out.println("No se encontró una publicación con ID: " + idBuscado);
+    }
+}</code></pre>
+
+      <div class="callout callout-celeste">
+        <p style="margin:0;"><strong>Patrón:</strong> Declarar una variable <code>null</code> antes del bucle. Si la encontramos, la asignamos y salimos con <code>break</code>. Después del bucle, verificamos si sigue siendo <code>null</code>.</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 7 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">7</div>
+        <div class="step-title">Implementa "Estadísticas del Feed" con HashMap</div>
+      </div>
+
+      <p>Usa un <code>HashMap</code> para contar cuántas publicaciones hay de cada tipo:</p>
+
+      <pre class="code-block"><code class="language-java">import java.util.HashMap;
+
+private static void mostrarEstadisticas(ArrayList&lt;Publicacion&gt; feed) {
+    if (feed.isEmpty()) {
+        System.out.println("El feed está vacío.");
+        return;
+    }
+
+    // Contar publicaciones por tipo usando HashMap
+    HashMap&lt;String, Integer&gt; conteo = new HashMap&lt;&gt;();
+    int totalLikes = 0;
+
+    for (Publicacion pub : feed) {
+        // Obtener el nombre de la clase real del objeto
+        String tipo = pub.getClass().getSimpleName(); // "Historia", "Reel" o "Post"
+        conteo.put(tipo, conteo.getOrDefault(tipo, 0) + 1);
+        totalLikes += pub.getLikes();
+    }
+
+    // Mostrar resultados
+    System.out.println("\n--- ESTADÍSTICAS DEL FEED ---");
+    System.out.println("Total de publicaciones: " + feed.size());
+    System.out.println("Total de likes: " + totalLikes);
+
+    if (!feed.isEmpty()) {
+        double promedio = (double) totalLikes / feed.size();
+        System.out.printf("Promedio de likes: %.1f%n", promedio);
+    }
+
+    System.out.println("\nPor tipo:");
+    for (String tipo : conteo.keySet()) {
+        System.out.println("  " + tipo + ": " + conteo.get(tipo));
+    }
+}</code></pre>
+
+      <div class="callout callout-lavanda">
+        <p style="margin:0;"><strong><code>getOrDefault(clave, 0)</code>:</strong> Si la clave existe, retorna su valor. Si no existe, retorna 0. Esto evita un <code>NullPointerException</code> al intentar sumar sobre un valor <code>null</code>.</p>
+      </div>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta:</strong> ¿Qué ventaja tiene usar <code>getOrDefault(tipo, 0) + 1</code> en vez de verificar con <code>containsKey</code> primero?</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 8 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">8</div>
+        <div class="step-title">Envuelve el menú con try-catch general</div>
+      </div>
+
+      <p>Agrega un <code>try-catch</code> alrededor del contenido del <code>while</code> para que ningún error imprevisto detenga el programa:</p>
+
+      <pre class="code-block"><code class="language-java">while (ejecutando) {
+    try {
+        System.out.println("\n=== INSTAGRAM CONSOLE APP ===");
+        System.out.println("1. Crear publicación");
+        System.out.println("2. Ver Feed completo");
+        System.out.println("3. Dar Like a una publicación");
+        System.out.println("4. Buscar publicación por ID");
+        System.out.println("5. Estadísticas del Feed");
+        System.out.println("6. Salir");
+        System.out.print("Seleccione una opción: ");
+
+        String opcion = scanner.nextLine().trim();
+
+        switch (opcion) {
+            case "1": crearPublicacion(scanner, feed); break;
+            case "2": mostrarFeed(feed); break;
+            case "3": darLike(scanner, feed); break;
+            case "4": buscarPorId(scanner, feed); break;
+            case "5": mostrarEstadisticas(feed); break;
+            case "6":
+                System.out.println("¡Hasta pronto! 🛸");
+                ejecutando = false;
+                break;
+            default:
+                System.out.println("Opción no válida.");
+                break;
+        }
+    } catch (Exception e) {
+        System.out.println("Error inesperado: " + e.getMessage());
+        System.out.println("El programa continúa funcionando.");
+    }
+}</code></pre>
+
+      <div class="callout callout-durazno">
+        <p style="margin:0;"><strong>Menú defensivo:</strong> Este try-catch general es una red de seguridad. Cada método individual ya maneja sus propios errores específicos, pero si algún caso no previsto ocurre, este catch lo atrapa sin romper el menú.</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- PASO 9 -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="step-block">
+      <div class="step-header">
+        <div class="step-number">9</div>
+        <div class="step-title">Verifica tu implementación</div>
+      </div>
+
+      <p>Ejecuta tu programa y prueba los siguientes escenarios:</p>
+
+      <div class="grid">
+        <div class="card card-menta">
+          <strong>Debe funcionar</strong>
+          <p>Crear una Historia, un Reel y un Post con datos válidos.</p>
+          <p>Ver el feed y que cada publicación muestre su formato propio.</p>
+          <p>Dar like y que el contador aumente.</p>
+          <p>Buscar por ID existente y no existente.</p>
+          <p>Ver estadísticas con publicaciones en el feed.</p>
+        </div>
+        <div class="card card-rosa">
+          <strong>No debe romperse</strong>
+          <p>Escribir "abc" cuando se pide la duración del Reel.</p>
+          <p>Escribir "xyz" cuando se pide el índice para dar like.</p>
+          <p>Seleccionar una opción de menú que no existe (ej: "99").</p>
+          <p>Intentar dar like con el feed vacío.</p>
+          <p>Buscar un ID que no existe.</p>
+        </div>
+      </div>
+
+      <div class="reflection-box" style="margin-top:24px;">
+        <p><strong>Reflexión final:</strong> ¿En qué otros lugares de tu código podrías agregar validación para mejorar la experiencia del usuario?</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- CIERRE -->
+    <!-- ============================================== -->
+    <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+      <h3>Guía completada</h3>
+      <p class="lead" style="margin:0 auto;">Tu proyecto Instagram ahora tiene un feed con colecciones polimórficas, búsqueda, estadísticas y manejo defensivo de errores.</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+createApp({
+  mounted() {
+    if (typeof hljs !== 'undefined') {
+      document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

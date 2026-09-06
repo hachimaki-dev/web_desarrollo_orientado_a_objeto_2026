@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manejo de Excepciones — Java OOP · Profe Carlitos</title>
+  <meta name="description" content="Presentación: Manejo de Excepciones en Java — Desarrollo Orientado a Objetos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow: hidden; }
+    .hierarchy-tree {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      margin: 16px 0;
+    }
+    .h-box {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 10px 20px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 160px;
+    }
+    .h-box.root { background: var(--pastel-rosa); }
+    .h-box.mid { background: var(--pastel-durazno); }
+    .h-box.leaf { background: var(--pastel-celeste); }
+    .h-box.ok { background: var(--pastel-menta); }
+    .h-connector {
+      width: 2px;
+      height: 16px;
+      background: var(--ink);
+    }
+    .h-row {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .h-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      align-items: start;
+      max-width: 1000px;
+    }
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--ink-muted);
+      padding-top: 30px;
+    }
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 16px;
+      border-radius: var(--radius-md);
+      margin: 6px 0;
+      font-size: 14px;
+    }
+    .flow-step.try-step { background: var(--pastel-celeste); }
+    .flow-step.catch-step { background: var(--pastel-rosa); }
+    .flow-step.finally-step { background: var(--pastel-menta); }
+    .flow-num {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      flex-shrink: 0;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 900px;
+    }
+    @media (max-width: 760px) {
+      .summary-grid, .vs-grid { grid-template-columns: 1fr; }
+      .vs-divider { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="app">
+
+<header class="topbar">
+  <div class="topbar-brand"><span class="alien">👽</span> Java · Manejo de Excepciones</div>
+  <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
+  <div class="progress-bar" :style="{width: ((current+1)/total*100)+'%'}"></div>
+</header>
+
+<main class="slide-area">
+
+<!-- ============================================== -->
+<!-- SLIDE 0: PORTADA -->
+<!-- ============================================== -->
+<section v-if="current===0" data-slide class="slide">
+  <div class="kicker">Unidad 1.4 · Manejo de Excepciones</div>
+  <h1 style="font-size:clamp(36px,5vw,56px);">Excepciones</h1>
+  <p class="lead">Cómo evitar que tu programa se rompa cuando algo sale mal.</p>
+  <div style="font-size:64px; margin-top:24px;">🛸</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 1: QUÉ ES UNA EXCEPCIÓN -->
+<!-- ============================================== -->
+<section v-else-if="current===1" data-slide class="slide">
+  <div class="kicker">Concepto</div>
+  <h2>¿Qué es una excepción?</h2>
+  <p>Un <strong>evento inesperado</strong> que ocurre durante la ejecución del programa y que interrumpe el flujo normal.</p>
+
+  <div class="grid">
+    <div class="card card-rosa">
+      <strong>Ejemplos de errores comunes</strong>
+      <p>El usuario escribe "abc" cuando se pide un número.</p>
+      <p>Se intenta acceder a la posición 10 de una lista con 3 elementos.</p>
+      <p>Se llama a un método sobre una variable que es <code>null</code>.</p>
+    </div>
+    <div class="card card-menta">
+      <strong>Sin manejo de excepciones</strong>
+      <p>El programa se detiene abruptamente.</p>
+      <p>El usuario ve un mensaje de error críptico.</p>
+      <p>Se pierden datos no guardados.</p>
+    </div>
+  </div>
+
+  <div class="rule" style="margin-top:16px;">
+    <strong>Objetivo:</strong> Anticipar los errores y manejarlos de forma controlada, sin que el programa deje de funcionar.
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 2: SIN TRY-CATCH -->
+<!-- ============================================== -->
+<section v-else-if="current===2" data-slide class="slide">
+  <div class="kicker">El problema</div>
+  <h2>¿Qué pasa sin try-catch?</h2>
+
+  <pre class="code-block"><code class="language-java">import java.util.Scanner;
+
+public class SinManejoError {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Ingrese su edad: ");
+        int edad = Integer.parseInt(scanner.nextLine()); // ← Si escribe "abc"...
+        System.out.println("Tienes " + edad + " años");
+    }
+}</code></pre>
+
+  <div class="callout callout-rosa" style="margin-top:16px;">
+    <h4 style="margin:0 0 6px;">Si el usuario escribe "abc":</h4>
+    <pre style="margin:0; font-size:13px; color:var(--accent-rosa); background:transparent; border:none; padding:0;"><code>Exception in thread "main" java.lang.NumberFormatException:
+    For input string: "abc"
+        at java.base/java.lang.NumberFormatException...
+        at java.base/java.lang.Integer.parseInt...</code></pre>
+    <p style="margin:8px 0 0;">El programa <strong>se detiene</strong>. La línea <code>System.out.println</code> nunca se ejecuta.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 3: ANATOMÍA DE TRY-CATCH -->
+<!-- ============================================== -->
+<section v-else-if="current===3" data-slide class="slide">
+  <div class="kicker">Estructura</div>
+  <h2>Anatomía de try-catch</h2>
+
+  <pre class="code-block"><code class="language-java">try {
+    // Código que PODRÍA fallar
+    int edad = Integer.parseInt(scanner.nextLine());
+    System.out.println("Edad: " + edad);
+
+} catch (NumberFormatException e) {
+    // Se ejecuta SOLO si ocurre ese error
+    System.out.println("Error: debe ingresar un número válido.");
+}
+// El programa CONTINÚA normalmente aquí</code></pre>
+
+  <div style="max-width:600px; margin:20px auto 0;">
+    <div class="flow-step try-step">
+      <div class="flow-num">1</div>
+      <div>Java intenta ejecutar el código dentro de <code>try</code></div>
+    </div>
+    <div class="flow-step catch-step">
+      <div class="flow-num">2</div>
+      <div>Si ocurre la excepción indicada, salta al bloque <code>catch</code></div>
+    </div>
+    <div class="flow-step finally-step">
+      <div class="flow-num">3</div>
+      <div>El programa continúa después del try-catch, sin detenerse</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 4: FINALLY -->
+<!-- ============================================== -->
+<section v-else-if="current===4" data-slide class="slide">
+  <div class="kicker">Bloque finally</div>
+  <h2>finally — Se ejecuta siempre</h2>
+  <p>El bloque <code>finally</code> se ejecuta <strong>haya o no excepción</strong>. Es opcional.</p>
+
+  <pre class="code-block"><code class="language-java">try {
+    int numero = Integer.parseInt(scanner.nextLine());
+    System.out.println("Número: " + numero);
+} catch (NumberFormatException e) {
+    System.out.println("Error: entrada no válida.");
+} finally {
+    System.out.println("Este mensaje SIEMPRE aparece.");
+}</code></pre>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-celeste">
+      <strong>Si no hay excepción:</strong>
+      <p>Se ejecuta <code>try</code> completo + <code>finally</code></p>
+    </div>
+    <div class="card card-durazno">
+      <strong>Si hay excepción:</strong>
+      <p>Se ejecuta <code>try</code> hasta el error + <code>catch</code> + <code>finally</code></p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 5: EJEMPLO NEUTRO -->
+<!-- ============================================== -->
+<section v-else-if="current===5" data-slide class="slide">
+  <div class="kicker">Ejemplo genérico</div>
+  <h2>Validar entrada numérica con Scanner</h2>
+
+  <pre class="code-block"><code class="language-java">import java.util.Scanner;
+
+public class EntradaSegura {
+    public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
+        int numero = 0;
+        boolean valido = false;
+
+        while (!valido) {
+            try {
+                System.out.print("Ingrese un número entero: ");
+                numero = Integer.parseInt(scanner.nextLine());
+                valido = true; // Solo llega aquí si no hubo excepción
+            } catch (NumberFormatException e) {
+                System.out.println("Error: eso no es un número. Intente de nuevo.");
+            }
+        }
+
+        System.out.println("Número ingresado: " + numero);
+    }
+}</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:8px;">
+    <p style="margin:0;"><strong>Patrón:</strong> while + try-catch = pedir el dato hasta que sea válido.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 6: JERARQUÍA DE EXCEPCIONES -->
+<!-- ============================================== -->
+<section v-else-if="current===6" data-slide class="slide">
+  <div class="kicker">Jerarquía</div>
+  <h2>Árbol de excepciones en Java</h2>
+
+  <div class="hierarchy-tree">
+    <div class="h-box root">Throwable</div>
+    <div class="h-connector"></div>
+    <div class="h-row">
+      <div class="h-branch">
+        <div class="h-box mid">Error</div>
+        <div style="font-size:12px; color:var(--ink-soft); max-width:180px; text-align:center;">Errores graves del sistema (OutOfMemoryError). No se manejan.</div>
+      </div>
+      <div class="h-branch">
+        <div class="h-box mid">Exception</div>
+        <div class="h-connector"></div>
+        <div class="h-row">
+          <div class="h-branch">
+            <div class="h-box leaf">RuntimeException</div>
+            <div style="font-size:12px; color:var(--ink-soft); max-width:180px; text-align:center;">Errores de programación. No requieren declaración.</div>
+          </div>
+          <div class="h-branch">
+            <div class="h-box ok">Checked Exceptions</div>
+            <div style="font-size:12px; color:var(--ink-soft); max-width:180px; text-align:center;">Errores esperables. El compilador obliga a manejarlas.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rule" style="margin-top:8px;">
+    En este curso trabajamos con <strong>RuntimeException</strong> y sus subclases, que son las más comunes en programas de consola.
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 7: EXCEPCIONES COMUNES -->
+<!-- ============================================== -->
+<section v-else-if="current===7" data-slide class="slide">
+  <div class="kicker">Referencia</div>
+  <h2>Excepciones más comunes</h2>
+
+  <div class="grid">
+    <div class="card card-rosa">
+      <strong><code>NumberFormatException</code></strong>
+      <p>Al convertir un texto que no es número.</p>
+      <pre class="code-block" style="font-size:12px;"><code class="language-java">Integer.parseInt("abc"); // Error</code></pre>
+    </div>
+    <div class="card card-durazno">
+      <strong><code>IndexOutOfBoundsException</code></strong>
+      <p>Al acceder a un índice fuera de rango de una lista o array.</p>
+      <pre class="code-block" style="font-size:12px;"><code class="language-java">lista.get(10); // Solo tiene 3 elementos</code></pre>
+    </div>
+    <div class="card card-celeste">
+      <strong><code>NullPointerException</code></strong>
+      <p>Al llamar un método sobre una referencia <code>null</code>.</p>
+      <pre class="code-block" style="font-size:12px;"><code class="language-java">String s = null;
+s.length(); // Error</code></pre>
+    </div>
+    <div class="card card-lavanda">
+      <strong><code>ArithmeticException</code></strong>
+      <p>Al dividir un entero por cero.</p>
+      <pre class="code-block" style="font-size:12px;"><code class="language-java">int x = 10 / 0; // Error</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 8: MÚLTIPLES CATCH -->
+<!-- ============================================== -->
+<section v-else-if="current===8" data-slide class="slide">
+  <div class="kicker">Múltiples catch</div>
+  <h2>Capturar diferentes tipos de excepción</h2>
+  <p>Puedes tener varios bloques <code>catch</code> para manejar diferentes errores de formas distintas.</p>
+
+  <pre class="code-block"><code class="language-java">try {
+    System.out.print("Índice: ");
+    int indice = Integer.parseInt(scanner.nextLine());
+    Publicacion pub = feed.get(indice);
+    pub.mostrarDetalle();
+
+} catch (NumberFormatException e) {
+    System.out.println("Error: debe ingresar un número.");
+
+} catch (IndexOutOfBoundsException e) {
+    System.out.println("Error: índice fuera de rango. Rango válido: 0 a " + (feed.size()-1));
+}</code></pre>
+
+  <div class="callout callout-durazno" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Regla:</strong> Los catch se evalúan en orden. Siempre coloca las excepciones más específicas primero. Si pones <code>Exception</code> primero, las demás nunca se ejecutarán.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 9: ATERRIZADO — INSTAGRAM -->
+<!-- ============================================== -->
+<section v-else-if="current===9" data-slide class="slide">
+  <div class="kicker">Aterrizado al proyecto</div>
+  <h2>Try-catch en Instagram — Crear Reel</h2>
+
+  <pre class="code-block"><code class="language-java">case "1": // Crear Reel
+    System.out.print("ID: ");
+    String id = scanner.nextLine();
+    System.out.print("Autor: ");
+    String autor = scanner.nextLine();
+
+    int duracion = 0;
+    try {
+        System.out.print("Duración (segundos, 3-90): ");
+        duracion = Integer.parseInt(scanner.nextLine());
+    } catch (NumberFormatException e) {
+        System.out.println("Error: duración no válida. Se usará 15 seg.");
+        duracion = 15;
+    }
+
+    System.out.print("Audio: ");
+    String audio = scanner.nextLine();
+    feed.add(new Reel(id, autor, duracion, audio));
+    System.out.println("Reel creado.");
+    break;</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 10: MENÚ DEFENSIVO -->
+<!-- ============================================== -->
+<section v-else-if="current===10" data-slide class="slide">
+  <div class="kicker">Patrón clave</div>
+  <h2>Menú defensivo — El menú que nunca se rompe</h2>
+
+  <pre class="code-block"><code class="language-java">Scanner scanner = new Scanner(System.in);
+ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+boolean ejecutando = true;
+
+while (ejecutando) {
+    System.out.println("\n=== INSTAGRAM CONSOLE APP ===");
+    System.out.println("1. Crear publicación");
+    System.out.println("2. Ver Feed");
+    System.out.println("3. Dar Like");
+    System.out.println("4. Salir");
+
+    try {
+        System.out.print("Opción: ");
+        String opcion = scanner.nextLine().trim();
+
+        switch (opcion) {
+            case "1": /* crear */ break;
+            case "2": /* listar */ break;
+            case "3": /* dar like */ break;
+            case "4": ejecutando = false; break;
+            default:
+                System.out.println("Opción no válida.");
+        }
+    } catch (Exception e) {
+        System.out.println("Error inesperado: " + e.getMessage());
+    }
+}</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 11: VALIDAR ENTRADA CON BUCLE -->
+<!-- ============================================== -->
+<section v-else-if="current===11" data-slide class="slide">
+  <div class="kicker">Patrón reutilizable</div>
+  <h2>Pedir dato hasta que sea válido</h2>
+
+  <pre class="code-block"><code class="language-java">// Método auxiliar reutilizable
+public static int pedirEntero(Scanner scanner, String mensaje) {
+    while (true) {
+        try {
+            System.out.print(mensaje);
+            return Integer.parseInt(scanner.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Error: debe ingresar un número entero.");
+        }
+    }
+}
+
+// Uso en cualquier parte del programa:
+int duracion = pedirEntero(scanner, "Duración del reel (seg): ");
+int indice = pedirEntero(scanner, "Índice de la publicación: ");</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <p style="margin:0;">Extraer la validación a un <strong>método auxiliar</strong> evita repetir el mismo try-catch en muchos lugares del código.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 12: EXCEPCIONES EN COLECCIONES -->
+<!-- ============================================== -->
+<section v-else-if="current===12" data-slide class="slide">
+  <div class="kicker">Colecciones + Excepciones</div>
+  <h2>Errores comunes al trabajar con listas</h2>
+
+  <pre class="code-block"><code class="language-java">ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+// feed tiene 3 elementos (índices 0, 1, 2)
+
+try {
+    Publicacion pub = feed.get(5); // IndexOutOfBoundsException
+} catch (IndexOutOfBoundsException e) {
+    System.out.println("Error: solo hay " + feed.size() + " publicaciones.");
+}</code></pre>
+
+  <div class="vs-grid" style="margin-top:20px;">
+    <div>
+      <strong style="color:var(--accent-rosa);">Enfoque frágil</strong>
+      <pre class="code-block" style="font-size:12px;"><code class="language-java">// Asumir que el índice es válido
+Publicacion pub = feed.get(indice);
+pub.darLike();</code></pre>
+    </div>
+    <div class="vs-divider">vs</div>
+    <div>
+      <strong style="color:var(--accent-menta);">Enfoque defensivo</strong>
+      <pre class="code-block" style="font-size:12px;"><code class="language-java">// Verificar antes de acceder
+if (indice >= 0 && indice < feed.size()) {
+    feed.get(indice).darLike();
+} else {
+    System.out.println("Índice no válido.");
+}</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 13: BUENAS PRÁCTICAS -->
+<!-- ============================================== -->
+<section v-else-if="current===13" data-slide class="slide">
+  <div class="kicker">Buenas prácticas</div>
+  <h2>Reglas para el manejo de excepciones</h2>
+
+  <div class="grid">
+    <div class="card card-menta">
+      <strong>1. Sé específico en el catch</strong>
+      <p>Captura <code>NumberFormatException</code>, no <code>Exception</code>. Así sabes exactamente qué error ocurrió.</p>
+    </div>
+    <div class="card card-celeste">
+      <strong>2. No uses excepciones para flujo normal</strong>
+      <p>Si puedes verificar con un <code>if</code> antes (ej: <code>isEmpty()</code>), hazlo. Las excepciones son para situaciones imprevistas.</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong>3. Mensajes claros al usuario</strong>
+      <p>En vez de <code>"Exception caught"</code>, escribe <code>"Error: debe ingresar un número entre 3 y 90."</code></p>
+    </div>
+    <div class="card card-durazno">
+      <strong>4. No dejes catch vacíos</strong>
+      <p>Un catch sin código oculta errores silenciosamente. Siempre informa o registra lo que pasó.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 14: VALIDACIÓN PREVENTIVA VS REACTIVA -->
+<!-- ============================================== -->
+<section v-else-if="current===14" data-slide class="slide">
+  <div class="kicker">Diseño</div>
+  <h2>Validación preventiva vs reactiva</h2>
+
+  <div class="vs-grid">
+    <div>
+      <strong>Preventiva (con if)</strong>
+      <pre class="code-block" style="font-size:13px;"><code class="language-java">// Verificar ANTES de actuar
+if (!feed.isEmpty()) {
+    feed.get(0).mostrarDetalle();
+} else {
+    System.out.println("Feed vacío.");
+}</code></pre>
+      <p style="font-size:13px; color:var(--ink-soft);">Usar cuando la condición se puede verificar sin costo.</p>
+    </div>
+    <div class="vs-divider">vs</div>
+    <div>
+      <strong>Reactiva (con try-catch)</strong>
+      <pre class="code-block" style="font-size:13px;"><code class="language-java">// Intentar y manejar si falla
+try {
+    int n = Integer.parseInt(texto);
+} catch (NumberFormatException e) {
+    System.out.println("No es número.");
+}</code></pre>
+      <p style="font-size:13px; color:var(--ink-soft);">Usar cuando no hay forma simple de verificar antes (ej: parseo).</p>
+    </div>
+  </div>
+
+  <div class="rule" style="margin-top:16px;">
+    <strong>Regla general:</strong> Si puedes prevenir con un <code>if</code>, previene. Si no, usa <code>try-catch</code>. En la práctica, muchos programas combinan ambas estrategias.
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 15: EJEMPLO COMPLETO INSTAGRAM -->
+<!-- ============================================== -->
+<section v-else-if="current===15" data-slide class="slide">
+  <div class="kicker">Ejemplo completo</div>
+  <h2>Dar Like con validación completa</h2>
+
+  <pre class="code-block"><code class="language-java">private static void darLike(Scanner scanner, ArrayList&lt;Publicacion&gt; feed) {
+    if (feed.isEmpty()) {
+        System.out.println("El feed está vacío.");
+        return;  // Validación preventiva
+    }
+
+    // Mostrar opciones
+    for (int i = 0; i &lt; feed.size(); i++) {
+        System.out.println(i + ". " + feed.get(i).getId());
+    }
+
+    try {
+        System.out.print("Índice de la publicación: ");
+        int indice = Integer.parseInt(scanner.nextLine());
+
+        if (indice &lt; 0 || indice &gt;= feed.size()) {
+            System.out.println("Índice fuera de rango.");
+            return;  // Validación preventiva
+        }
+
+        feed.get(indice).darLike();
+        System.out.println("Like registrado. Total: " + feed.get(indice).getLikes());
+
+    } catch (NumberFormatException e) {
+        System.out.println("Error: debe ingresar un número.");
+        // Validación reactiva
+    }
+}</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 16: RESUMEN -->
+<!-- ============================================== -->
+<section v-else-if="current===16" data-slide class="slide">
+  <div class="kicker">Resumen</div>
+  <h2>Lo que aprendimos</h2>
+
+  <div class="summary-grid">
+    <div class="card card-celeste">
+      <strong>try-catch-finally</strong>
+      <p>Estructura para capturar errores sin detener el programa. <code>finally</code> se ejecuta siempre.</p>
+    </div>
+    <div class="card card-rosa">
+      <strong>Excepciones comunes</strong>
+      <p>NumberFormatException, IndexOutOfBoundsException, NullPointerException, ArithmeticException.</p>
+    </div>
+    <div class="card card-menta">
+      <strong>Menú defensivo</strong>
+      <p>while + try-catch + switch = un menú que nunca se rompe ante entradas inválidas.</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong>Buenas prácticas</strong>
+      <p>Ser específico, combinar if con try-catch, mensajes claros, nunca catch vacío.</p>
+    </div>
+  </div>
+
+  <div class="rule" style="margin-top:20px;">
+    <strong>Un buen programa no es el que nunca falla</strong> — es el que maneja las fallas de forma controlada y amigable para el usuario.
+  </div>
+</section>
+
+</main>
+
+<footer class="controls-bar">
+  <button class="btn" @click="prev">← Anterior</button>
+  <div class="dots">
+    <span v-for="i in total" :key="i" class="dot" :class="{active: current===i-1}" @click="goTo(i-1)"></span>
+  </div>
+  <button class="btn" @click="next">Siguiente →</button>
+</footer>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+createApp({
+  data() {
+    return { current: 0, total: 17 };
+  },
+  computed: {
+    progressWidth() { return ((this.current + 1) / this.total * 100) + '%'; }
+  },
+  methods: {
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    goTo(i) { if (i >= 0 && i < this.total) this.current = i; },
+    highlightCode() {
+      this.$nextTick(() => {
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code:not(.hljs)').forEach(block => hljs.highlightElement(block));
+        }
+      });
+    }
+  },
+  watch: {
+    current() { this.highlightCode(); }
+  },
+  mounted() {
+    this.highlightCode();
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); this.next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); this.prev(); }
+      if (e.key === 'Home') { e.preventDefault(); this.current = 0; }
+      if (e.key === 'End') { e.preventDefault(); this.current = this.total - 1; }
+    });
+  }
+}).mount('#app');
+</script>
+</body>
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Colecciones — Java OOP · Profe Carlitos</title>
+  <meta name="description" content="Presentación: Colecciones en Java (ArrayList y HashMap) — Desarrollo Orientado a Objetos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow: hidden; }
+    .diagram-box {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      margin: 4px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 140px;
+    }
+    .diagram-box.parent { background: var(--pastel-lavanda); }
+    .diagram-box.child { background: var(--pastel-celeste); }
+    .diagram-box.alt { background: var(--pastel-menta); }
+    .diagram-box.warn { background: var(--pastel-durazno); }
+    .diagram-arrow {
+      display: block;
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+    }
+    .diagram-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      align-items: start;
+      max-width: 1000px;
+    }
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--ink-muted);
+      padding-top: 30px;
+    }
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 900px;
+    }
+    .method-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    .method-table th, .method-table td {
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .method-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+    }
+    .method-table tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+    @media (max-width: 760px) {
+      .summary-grid, .vs-grid { grid-template-columns: 1fr; }
+      .vs-divider { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="app">
+
+<header class="topbar">
+  <div class="topbar-brand"><span class="alien">👽</span> Java · Colecciones</div>
+  <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
+  <div class="progress-bar" :style="{width: ((current+1)/total*100)+'%'}"></div>
+</header>
+
+<main class="slide-area">
+
+<!-- ============================================== -->
+<!-- SLIDE 0: PORTADA -->
+<!-- ============================================== -->
+<section v-if="current===0" data-slide class="slide">
+  <div class="kicker">Unidad 1.4 · Colecciones en Java</div>
+  <h1 style="font-size:clamp(36px,5vw,56px);">Colecciones</h1>
+  <p class="lead">ArrayList, HashMap y cómo organizar datos dinámicos en Java.</p>
+  <div style="font-size:64px; margin-top:24px;">🛸</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 1: EL PROBLEMA CON ARRAYS -->
+<!-- ============================================== -->
+<section v-else-if="current===1" data-slide class="slide">
+  <div class="kicker">Motivación</div>
+  <h2>El problema con los arrays</h2>
+  <p>Un array en Java tiene <strong>tamaño fijo</strong>. Se define al crear y no puede cambiar.</p>
+
+  <pre class="code-block"><code class="language-java">String[] nombres = new String[3]; // Solo 3 posiciones
+nombres[0] = "Ana";
+nombres[1] = "Pedro";
+nombres[2] = "Luis";
+// nombres[3] = "María"; → ERROR: ArrayIndexOutOfBoundsException</code></pre>
+
+  <div class="grid" style="margin-top:20px;">
+    <div class="card card-rosa">
+      <strong>Limitaciones del array</strong>
+      <p>Tamaño fijo al momento de la creación.</p>
+      <p>No tiene métodos para buscar, eliminar o contar.</p>
+      <p>Insertar o eliminar en el medio requiere desplazar elementos manualmente.</p>
+    </div>
+    <div class="card card-menta">
+      <strong>Lo que necesitamos</strong>
+      <p>Una estructura que crezca y se reduzca automáticamente.</p>
+      <p>Con métodos integrados para agregar, buscar, eliminar.</p>
+      <p>Que funcione con cualquier tipo de objeto.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 2: QUÉ ES ARRAYLIST -->
+<!-- ============================================== -->
+<section v-else-if="current===2" data-slide class="slide">
+  <div class="kicker">Concepto</div>
+  <h2>ArrayList&lt;T&gt;</h2>
+  <p>Una <strong>lista dinámica</strong> que crece automáticamente. Pertenece al paquete <code>java.util</code>.</p>
+
+  <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+
+// Declarar y crear
+ArrayList&lt;String&gt; nombres = new ArrayList&lt;&gt;();
+
+// Agregar elementos (la lista crece sola)
+nombres.add("Ana");
+nombres.add("Pedro");
+nombres.add("Luis");
+nombres.add("María"); // Sin problema — crece automáticamente</code></pre>
+
+  <div class="callout callout-lavanda" style="margin-top:16px;">
+    <h4 style="margin:0 0 6px;">Tipo genérico &lt;T&gt;</h4>
+    <p style="margin:0;">El tipo entre <code>&lt; &gt;</code> indica qué tipo de objetos almacena la lista. Solo acepta objetos, no primitivos. Para <code>int</code> se usa <code>Integer</code>, para <code>double</code> se usa <code>Double</code>.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 3: MÉTODOS ESENCIALES DE ARRAYLIST -->
+<!-- ============================================== -->
+<section v-else-if="current===3" data-slide class="slide">
+  <div class="kicker">Referencia</div>
+  <h2>Métodos esenciales de ArrayList</h2>
+
+  <table class="method-table">
+    <thead>
+      <tr>
+        <th>Método</th>
+        <th>Retorno</th>
+        <th>Descripción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>add(elemento)</code></td><td><code>boolean</code></td><td>Agrega al final de la lista</td></tr>
+      <tr><td><code>get(indice)</code></td><td><code>T</code></td><td>Obtiene el elemento en esa posición</td></tr>
+      <tr><td><code>set(indice, elemento)</code></td><td><code>T</code></td><td>Reemplaza el elemento en esa posición</td></tr>
+      <tr><td><code>remove(indice)</code></td><td><code>T</code></td><td>Elimina y retorna el elemento</td></tr>
+      <tr><td><code>size()</code></td><td><code>int</code></td><td>Cantidad de elementos actuales</td></tr>
+      <tr><td><code>isEmpty()</code></td><td><code>boolean</code></td><td><code>true</code> si la lista no tiene elementos</td></tr>
+      <tr><td><code>contains(obj)</code></td><td><code>boolean</code></td><td><code>true</code> si el elemento existe en la lista</td></tr>
+      <tr><td><code>indexOf(obj)</code></td><td><code>int</code></td><td>Posición del elemento, o <code>-1</code> si no existe</td></tr>
+      <tr><td><code>clear()</code></td><td><code>void</code></td><td>Elimina todos los elementos</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 4: EJEMPLO NEUTRO CON ARRAYLIST -->
+<!-- ============================================== -->
+<section v-else-if="current===4" data-slide class="slide">
+  <div class="kicker">Ejemplo genérico</div>
+  <h2>ArrayList en acción — Lista de animales</h2>
+
+  <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+
+public class EjemploLista {
+    public static void main(String[] args) {
+        ArrayList&lt;String&gt; animales = new ArrayList&lt;&gt;();
+
+        // Agregar
+        animales.add("Perro");
+        animales.add("Gato");
+        animales.add("Pato");
+
+        // Consultar
+        System.out.println("Total: " + animales.size());     // 3
+        System.out.println("Primero: " + animales.get(0));    // Perro
+        System.out.println("Tiene Gato: " + animales.contains("Gato")); // true
+
+        // Modificar
+        animales.set(1, "León");  // Reemplaza "Gato" por "León"
+
+        // Eliminar
+        animales.remove(0);      // Elimina "Perro"
+
+        System.out.println(animales); // [León, Pato]
+    }
+}</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 5: ATERRIZADO — INSTAGRAM -->
+<!-- ============================================== -->
+<section v-else-if="current===5" data-slide class="slide">
+  <div class="kicker">Aterrizado al proyecto</div>
+  <h2>ArrayList polimórfico — Caso Instagram</h2>
+  <p>La lista almacena objetos de tipo <code>Publicacion</code> (padre). Pero los objetos reales pueden ser <code>Historia</code>, <code>Reel</code> o <code>Post</code>.</p>
+
+  <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+
+ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+
+// Agregar diferentes tipos de publicaciones
+feed.add(new Historia("H1", "carlos", true));
+feed.add(new Reel("R1", "ana", 30, "Trending Audio"));
+feed.add(new Post("P1", "pedro", "Vacaciones", "Viña"));
+
+System.out.println("Publicaciones en el feed: " + feed.size()); // 3</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Colección polimórfica:</strong> La lista es de tipo <code>Publicacion</code>, pero almacena objetos hijos. Cada elemento mantiene su comportamiento real gracias al polimorfismo.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 6: ITERAR CON FOR-EACH -->
+<!-- ============================================== -->
+<section v-else-if="current===6" data-slide class="slide">
+  <div class="kicker">Iteración</div>
+  <h2>Recorrer con for-each</h2>
+  <p>El <strong>for-each</strong> recorre cada elemento de la lista sin necesidad de manejar índices.</p>
+
+  <div class="vs-grid">
+    <div>
+      <strong>Ejemplo genérico</strong>
+      <pre class="code-block"><code class="language-java">ArrayList&lt;String&gt; frutas = new ArrayList&lt;&gt;();
+frutas.add("Manzana");
+frutas.add("Pera");
+frutas.add("Uva");
+
+for (String fruta : frutas) {
+    System.out.println(fruta);
+}</code></pre>
+    </div>
+    <div class="vs-divider">→</div>
+    <div>
+      <strong>Caso Instagram</strong>
+      <pre class="code-block"><code class="language-java">// POLIMORFISMO EN ACCIÓN
+for (Publicacion pub : feed) {
+    pub.mostrarDetalle();
+    // Cada publicación ejecuta
+    // SU versión del método
+}
+// Historia muestra su formato
+// Reel muestra su formato
+// Post muestra su formato</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 7: ITERAR CON FOR TRADICIONAL -->
+<!-- ============================================== -->
+<section v-else-if="current===7" data-slide class="slide">
+  <div class="kicker">Iteración</div>
+  <h2>Recorrer con for tradicional (por índice)</h2>
+  <p>Usar cuando necesitas el <strong>número de posición</strong> del elemento.</p>
+
+  <pre class="code-block"><code class="language-java">for (int i = 0; i &lt; feed.size(); i++) {
+    System.out.println("Posición " + i + ":");
+    feed.get(i).mostrarDetalle();
+}</code></pre>
+
+  <div class="grid" style="margin-top:20px;">
+    <div class="card card-celeste">
+      <strong>Usa for-each cuando:</strong>
+      <p>Solo necesitas leer cada elemento.</p>
+      <p>No importa la posición.</p>
+      <p>No vas a modificar la lista durante el recorrido.</p>
+    </div>
+    <div class="card card-durazno">
+      <strong>Usa for tradicional cuando:</strong>
+      <p>Necesitas mostrar o usar el índice.</p>
+      <p>Necesitas acceder a posiciones específicas.</p>
+      <p>Vas a eliminar elementos durante el recorrido.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 8: BUSCAR EN UNA LISTA -->
+<!-- ============================================== -->
+<section v-else-if="current===8" data-slide class="slide">
+  <div class="kicker">Patrón de búsqueda</div>
+  <h2>Buscar un elemento en la lista</h2>
+  <p>Patrón de <strong>búsqueda lineal</strong>: recorrer la lista comparando hasta encontrar el elemento deseado.</p>
+
+  <pre class="code-block"><code class="language-java">// Buscar publicación por ID en el feed de Instagram
+public static Publicacion buscarPorId(ArrayList&lt;Publicacion&gt; feed, String id) {
+    for (Publicacion pub : feed) {
+        if (pub.getId().equals(id)) {
+            return pub; // Encontrada
+        }
+    }
+    return null; // No existe
+}
+
+// Uso:
+Publicacion resultado = buscarPorId(feed, "R1");
+if (resultado != null) {
+    resultado.mostrarDetalle();
+} else {
+    System.out.println("Publicación no encontrada.");
+}</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 9: FILTRAR ELEMENTOS -->
+<!-- ============================================== -->
+<section v-else-if="current===9" data-slide class="slide">
+  <div class="kicker">Patrón de filtrado</div>
+  <h2>Filtrar elementos de una lista</h2>
+  <p>Recorrer + condición + acumular en una nueva lista.</p>
+
+  <pre class="code-block"><code class="language-java">// Filtrar solo las Historias activas del feed
+ArrayList&lt;Publicacion&gt; historiasActivas = new ArrayList&lt;&gt;();
+
+for (Publicacion pub : feed) {
+    if (pub instanceof Historia) {
+        Historia h = (Historia) pub;  // Casting explícito
+        if (h.isEstaActiva()) {
+            historiasActivas.add(h);
+        }
+    }
+}
+
+System.out.println("Historias activas: " + historiasActivas.size());</code></pre>
+
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;"><code>instanceof</code> verifica el tipo real del objeto. Después del check, se hace <strong>casting</strong> para acceder a los métodos específicos de la clase hija.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 10: QUÉ ES HASHMAP -->
+<!-- ============================================== -->
+<section v-else-if="current===10" data-slide class="slide">
+  <div class="kicker">Concepto</div>
+  <h2>HashMap&lt;K, V&gt;</h2>
+  <p>Estructura que almacena pares de <strong>clave → valor</strong>. Cada clave es única. Pertenece a <code>java.util</code>.</p>
+
+  <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:20px 0;">
+    <div class="diagram-box parent">Clave (K)</div>
+    <div style="font-size:28px; display:flex; align-items:center;">→</div>
+    <div class="diagram-box alt">Valor (V)</div>
+  </div>
+
+  <pre class="code-block"><code class="language-java">import java.util.HashMap;
+
+// Clave: String (nombre de ciudad) → Valor: Integer (temperatura)
+HashMap&lt;String, Integer&gt; temperaturas = new HashMap&lt;&gt;();
+
+temperaturas.put("Santiago", 18);
+temperaturas.put("Valparaíso", 15);
+temperaturas.put("Temuco", 10);
+
+System.out.println(temperaturas.get("Santiago")); // 18</code></pre>
+
+  <p>Analogía: un <strong>diccionario</strong> donde buscas por la palabra (clave) para obtener la definición (valor).</p>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 11: MÉTODOS ESENCIALES DE HASHMAP -->
+<!-- ============================================== -->
+<section v-else-if="current===11" data-slide class="slide">
+  <div class="kicker">Referencia</div>
+  <h2>Métodos esenciales de HashMap</h2>
+
+  <table class="method-table">
+    <thead>
+      <tr>
+        <th>Método</th>
+        <th>Retorno</th>
+        <th>Descripción</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>put(clave, valor)</code></td><td><code>V</code></td><td>Agrega o reemplaza el par clave-valor</td></tr>
+      <tr><td><code>get(clave)</code></td><td><code>V</code></td><td>Obtiene el valor asociado a la clave, o <code>null</code></td></tr>
+      <tr><td><code>getOrDefault(clave, def)</code></td><td><code>V</code></td><td>Obtiene el valor, o el valor por defecto si no existe</td></tr>
+      <tr><td><code>containsKey(clave)</code></td><td><code>boolean</code></td><td><code>true</code> si la clave existe</td></tr>
+      <tr><td><code>containsValue(valor)</code></td><td><code>boolean</code></td><td><code>true</code> si el valor existe</td></tr>
+      <tr><td><code>remove(clave)</code></td><td><code>V</code></td><td>Elimina el par y retorna el valor</td></tr>
+      <tr><td><code>keySet()</code></td><td><code>Set&lt;K&gt;</code></td><td>Conjunto de todas las claves</td></tr>
+      <tr><td><code>values()</code></td><td><code>Collection&lt;V&gt;</code></td><td>Colección de todos los valores</td></tr>
+      <tr><td><code>size()</code></td><td><code>int</code></td><td>Cantidad de pares clave-valor</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 12: EJEMPLO HASHMAP EN INSTAGRAM -->
+<!-- ============================================== -->
+<section v-else-if="current===12" data-slide class="slide">
+  <div class="kicker">Aterrizado al proyecto</div>
+  <h2>HashMap en Instagram — Indexar por ID</h2>
+
+  <pre class="code-block"><code class="language-java">import java.util.HashMap;
+
+// Mapa para buscar publicaciones rápidamente por su ID
+HashMap&lt;String, Publicacion&gt; indicePorId = new HashMap&lt;&gt;();
+
+// Agregar publicaciones al mapa
+indicePorId.put("H1", new Historia("H1", "carlos", true));
+indicePorId.put("R1", new Reel("R1", "ana", 30, "Audio Viral"));
+indicePorId.put("P1", new Post("P1", "pedro", "Vacaciones", "Viña"));
+
+// Buscar por ID (sin recorrer la lista completa)
+if (indicePorId.containsKey("R1")) {
+    Publicacion pub = indicePorId.get("R1");
+    pub.mostrarDetalle();
+} else {
+    System.out.println("ID no encontrado.");
+}</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Ventaja:</strong> Con HashMap, buscar por clave es prácticamente instantáneo. Con ArrayList, hay que recorrer elemento por elemento.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 13: ITERAR UN HASHMAP -->
+<!-- ============================================== -->
+<section v-else-if="current===13" data-slide class="slide">
+  <div class="kicker">Iteración</div>
+  <h2>Recorrer un HashMap</h2>
+
+  <pre class="code-block"><code class="language-java">HashMap&lt;String, Integer&gt; likesPorAutor = new HashMap&lt;&gt;();
+likesPorAutor.put("carlos", 45);
+likesPorAutor.put("ana", 120);
+likesPorAutor.put("pedro", 78);
+
+// Opción 1: Recorrer claves
+for (String autor : likesPorAutor.keySet()) {
+    System.out.println(autor + " tiene " + likesPorAutor.get(autor) + " likes");
+}
+
+// Opción 2: Recorrer pares clave-valor (más eficiente)
+for (Map.Entry&lt;String, Integer&gt; entry : likesPorAutor.entrySet()) {
+    System.out.println(entry.getKey() + " → " + entry.getValue());
+}</code></pre>
+
+  <div class="callout callout-celeste" style="margin-top:12px;">
+    <p style="margin:0;">Para usar <code>Map.Entry</code>, agrega <code>import java.util.Map;</code> en los imports.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 14: ARRAYLIST VS HASHMAP -->
+<!-- ============================================== -->
+<section v-else-if="current===14" data-slide class="slide">
+  <div class="kicker">Comparación</div>
+  <h2>ArrayList vs HashMap</h2>
+
+  <table class="method-table">
+    <thead>
+      <tr>
+        <th>Característica</th>
+        <th>ArrayList&lt;T&gt;</th>
+        <th>HashMap&lt;K, V&gt;</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Organización</strong></td>
+        <td>Por posición (índice 0, 1, 2...)</td>
+        <td>Por clave (cualquier objeto)</td>
+      </tr>
+      <tr>
+        <td><strong>Orden</strong></td>
+        <td>Mantiene el orden de inserción</td>
+        <td>No garantiza orden</td>
+      </tr>
+      <tr>
+        <td><strong>Búsqueda</strong></td>
+        <td>Recorrer hasta encontrar (lento en listas grandes)</td>
+        <td>Acceso directo por clave (rápido)</td>
+      </tr>
+      <tr>
+        <td><strong>Duplicados</strong></td>
+        <td>Permite elementos duplicados</td>
+        <td>Claves únicas, valores pueden repetirse</td>
+      </tr>
+      <tr>
+        <td><strong>Usa cuando</strong></td>
+        <td>Importa el orden o la posición</td>
+        <td>Necesitas buscar por un identificador</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-celeste">
+      <strong>Instagram: ArrayList</strong>
+      <p>El feed en orden cronológico.</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong>Instagram: HashMap</strong>
+      <p>Buscar una publicación por su ID.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 15: POLIMORFISMO EN COLECCIONES -->
+<!-- ============================================== -->
+<section v-else-if="current===15" data-slide class="slide">
+  <div class="kicker">Colección + Polimorfismo</div>
+  <h2>ArrayList polimórfico</h2>
+  <p>La combinación de colecciones y polimorfismo es una de las herramientas más poderosas de la POO.</p>
+
+  <pre class="code-block"><code class="language-java">ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+feed.add(new Historia("H1", "carlos", false));
+feed.add(new Reel("R1", "ana", 60, "Trending"));
+feed.add(new Post("P1", "pedro", "Hola mundo", "Santiago"));
+
+// UNA sola línea de código recorre TODOS los tipos
+for (Publicacion pub : feed) {
+    pub.mostrarDetalle();  // Cada objeto ejecuta SU versión
+}</code></pre>
+
+  <div class="rule">
+    <strong>Principio clave:</strong> No necesitas saber qué tipo de publicación es cada elemento. El polimorfismo se encarga de ejecutar el método correcto automáticamente.
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 16: CRUD COMPLETO -->
+<!-- ============================================== -->
+<section v-else-if="current===16" data-slide class="slide">
+  <div class="kicker">Patrón CRUD</div>
+  <h2>CRUD con ArrayList — Instagram</h2>
+
+  <pre class="code-block"><code class="language-java">ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+
+// CREATE — Agregar
+feed.add(new Post("P1", "carlos", "Mi primera foto", "Santiago"));
+
+// READ — Leer por índice
+Publicacion primera = feed.get(0);
+primera.mostrarDetalle();
+
+// UPDATE — Dar like a una publicación
+feed.get(0).darLike();
+
+// DELETE — Eliminar por índice
+feed.remove(0);
+
+// Verificar
+System.out.println("Feed vacío: " + feed.isEmpty()); // true</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 17: PATRÓN DE ACUMULACIÓN -->
+<!-- ============================================== -->
+<section v-else-if="current===17" data-slide class="slide">
+  <div class="kicker">Patrón de acumulación</div>
+  <h2>Contar, sumar y promediar sobre una colección</h2>
+
+  <pre class="code-block"><code class="language-java">ArrayList&lt;Publicacion&gt; feed = new ArrayList&lt;&gt;();
+// ... (feed ya tiene publicaciones con likes)
+
+// CONTAR publicaciones de un autor
+int totalCarlos = 0;
+for (Publicacion pub : feed) {
+    if (pub.getAutor().equals("carlos")) {
+        totalCarlos++;
+    }
+}
+
+// SUMAR todos los likes del feed
+int totalLikes = 0;
+for (Publicacion pub : feed) {
+    totalLikes += pub.getLikes();
+}
+
+// PROMEDIO de likes
+double promedio = (feed.isEmpty()) ? 0 : (double) totalLikes / feed.size();</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 18: WRAPPERS -->
+<!-- ============================================== -->
+<section v-else-if="current===18" data-slide class="slide">
+  <div class="kicker">Detalle técnico</div>
+  <h2>Tipos primitivos y Wrappers en colecciones</h2>
+  <p>Las colecciones solo aceptan <strong>objetos</strong>, no primitivos. Java proporciona clases <em>wrapper</em> para cada tipo primitivo.</p>
+
+  <table class="method-table">
+    <thead>
+      <tr>
+        <th>Primitivo</th>
+        <th>Wrapper</th>
+        <th>Declaración de lista</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td><code>int</code></td><td><code>Integer</code></td><td><code>ArrayList&lt;Integer&gt;</code></td></tr>
+      <tr><td><code>double</code></td><td><code>Double</code></td><td><code>ArrayList&lt;Double&gt;</code></td></tr>
+      <tr><td><code>boolean</code></td><td><code>Boolean</code></td><td><code>ArrayList&lt;Boolean&gt;</code></td></tr>
+      <tr><td><code>char</code></td><td><code>Character</code></td><td><code>ArrayList&lt;Character&gt;</code></td></tr>
+    </tbody>
+  </table>
+
+  <pre class="code-block" style="margin-top:16px;"><code class="language-java">// Java convierte automáticamente (autoboxing)
+ArrayList&lt;Integer&gt; numeros = new ArrayList&lt;&gt;();
+numeros.add(42);        // int → Integer automáticamente
+int valor = numeros.get(0); // Integer → int automáticamente</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 19: RESUMEN -->
+<!-- ============================================== -->
+<section v-else-if="current===19" data-slide class="slide">
+  <div class="kicker">Resumen</div>
+  <h2>Lo que aprendimos</h2>
+
+  <div class="summary-grid">
+    <div class="card card-celeste">
+      <strong>ArrayList&lt;T&gt;</strong>
+      <p>Lista dinámica ordenada por posición. Ideal para el feed de Instagram.</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong>HashMap&lt;K, V&gt;</strong>
+      <p>Mapa clave-valor para búsquedas rápidas. Ideal para indexar por ID.</p>
+    </div>
+    <div class="card card-menta">
+      <strong>Iteración</strong>
+      <p>for-each para leer todos. for tradicional cuando necesitas el índice.</p>
+    </div>
+    <div class="card card-durazno">
+      <strong>Patrones</strong>
+      <p>Búsqueda lineal, filtrado, CRUD y acumulación sobre colecciones.</p>
+    </div>
+  </div>
+
+  <div class="rule" style="margin-top:20px;">
+    <strong>Colecciones + Polimorfismo =</strong> poder recorrer objetos de diferentes tipos con un único bucle y un único método.
+  </div>
+</section>
+
+</main>
+
+<footer class="controls-bar">
+  <button class="btn" @click="prev">← Anterior</button>
+  <div class="dots">
+    <span v-for="i in total" :key="i" class="dot" :class="{active: current===i-1}" @click="goTo(i-1)"></span>
+  </div>
+  <button class="btn" @click="next">Siguiente →</button>
+</footer>
+
+</div>
+
+<script>
+const { createApp } = Vue;
+createApp({
+  data() {
+    return { current: 0, total: 20 };
+  },
+  computed: {
+    progressWidth() { return ((this.current + 1) / this.total * 100) + '%'; }
+  },
+  methods: {
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    goTo(i) { if (i >= 0 && i < this.total) this.current = i; },
+    highlightCode() {
+      this.$nextTick(() => {
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code:not(.hljs)').forEach(block => hljs.highlightElement(block));
+        }
+      });
+    }
+  },
+  watch: {
+    current() { this.highlightCode(); }
+  },
+  mounted() {
+    this.highlightCode();
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); this.next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); this.prev(); }
+      if (e.key === 'Home') { e.preventDefault(); this.current = 0; }
+      if (e.key === 'End') { e.preventDefault(); this.current = this.total - 1; }
+    });
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
