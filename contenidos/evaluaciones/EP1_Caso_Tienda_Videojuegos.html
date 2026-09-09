@@ -1,0 +1,3346 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluación Parcial 1 — Caso Tienda de Videojuegos · Profe Carlitos</title>
+  <meta name="description" content="Caso de negocio para la Evaluación Parcial 1: Sistema de Gestión de Inventario de Tienda de Videojuegos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .guide-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .guide-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-divider {
+      margin: 48px 0 32px;
+      padding: 16px 0;
+      border-top: 2px solid var(--line);
+    }
+
+    /* Evaluation-specific styles */
+    .eval-badge {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 16px;
+    }
+    .il-tag {
+      display: inline-block;
+      background: var(--pastel-celeste);
+      color: var(--accent-celeste);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin: 2px 2px 2px 0;
+      letter-spacing: 0.03em;
+    }
+    .req-block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      margin-bottom: var(--sp-md);
+    }
+    .req-block h4 {
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .req-block p, .req-block ul { font-size: 15px; color: var(--ink-soft); }
+    .req-block ul { padding-left: 20px; }
+    .req-block ul li { margin-bottom: 6px; }
+
+    .uml-box {
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .uml-class {
+      background: var(--bg);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      min-width: 260px;
+      margin: 8px;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    .uml-class-name {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 15px;
+      text-align: center;
+    }
+    .uml-class-name.abstract {
+      font-style: italic;
+    }
+    .uml-section {
+      padding: 8px 16px;
+      border-top: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .uml-arrow {
+      display: block;
+      text-align: center;
+      font-size: 24px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+    }
+    .uml-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .time-box {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin: 16px 0;
+    }
+    .time-item {
+      background: var(--pastel-lavanda);
+      color: var(--accent-lavanda);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      flex: 1;
+      min-width: 180px;
+      text-align: center;
+    }
+    .time-item strong {
+      display: block;
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+    .time-item span {
+      font-size: 13px;
+    }
+
+    .rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 16px 0;
+    }
+    .rubric-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--line);
+    }
+    .rubric-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .rubric-table tr:last-child td { border-bottom: none; }
+
+    .warning-box {
+      background: var(--incorrect);
+      color: var(--incorrect-ink);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .warning-box p { margin: 0; color: var(--incorrect-ink); }
+    .warning-box strong { color: var(--incorrect-ink); }
+
+    /* --- MAIN TABS ------------------------------------------- */
+    .main-tabs {
+      display: flex;
+      gap: 0;
+      margin-bottom: 0;
+      border-bottom: 3px solid var(--ink);
+      position: sticky;
+      top: 0;
+      background: var(--bg);
+      z-index: 20;
+      padding-top: 8px;
+      overflow-x: auto;
+      white-space: nowrap;
+      -webkit-overflow-scrolling: touch;
+    }
+    .main-tab {
+      padding: 14px 22px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      border: 2px solid transparent;
+      border-bottom: none;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      margin-bottom: -3px;
+      transition: color 0.15s, background 0.15s;
+      background: none;
+      font-family: var(--font-body);
+      letter-spacing: -0.01em;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+    .main-tab:hover { color: var(--ink); background: var(--bg-muted); }
+    .main-tab.active {
+      color: var(--ink);
+      background: var(--bg);
+      border-color: var(--ink);
+      border-bottom: 3px solid var(--bg);
+    }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* --- SOLUCIÓN COMPLETA STYLES ---------------------------- */
+    .file-pills {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 24px 0 32px;
+      padding: 12px;
+      background: var(--bg-soft);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--line);
+    }
+    .file-pill {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      padding: 8px 16px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font-code);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .file-pill:hover {
+      border-color: var(--ink);
+      background: var(--bg-muted);
+    }
+    .file-pill.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    .code-file-card {
+      background: var(--bg);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      margin-bottom: 36px;
+      overflow: hidden;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+    }
+    .code-file-header {
+      background: var(--bg-soft);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 2px solid var(--line);
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .code-file-title-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .code-file-title {
+      font-family: var(--font-code);
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .code-file-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .code-file-badge.abstract { background: var(--pastel-amarillo); color: var(--accent-amarillo); }
+    .code-file-badge.subclass { background: var(--pastel-celeste); color: var(--accent-celeste); }
+    .code-file-badge.main { background: var(--pastel-menta); color: var(--accent-menta); }
+    .code-file-desc {
+      font-size: 13px;
+      color: var(--ink-soft);
+      margin: 0;
+    }
+    .copy-btn {
+      background: var(--bg);
+      color: var(--ink);
+      border: 1.5px solid var(--ink);
+      border-radius: var(--radius-sm);
+      padding: 7px 14px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      font-family: var(--font-body);
+    }
+    .copy-btn:hover {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .copy-btn.copied {
+      background: var(--correct);
+      color: var(--correct-ink);
+      border-color: var(--correct-ink);
+    }
+    .code-file-card pre.code-block {
+      margin: 0;
+      border: none;
+      border-radius: 0;
+      max-height: 600px;
+      overflow-y: auto;
+    }
+
+    /* --- CHEQUEO DE COMPRENSIÓN STYLES ----------------------- */
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      margin: 40px 0 20px;
+      padding: 12px 0;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .tag-base { background: #D1FAE5; color: #065F46; }
+    .tag-inter { background: #DBEAFE; color: #1E40AF; }
+    .tag-avanzado { background: #EDE9FE; color: #5B21B6; }
+    .ws-wrapper { overflow-x: auto; }
+
+    /* --- GUIDE-SPECIFIC STYLES ------------------------------- */
+    .thinking-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .thinking-box p { margin: 0; color: var(--accent-amarillo); font-size: 15px; }
+    .thinking-box strong { color: var(--accent-amarillo); }
+
+    .why-box {
+      background: var(--pastel-lavanda);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .why-box p { margin: 0; color: var(--accent-lavanda); font-size: 15px; }
+    .why-box strong { color: var(--accent-lavanda); }
+
+    .analogy-box {
+      background: var(--pastel-durazno);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .analogy-box p { margin: 0; color: var(--accent-durazno); font-size: 15px; }
+    .analogy-box strong { color: var(--accent-durazno); }
+
+    .trap-box {
+      background: var(--pastel-rosa);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .trap-box p { margin: 0; color: var(--accent-rosa); font-size: 15px; }
+    .trap-box strong { color: var(--accent-rosa); }
+
+    .checkpoint-box {
+      background: var(--pastel-menta);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .checkpoint-box p { margin: 0; color: var(--accent-menta); font-size: 15px; }
+    .checkpoint-box strong { color: var(--accent-menta); }
+
+    .piece-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .piece-number {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: var(--ink);
+      color: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      flex-shrink: 0;
+    }
+    .piece-title { font-size: 22px; font-weight: 700; }
+
+    .sub-piece {
+      border-left: 3px solid var(--line);
+      padding-left: 20px;
+      margin: 24px 0;
+    }
+    .sub-piece h4 { margin: 0 0 8px; font-size: 17px; }
+
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .comparison-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--line);
+    }
+    .comparison-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    @media print {
+      .guide-container { padding: 20px; }
+      .eval-badge { border: 1px solid var(--ink); }
+      .req-block { page-break-inside: avoid; }
+      .main-tabs { position: static; }
+    }
+
+    @media (max-width: 760px) {
+      .main-tab { padding: 10px 16px; font-size: 13px; }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="guide-container">
+
+    <header class="guide-header">
+      <div style="font-size:40px; margin-bottom:12px;">👽</div>
+      <div class="eval-badge">Evaluación Parcial 1</div>
+      <h1 style="font-size:clamp(32px,4vw,48px);">Caso: Tienda de Videojuegos</h1>
+      <p class="lead">Sistema de Gestión de Inventario — Programa de consola en Java</p>
+      <p class="small" style="margin-top:8px;">Desarrollo Orientado a Objetos · 2° semestre 2026 · Semana 6</p>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- TABS -->
+    <!-- ============================================== -->
+    <div class="main-tabs">
+      <button class="main-tab" :class="{active: tab==='caso'}" @click="switchTab('caso')">Caso de negocio</button>
+      <button class="main-tab" :class="{active: tab==='guia'}" @click="switchTab('guia')">Guía de resolución</button>
+      <button class="main-tab" :class="{active: tab==='solucion'}" @click="switchTab('solucion')">Solución completa</button>
+      <button class="main-tab" :class="{active: tab==='chequeo'}" @click="switchTab('chequeo')">Chequeo de comprensión</button>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- TAB 1: CASO DE NEGOCIO (original content) -->
+    <!-- ============================================== -->
+    <div class="tab-content" :class="{active: tab==='caso'}">
+
+    <!-- CONTEXTO Y TIEMPO -->
+    <div style="margin-top:32px;">
+      <div class="callout callout-lavanda" style="margin-bottom:32px;">
+        <h4 style="margin:0 0 8px;">Contexto de la evaluación</h4>
+        <p style="margin:0 0 8px;">Esta evaluación es <strong>individual</strong> y se desarrolla <strong>completamente en el laboratorio</strong> durante la sesión asignada. No se permite acceso a internet, dispositivos externos ni herramientas de inteligencia artificial.</p>
+        <p style="margin:0;">La solución debe compilar y ejecutarse correctamente. Un programa que no compila no permite evidenciar los indicadores de logro.</p>
+      </div>
+    </div>
+
+    <h3>Distribución de tiempo sugerida</h3>
+    <div class="time-box">
+      <div class="time-item">
+        <strong>15 min</strong>
+        <span>Lectura del caso y planificación</span>
+      </div>
+      <div class="time-item">
+        <strong>60 min</strong>
+        <span>Desarrollo de clases y lógica</span>
+      </div>
+      <div class="time-item">
+        <strong>15 min</strong>
+        <span>Menú, excepciones y pruebas</span>
+      </div>
+      <div class="time-item">
+        <strong>10 min</strong>
+        <span>Comentarios y entrega</span>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+    <h2>Caso de negocio</h2>
+
+    <p>Una tienda de videojuegos necesita un sistema de consola para gestionar su inventario de productos. La tienda vende dos tipos de productos: <strong>productos físicos</strong> (cajas, discos) y <strong>productos digitales</strong> (códigos de descarga). Ambos comparten datos generales como nombre, precio base y stock, pero se diferencian en sus atributos específicos y en la forma de calcular su precio final.</p>
+
+    <p>El sistema debe permitir registrar productos, listar el inventario, buscar productos por nombre, vender unidades y ver un resumen del inventario. Todas las entradas del usuario deben estar protegidas contra errores.</p>
+
+    <div class="section-divider"></div>
+    <h2>Estructura de clases</h2>
+
+    <p>El siguiente diagrama muestra la jerarquía de clases que debes implementar. La clase <code>Producto</code> es <strong>abstracta</strong> y define la estructura base. Las clases <code>ProductoFisico</code> y <code>ProductoDigital</code> heredan de ella y especializan el cálculo del precio final.</p>
+
+    <div class="uml-box">
+      <div style="text-align:center;">
+        <div class="uml-class">
+          <div class="uml-class-name abstract">Producto (abstracta)</div>
+          <div class="uml-section">
+            - nombre: String<br>
+            - precioBase: int<br>
+            - stock: int
+          </div>
+          <div class="uml-section">
+            + Producto(nombre, precioBase, stock)<br>
+            + getNombre(): String<br>
+            + getPrecioBase(): int<br>
+            + getStock(): int<br>
+            + setStock(stock): void<br>
+            + <em>calcularPrecioFinal(): int</em><br>
+            + mostrarInfo(): String
+          </div>
+        </div>
+      </div>
+
+      <div class="uml-arrow">▲ extends</div>
+
+      <div class="uml-row">
+        <div class="uml-class">
+          <div class="uml-class-name">ProductoFisico</div>
+          <div class="uml-section">
+            - costoEnvio: int
+          </div>
+          <div class="uml-section">
+            + ProductoFisico(nombre, precioBase, stock, costoEnvio)<br>
+            + getCostoEnvio(): int<br>
+            + calcularPrecioFinal(): int<br>
+            + mostrarInfo(): String
+          </div>
+        </div>
+        <div class="uml-class">
+          <div class="uml-class-name">ProductoDigital</div>
+          <div class="uml-section">
+            - descuento: int<br>
+            - plataforma: String
+          </div>
+          <div class="uml-section">
+            + ProductoDigital(nombre, precioBase, stock, descuento, plataforma)<br>
+            + getDescuento(): int<br>
+            + getPlataforma(): String<br>
+            + calcularPrecioFinal(): int<br>
+            + mostrarInfo(): String
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-menta" style="margin-top:16px;">
+      <p style="margin:0;"><strong>Nota sobre los precios:</strong> Para simplificar, todos los precios se manejan como <code>int</code> (pesos chilenos enteros, sin decimales). El descuento del producto digital es un porcentaje entero (ej: <code>10</code> significa 10%).</p>
+    </div>
+
+    <div class="section-divider"></div>
+    <h2>Requerimientos funcionales</h2>
+
+    <p>A continuación se detalla cada requerimiento. Las etiquetas <span class="il-tag">IL</span> indican qué indicador de logro se evalúa en cada parte.</p>
+
+    <!-- REQ 1 -->
+    <div class="req-block">
+      <h4>
+        R1 — Comentarios de paradigma
+        <span class="il-tag">IL 1.1</span>
+      </h4>
+      <p>Al inicio de la clase <code>Main.java</code>, incluye un bloque de comentarios que explique:</p>
+      <ul>
+        <li>Qué paradigma de programación se está usando y sus características principales.</li>
+        <li>Al menos <strong>2 diferencias concretas</strong> entre el paradigma orientado a objetos (Java) y el paradigma que usabas antes (Python funcional). Por ejemplo: tipado, estructura del programa, compilación vs. interpretación, o forma de organizar el código.</li>
+      </ul>
+      <pre class="code-block"><code class="language-java">/*
+ * Paradigma: Orientado a Objetos
+ * 
+ * Este programa utiliza el paradigma orientado a objetos (POO).
+ * En POO, el código se organiza en clases que representan entidades
+ * del mundo real, encapsulando datos (atributos) y comportamiento
+ * (métodos) en una misma unidad.
+ *
+ * Diferencias con Python funcional:
+ * 1. (Escribe tu primera diferencia aquí)
+ * 2. (Escribe tu segunda diferencia aquí)
+ */</code></pre>
+    </div>
+
+    <!-- REQ 2 -->
+    <div class="req-block">
+      <h4>
+        R2 — Clase abstracta Producto
+        <span class="il-tag">IL 1.3</span>
+        <span class="il-tag">IL 1.4</span>
+      </h4>
+      <p>Implementa la clase abstracta <code>Producto</code> según el diagrama UML:</p>
+      <ul>
+        <li>Atributos <strong>privados</strong>: <code>nombre</code> (String), <code>precioBase</code> (int), <code>stock</code> (int).</li>
+        <li>Constructor que reciba los 3 atributos.</li>
+        <li>Getters para los tres atributos y setter para <code>stock</code>.</li>
+        <li>Método abstracto <code>calcularPrecioFinal()</code> que retorna <code>int</code>.</li>
+        <li>Método <code>mostrarInfo()</code> que retorna un <code>String</code> con el nombre, precio base, precio final y stock del producto. Este método puede ser sobrescrito por las clases hijas para agregar información adicional.</li>
+      </ul>
+    </div>
+
+    <!-- REQ 3 -->
+    <div class="req-block">
+      <h4>
+        R3 — Clase ProductoFisico
+        <span class="il-tag">IL 1.3</span>
+        <span class="il-tag">IL 1.4</span>
+      </h4>
+      <p>Hereda de <code>Producto</code>. Representa un juego en formato físico (caja/disco).</p>
+      <ul>
+        <li>Atributo privado adicional: <code>costoEnvio</code> (int).</li>
+        <li>Constructor que reciba los 4 parámetros (3 del padre + costo de envío). Usa <code>super()</code>.</li>
+        <li>Getter para <code>costoEnvio</code>.</li>
+        <li><code>calcularPrecioFinal()</code>: retorna <code>precioBase + costoEnvio</code>.</li>
+        <li><code>mostrarInfo()</code>: sobrescribe el método del padre. Agrega el tipo (<code>"Físico"</code>) y el costo de envío al texto retornado.</li>
+      </ul>
+    </div>
+
+    <!-- REQ 4 -->
+    <div class="req-block">
+      <h4>
+        R4 — Clase ProductoDigital
+        <span class="il-tag">IL 1.3</span>
+        <span class="il-tag">IL 1.4</span>
+      </h4>
+      <p>Hereda de <code>Producto</code>. Representa un juego en formato digital (descarga).</p>
+      <ul>
+        <li>Atributos privados adicionales: <code>descuento</code> (int, porcentaje entero) y <code>plataforma</code> (String).</li>
+        <li>Constructor que reciba los 5 parámetros (3 del padre + descuento + plataforma). Usa <code>super()</code>.</li>
+        <li>Getters para <code>descuento</code> y <code>plataforma</code>.</li>
+        <li><code>calcularPrecioFinal()</code>: retorna <code>precioBase - (precioBase * descuento / 100)</code>.</li>
+        <li><code>mostrarInfo()</code>: sobrescribe el método del padre. Agrega el tipo (<code>"Digital"</code>), la plataforma y el descuento aplicado.</li>
+      </ul>
+    </div>
+
+    <!-- REQ 5 -->
+    <div class="req-block">
+      <h4>
+        R5 — Menú de consola con estructuras de control
+        <span class="il-tag">IL 1.2</span>
+      </h4>
+      <p>La clase <code>Main</code> debe presentar un menú de consola que se repita hasta que el usuario elija salir. Usa un bucle <code>while</code> y <code>switch</code> para controlar las opciones:</p>
+      <pre class="code-block"><code class="language-java">=== TIENDA DE VIDEOJUEGOS ===
+1. Registrar producto
+2. Listar inventario
+3. Buscar producto por nombre
+4. Vender producto
+5. Resumen del inventario
+6. Salir
+Seleccione una opción: _</code></pre>
+      <p>Las opciones inválidas deben mostrar un mensaje y volver al menú sin que el programa se detenga.</p>
+    </div>
+
+    <!-- REQ 6 -->
+    <div class="req-block">
+      <h4>
+        R6 — Registrar producto (con submenú y sobrecarga)
+        <span class="il-tag">IL 1.2</span>
+        <span class="il-tag">IL 1.6</span>
+      </h4>
+      <p>Al seleccionar "Registrar producto", el sistema muestra un submenú para elegir entre Físico y Digital. Luego solicita los datos correspondientes y agrega el producto a una colección <code>ArrayList&lt;Producto&gt;</code>.</p>
+      <p>Además, implementa <strong>al menos un método sobrecargado</strong> en la clase <code>Main</code>. Por ejemplo:</p>
+      <ul>
+        <li><code>mostrarMensaje(String mensaje)</code> — imprime un mensaje simple.</li>
+        <li><code>mostrarMensaje(String mensaje, String tipo)</code> — imprime el mensaje con un prefijo según el tipo (ej: <code>"[ERROR]"</code>, <code>"[OK]"</code>, <code>"[INFO]"</code>).</li>
+      </ul>
+      <p>Usa estos métodos sobrecargados en distintas partes de tu código para demostrar la sobrecarga.</p>
+    </div>
+
+    <!-- REQ 7 -->
+    <div class="req-block">
+      <h4>
+        R7 — Listar inventario (polimorfismo en acción)
+        <span class="il-tag">IL 1.5</span>
+        <span class="il-tag">IL 1.6</span>
+      </h4>
+      <p>Recorre la colección <code>ArrayList&lt;Producto&gt;</code> con un <code>for-each</code> e imprime la información de cada producto usando <code>mostrarInfo()</code>.</p>
+      <p>Cada producto se muestra con su formato propio (físico o digital) sin necesidad de hacer <code>instanceof</code>. Esto es polimorfismo: el mismo método produce resultados distintos según el tipo real del objeto.</p>
+      <p>Si la lista está vacía, mostrar un mensaje indicando que no hay productos registrados.</p>
+    </div>
+
+    <!-- REQ 8 -->
+    <div class="req-block">
+      <h4>
+        R8 — Buscar producto por nombre
+        <span class="il-tag">IL 1.2</span>
+        <span class="il-tag">IL 1.6</span>
+      </h4>
+      <p>El usuario ingresa un texto y el sistema busca productos cuyo nombre contenga ese texto (búsqueda parcial, sin distinguir mayúsculas/minúsculas). Muestra todos los resultados encontrados o un mensaje si no hay coincidencias.</p>
+    </div>
+
+    <!-- REQ 9 -->
+    <div class="req-block">
+      <h4>
+        R9 — Vender producto (descontar stock)
+        <span class="il-tag">IL 1.2</span>
+        <span class="il-tag">IL 1.5</span>
+        <span class="il-tag">IL 1.6</span>
+      </h4>
+      <p>El sistema lista los productos con su índice. El usuario ingresa el número del producto y la cantidad a vender. El sistema valida:</p>
+      <ul>
+        <li>Que el número de producto sea válido (exista en la lista).</li>
+        <li>Que la cantidad a vender no sea mayor al stock disponible.</li>
+        <li>Que la cantidad sea un número positivo.</li>
+      </ul>
+      <p>Si la venta es válida, descuenta el stock y muestra el total de la venta (cantidad × precio final del producto).</p>
+    </div>
+
+    <!-- REQ 10 -->
+    <div class="req-block">
+      <h4>
+        R10 — Resumen del inventario
+        <span class="il-tag">IL 1.2</span>
+        <span class="il-tag">IL 1.5</span>
+        <span class="il-tag">IL 1.6</span>
+      </h4>
+      <p>Muestra un resumen que incluya:</p>
+      <ul>
+        <li>Total de productos registrados.</li>
+        <li>Cantidad de productos físicos y cantidad de productos digitales (usa <code>instanceof</code> aquí).</li>
+        <li>Valor total del inventario: la suma de <code>calcularPrecioFinal() × stock</code> de cada producto.</li>
+      </ul>
+    </div>
+
+    <!-- REQ 11 -->
+    <div class="req-block">
+      <h4>
+        R11 — Manejo de excepciones
+        <span class="il-tag">IL 1.5</span>
+      </h4>
+      <p>Toda entrada numérica del usuario debe estar protegida con <code>try-catch</code>. El programa <strong>nunca debe detenerse</strong> por un error de ingreso. Situaciones que deben manejarse:</p>
+      <ul>
+        <li>El usuario escribe texto cuando se espera un número (precio, stock, cantidad, descuento, costo de envío).</li>
+        <li>El usuario ingresa un índice fuera de rango al vender.</li>
+        <li>El usuario ingresa una opción de menú que no existe.</li>
+      </ul>
+      <p>En cada caso, muestra un mensaje claro al usuario y vuelve al menú sin interrumpir la ejecución.</p>
+    </div>
+
+    <!-- EJEMPLO DE EJECUCIÓN -->
+    <div class="section-divider"></div>
+    <h2>Ejemplo de ejecución esperada</h2>
+
+    <p>Este ejemplo muestra cómo debería verse la interacción con el programa. Tu implementación debe producir una salida similar (no necesariamente idéntica en formato).</p>
+
+    <pre class="code-block"><code>=== TIENDA DE VIDEOJUEGOS ===
+1. Registrar producto
+2. Listar inventario
+3. Buscar producto por nombre
+4. Vender producto
+5. Resumen del inventario
+6. Salir
+Seleccione una opción: 1
+
+--- Tipo de producto ---
+1. Físico
+2. Digital
+Seleccione: 1
+Nombre: The Legend of Zelda
+Precio base: 49990
+Stock: 10
+Costo de envío: 3990
+[OK] Producto físico registrado.
+
+Seleccione una opción: 1
+
+--- Tipo de producto ---
+1. Físico
+2. Digital
+Seleccione: 2
+Nombre: Minecraft Java Edition
+Precio base: 29990
+Stock: 999
+Descuento (%): 15
+Plataforma: PC
+[OK] Producto digital registrado.
+
+Seleccione una opción: 2
+
+--- INVENTARIO ---
+[1] Físico | The Legend of Zelda | Base: $49990 | Envío: $3990 | Final: $53980 | Stock: 10
+[2] Digital | Minecraft Java Edition | Base: $29990 | Dcto: 15% | Plataforma: PC | Final: $25491 | Stock: 999
+
+Seleccione una opción: 4
+
+--- VENDER PRODUCTO ---
+[1] The Legend of Zelda (Stock: 10)
+[2] Minecraft Java Edition (Stock: 999)
+Ingrese número de producto: 1
+Cantidad a vender: 3
+Venta realizada. Total: $161940 (3 x $53980)
+Stock actualizado: 7
+
+Seleccione una opción: 5
+
+--- RESUMEN DEL INVENTARIO ---
+Total de productos: 2
+Productos físicos: 1
+Productos digitales: 1
+Valor total del inventario: $25,854,369
+
+Seleccione una opción: 3
+
+--- BUSCAR PRODUCTO ---
+Ingrese texto a buscar: mine
+Resultados:
+Digital | Minecraft Java Edition | Base: $29990 | Dcto: 15% | Plataforma: PC | Final: $25491 | Stock: 999
+
+Seleccione una opción: 4
+Ingrese número de producto: abc
+Error: Debe ingresar un número válido.
+
+Seleccione una opción: 6
+Programa finalizado.</code></pre>
+
+    <!-- RESUMEN DE INDICADORES -->
+    <div class="section-divider"></div>
+    <h2>Mapa de indicadores de logro</h2>
+
+    <p>Esta tabla resume dónde se evalúa cada indicador. Úsala como checklist antes de entregar.</p>
+
+    <table class="rubric-table">
+      <thead>
+        <tr>
+          <th>IL</th>
+          <th>Indicador</th>
+          <th>Dónde se evidencia</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="il-tag">IL 1.1</span></td>
+          <td>Identificar el paradigma OO y diferenciarlo de otros</td>
+          <td>Comentarios en <code>Main.java</code> (R1)</td>
+        </tr>
+        <tr>
+          <td><span class="il-tag">IL 1.2</span></td>
+          <td>Estructuras de control, métodos con parámetros, retorno y sobrecarga</td>
+          <td>Menú while/switch (R5), submenú (R6), métodos sobrecargados (R6), búsqueda (R8), venta (R9)</td>
+        </tr>
+        <tr>
+          <td><span class="il-tag">IL 1.3</span></td>
+          <td>Clases con encapsulamiento y colaboración</td>
+          <td>Atributos privados, getters/setters, constructores en <code>Producto</code>, <code>ProductoFisico</code>, <code>ProductoDigital</code> (R2, R3, R4)</td>
+        </tr>
+        <tr>
+          <td><span class="il-tag">IL 1.4</span></td>
+          <td>Herencia, clases abstractas, jerarquías de tipos</td>
+          <td>Clase abstracta <code>Producto</code>, herencia con <code>extends</code>, <code>super()</code>, método abstracto (R2, R3, R4)</td>
+        </tr>
+        <tr>
+          <td><span class="il-tag">IL 1.5</span></td>
+          <td>Polimorfismo y manejo de excepciones</td>
+          <td>Recorrido polimórfico del ArrayList (R7), <code>@Override</code> de métodos (R3, R4), try-catch (R11), instanceof en resumen (R10)</td>
+        </tr>
+        <tr>
+          <td><span class="il-tag">IL 1.6</span></td>
+          <td>Colecciones para almacenar y gestionar datos</td>
+          <td><code>ArrayList&lt;Producto&gt;</code> como inventario, agregar, iterar, buscar, modificar stock (R6, R7, R8, R9, R10)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- RECORDATORIOS -->
+    <div class="section-divider"></div>
+    <h2>Antes de entregar</h2>
+
+    <div class="grid" style="max-width:860px;">
+      <div class="card card-menta">
+        <strong>Debe funcionar</strong>
+        <p>El programa compila con <code>javac *.java</code> y se ejecuta con <code>java Main</code> sin errores.</p>
+        <p>Cada opción del menú hace lo que se pide.</p>
+        <p>Los métodos sobrecargados se usan en al menos 2 lugares distintos.</p>
+      </div>
+      <div class="card card-rosa">
+        <strong>No debe romperse</strong>
+        <p>Escribir "abc" cuando se pide un precio o cantidad.</p>
+        <p>Intentar vender más unidades que el stock.</p>
+        <p>Buscar un producto cuando la lista está vacía.</p>
+        <p>Seleccionar una opción de menú inexistente.</p>
+      </div>
+    </div>
+
+    <div class="callout callout-celeste" style="margin-top:24px;">
+      <h4 style="margin:0 0 8px;">Archivos a entregar</h4>
+      <p style="margin:0;">Comprime en formato <strong>ZIP</strong> todos los archivos <code>.java</code> de tu proyecto. Como mínimo debes tener:</p>
+      <ul style="margin:8px 0 0;">
+        <li><code>Main.java</code></li>
+        <li><code>Producto.java</code></li>
+        <li><code>ProductoFisico.java</code></li>
+        <li><code>ProductoDigital.java</code></li>
+      </ul>
+    </div>
+
+    <div class="warning-box" style="margin-top:24px;">
+      <p><strong>Importante:</strong> No se permite el uso de herramientas de IA, acceso a internet, ni dispositivos externos durante la evaluación. Cualquier indicio de colaboración no autorizada o uso de IA implica la anulación de la evaluación con nota mínima 1.0.</p>
+    </div>
+
+    <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+      <p class="lead" style="margin:0 auto;">Éxito en tu evaluación. Lee bien cada requerimiento, planifica antes de codificar y prueba tu programa antes de entregar.</p>
+    </div>
+
+    </div><!-- /tab caso -->
+
+    <!-- ============================================== -->
+    <!-- TAB 2: GUÍA DE RESOLUCIÓN -->
+    <!-- ============================================== -->
+    <div class="tab-content" :class="{active: tab==='guia'}">
+
+    <div style="margin-top:32px;">
+      <div class="callout callout-lavanda" style="margin-bottom:32px;">
+        <h4 style="margin:0 0 8px;">Sobre esta guía</h4>
+        <p style="margin:0;">Esta guía te acompaña en la resolución del caso paso a paso. No encontrarás código para copiar y pegar. En su lugar, encontrarás el razonamiento detrás de cada decisión: por qué se crea cada archivo, por qué un atributo es privado, por qué un método va en una clase y no en otra. El objetivo es que entiendas el <em>por qué</em> de cada línea que escribas.</p>
+      </div>
+    </div>
+
+    <!-- ============================================== -->
+    <!-- FASE 0: LEER Y DESCOMPONER EL PROBLEMA -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">0</div>
+      <div class="piece-title">Antes de escribir código: leer y descomponer</div>
+    </div>
+
+    <p>El error más común es abrir el editor y empezar a escribir código inmediatamente. Antes de tocar el teclado, necesitas responder tres preguntas:</p>
+
+    <ol style="max-width:860px;">
+      <li><strong>¿Qué entidades existen en este problema?</strong> — Lee el caso de negocio y subraya los sustantivos. Cada sustantivo relevante es un candidato a clase.</li>
+      <li><strong>¿Qué datos tiene cada entidad?</strong> — Los datos de cada entidad serán sus atributos.</li>
+      <li><strong>¿Qué acciones puede realizar cada entidad?</strong> — Las acciones serán sus métodos.</li>
+    </ol>
+
+    <div class="analogy-box">
+      <p><strong>Analogía LEGO:</strong> Imagina que tienes una caja de LEGO con instrucciones. No empiezas armando al azar. Primero miras la imagen del modelo terminado (el caso de negocio), luego identificas las piezas que necesitas (las clases), y después sigues el orden de armado (primero la base, luego las paredes, al final el techo). Programar es lo mismo: primero entiendes, luego planificas, y al final escribes.</p>
+    </div>
+
+    <h3>Identifica las entidades del caso</h3>
+    <p>Del texto del caso de negocio, los sustantivos relevantes son:</p>
+    <ul style="max-width:860px;">
+      <li><strong>Producto</strong> — concepto general, compartido por todos los tipos.</li>
+      <li><strong>Producto físico</strong> — un tipo específico de producto.</li>
+      <li><strong>Producto digital</strong> — otro tipo específico de producto.</li>
+    </ul>
+    <p>Esas tres entidades son las tres clases que necesitas crear. Cada una será un archivo <code>.java</code> separado.</p>
+
+    <div class="thinking-box">
+      <p><strong>¿Por qué un archivo por clase?</strong> En Java, la convención es que cada clase pública vive en su propio archivo, y el nombre del archivo debe coincidir exactamente con el nombre de la clase. Si la clase se llama <code>Producto</code>, el archivo se llama <code>Producto.java</code>. Esto no es opcional — el compilador lo exige.</p>
+    </div>
+
+    <h3>Identifica la relación entre las entidades</h3>
+    <p>El caso dice: "Ambos comparten datos generales como nombre, precio base y stock, pero se diferencian en sus atributos específicos". Esto indica una relación de <strong>herencia</strong>:</p>
+    <ul style="max-width:860px;">
+      <li><code>Producto</code> tiene los datos comunes (nombre, precioBase, stock).</li>
+      <li><code>ProductoFisico</code> tiene todo lo de <code>Producto</code> más su dato propio (costoEnvio).</li>
+      <li><code>ProductoDigital</code> tiene todo lo de <code>Producto</code> más sus datos propios (descuento, plataforma).</li>
+    </ul>
+
+    <div class="why-box">
+      <p><strong>¿Por qué herencia y no copiar los atributos?</strong> Si copiaras <code>nombre</code>, <code>precioBase</code> y <code>stock</code> en cada clase, tendrías código duplicado. Si mañana necesitas agregar un cuarto atributo común (por ejemplo, <code>categoria</code>), tendrías que modificar tres archivos en vez de uno. La herencia resuelve esto: defines lo común una vez en el padre y las hijas lo reciben automáticamente.</p>
+    </div>
+
+    <h3>Define el orden de construcción</h3>
+    <p>Igual que en LEGO, hay un orden lógico. No puedes armar el techo antes que las paredes. En este caso:</p>
+    <ol style="max-width:860px;">
+      <li><strong>Pieza 1:</strong> <code>Producto.java</code> — la base. Las hijas dependen de ella.</li>
+      <li><strong>Pieza 2:</strong> <code>ProductoFisico.java</code> — primera hija. Necesita que <code>Producto</code> ya exista.</li>
+      <li><strong>Pieza 3:</strong> <code>ProductoDigital.java</code> — segunda hija. También necesita que <code>Producto</code> ya exista.</li>
+      <li><strong>Pieza 4:</strong> <code>Main.java</code> — el programa principal. Necesita que todas las clases existan para poder usarlas.</li>
+    </ol>
+
+    <div class="trap-box">
+      <p><strong>Error frecuente:</strong> Empezar por <code>Main.java</code>. Si lo haces, vas a intentar crear objetos de clases que todavía no existen, y el compilador te va a devolver errores. Esto genera frustración y pérdida de tiempo. Empieza por las piezas base.</p>
+    </div>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint:</strong> Antes de continuar, deberías tener claro que necesitas 4 archivos (<code>Producto.java</code>, <code>ProductoFisico.java</code>, <code>ProductoDigital.java</code>, <code>Main.java</code>) y que el orden de creación importa: primero el padre, luego las hijas, al final el Main.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 1: PRODUCTO -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">1</div>
+      <div class="piece-title">Pieza 1 — La clase Producto</div>
+    </div>
+
+    <p>Esta es la base de todo. <code>Producto</code> define qué datos y comportamientos comparten todos los productos, sin importar si son físicos o digitales.</p>
+
+    <!-- Sub-pieza 1A: abstract -->
+    <div class="sub-piece">
+      <h4>1A — ¿Por qué la clase es abstracta?</h4>
+
+      <p>El caso dice que el precio final se calcula diferente para cada tipo: el físico suma costo de envío y el digital aplica descuento. Entonces la clase <code>Producto</code> sabe que el método <code>calcularPrecioFinal()</code> <em>debe existir</em>, pero no sabe <em>cómo</em> calcularlo, porque depende del tipo concreto.</p>
+
+      <p>Cuando una clase tiene al menos un método que dice "esto debe existir, pero cada hijo define cómo", esa clase es <strong>abstracta</strong>.</p>
+
+      <div class="analogy-box">
+        <p><strong>Analogía:</strong> Un formulario de impuestos tiene un campo "Monto a pagar", pero el cálculo depende de si eres persona natural o empresa. El formulario define que el campo existe; cada tipo de contribuyente define cómo se llena. La clase abstracta es el formulario. Las clases hijas son los tipos de contribuyente.</p>
+      </div>
+
+      <p>En Java, declarar una clase abstracta se hace así:</p>
+      <pre class="code-block"><code class="language-java">public abstract class Producto {
+    // contenido
+}</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Qué implica <code>abstract</code> en la práctica?</strong> Que no puedes escribir <code>new Producto(...)</code>. No puedes crear un "producto genérico" — siempre tiene que ser un ProductoFisico o un ProductoDigital. Esto tiene sentido: en la tienda real, nunca vendes "un producto" a secas. Siempre es un juego físico o un código digital.</p>
+      </div>
+    </div>
+
+    <!-- Sub-pieza 1B: atributos -->
+    <div class="sub-piece">
+      <h4>1B — Los atributos y por qué son privados</h4>
+
+      <p>Del diagrama UML, <code>Producto</code> tiene tres atributos: <code>nombre</code>, <code>precioBase</code> y <code>stock</code>. Los tres están marcados con <code>-</code> (guion), que en UML significa <strong>privado</strong>.</p>
+
+      <div class="why-box">
+        <p><strong>¿Por qué privados y no públicos?</strong> Si el atributo <code>stock</code> fuera público, cualquier parte del código podría escribir <code>producto.stock = -50</code> y dejar el inventario en un estado imposible. Al hacerlo privado, obligamos a que el acceso pase por métodos (getters/setters) donde podríamos agregar validación. Esto es <strong>encapsulamiento</strong>: controlar quién puede ver y modificar los datos internos de un objeto.</p>
+      </div>
+
+      <p>Declarar atributos privados en Java se ve así:</p>
+      <pre class="code-block"><code class="language-java">private String nombre;
+private int precioBase;
+private int stock;</code></pre>
+
+      <p>Estas tres líneas van dentro de la clase <code>Producto</code>, antes del constructor. Son las "propiedades" que todo producto tiene.</p>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué <code>int</code> y no <code>double</code> para los precios?</strong> El enunciado dice que los precios son enteros (pesos chilenos sin decimales). Usar <code>int</code> simplifica los cálculos y evita errores de precisión decimal. Si el caso pidiera centavos, usaríamos <code>double</code> o <code>long</code>.</p>
+      </div>
+    </div>
+
+    <!-- Sub-pieza 1C: constructor -->
+    <div class="sub-piece">
+      <h4>1C — El constructor: cómo se crea un objeto</h4>
+
+      <p>Un constructor es un método especial que se ejecuta cuando creas un objeto con <code>new</code>. Su trabajo es recibir los datos iniciales y guardarlos en los atributos.</p>
+
+      <p>El constructor de <code>Producto</code> necesita recibir los tres datos comunes: nombre, precioBase y stock. Dentro del constructor, usas <code>this.</code> para distinguir entre el atributo de la clase y el parámetro que recibiste.</p>
+
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Elemento</th><th>Qué es</th><th>Ejemplo</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>this.nombre</code></td>
+            <td>El atributo de la clase (el que declaraste arriba con <code>private</code>)</td>
+            <td>El "cajón" donde se guarda el dato permanentemente</td>
+          </tr>
+          <tr>
+            <td><code>nombre</code> (sin <code>this</code>)</td>
+            <td>El parámetro que llegó al constructor</td>
+            <td>El "sobre" que alguien te entregó con un valor</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>La línea <code>this.nombre = nombre;</code> significa: "toma el valor que me dieron en el parámetro y guárdalo en el atributo de esta instancia".</p>
+
+      <div class="trap-box">
+        <p><strong>Error frecuente:</strong> Olvidar <code>this.</code> y escribir <code>nombre = nombre;</code>. Esto no hace nada útil — le asigna el parámetro a sí mismo, y el atributo queda en <code>null</code> o <code>0</code>. El compilador no te avisa de este error. El programa compila, pero los datos no se guardan.</p>
+      </div>
+    </div>
+
+    <!-- Sub-pieza 1D: getters/setters -->
+    <div class="sub-piece">
+      <h4>1D — Getters y setters: la puerta controlada a los datos</h4>
+
+      <p>Como los atributos son privados, otras clases no pueden leerlos directamente. Los <strong>getters</strong> son métodos públicos que devuelven el valor de un atributo. Los <strong>setters</strong> son métodos públicos que permiten modificarlo.</p>
+
+      <p>Para <code>Producto</code>, necesitas:</p>
+      <ul>
+        <li><code>getNombre()</code> — retorna <code>String</code>. Solo lectura.</li>
+        <li><code>getPrecioBase()</code> — retorna <code>int</code>. Solo lectura.</li>
+        <li><code>getStock()</code> — retorna <code>int</code>. Solo lectura.</li>
+        <li><code>setStock(int stock)</code> — modifica el stock. Se necesita porque al vender un producto, Main debe poder actualizar el stock.</li>
+      </ul>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué solo setter para stock y no para nombre o precio?</strong> Porque en este caso de negocio, una vez que registras un producto, su nombre y precio no cambian. El único dato que se modifica durante la ejecución es el stock (cuando vendes unidades). Si el caso pidiera "editar producto", necesitarías setters para los otros atributos también. Cada setter que creas es una decisión de diseño: ¿quién necesita modificar este dato y cuándo?</p>
+      </div>
+
+      <p>Un getter sigue siempre el mismo patrón:</p>
+      <pre class="code-block"><code class="language-java">public int getPrecioBase() {
+    return precioBase;
+}</code></pre>
+      <p>Retorna el valor del atributo privado. Nada más. Un setter recibe un valor y lo asigna:</p>
+      <pre class="code-block"><code class="language-java">public void setStock(int stock) {
+    this.stock = stock;
+}</code></pre>
+    </div>
+
+    <!-- Sub-pieza 1E: método abstracto -->
+    <div class="sub-piece">
+      <h4>1E — El método abstracto: una promesa a las hijas</h4>
+
+      <p><code>calcularPrecioFinal()</code> es un método abstracto. Esto significa que <code>Producto</code> lo declara pero <strong>no lo implementa</strong>. No tiene llaves <code>{}</code> ni cuerpo. Solo tiene la firma y un punto y coma:</p>
+
+      <pre class="code-block"><code class="language-java">public abstract int calcularPrecioFinal();</code></pre>
+
+      <div class="why-box">
+        <p><strong>¿Qué logra esto?</strong> Dos cosas. Primero, obliga a que toda clase que herede de <code>Producto</code> <em>implemente</em> este método — si no lo hace, el compilador da error. Segundo, permite que en el <code>Main</code> puedas llamar a <code>producto.calcularPrecioFinal()</code> sin saber si es físico o digital, y Java ejecutará la versión correcta según el tipo real del objeto. Esto es polimorfismo.</p>
+      </div>
+    </div>
+
+    <!-- Sub-pieza 1F: mostrarInfo -->
+    <div class="sub-piece">
+      <h4>1F — mostrarInfo(): un método concreto que las hijas pueden sobrescribir</h4>
+
+      <p>A diferencia de <code>calcularPrecioFinal()</code>, <code>mostrarInfo()</code> sí tiene implementación en <code>Producto</code>. Retorna un <code>String</code> con la información base: nombre, precio base, precio final y stock.</p>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué retorna String en vez de usar System.out.println directamente?</strong> Si el método imprime directo, está acoplado a la consola. Si mañana quieres mostrar esos datos en una interfaz gráfica o guardarlos en un archivo, tendrías que reescribirlo. Al retornar un String, quien llame al método decide qué hacer con el texto: imprimirlo, guardarlo, o cualquier otra cosa. Es un principio de diseño: separar la lógica de la presentación.</p>
+      </div>
+
+      <p>Dentro de <code>mostrarInfo()</code> puedes llamar a <code>calcularPrecioFinal()</code> aunque sea abstracto. ¿Por qué? Porque este método nunca se ejecutará en un <code>Producto</code> directamente (es abstracto, no puedes crear instancias). Se ejecutará en un <code>ProductoFisico</code> o <code>ProductoDigital</code>, que sí tienen implementación del método. Java resuelve la llamada en tiempo de ejecución.</p>
+
+      <p>Un ejemplo de cómo armar el String:</p>
+      <pre class="code-block"><code class="language-java">return nombre + " | Base: $" + precioBase + " | Final: $" + calcularPrecioFinal() + " | Stock: " + stock;</code></pre>
+    </div>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint — Pieza 1 completa:</strong> Tu archivo <code>Producto.java</code> debería tener: la palabra <code>abstract</code> en la declaración de clase, tres atributos privados, un constructor con <code>this.</code>, tres getters, un setter, un método abstracto sin cuerpo, y un <code>mostrarInfo()</code> con cuerpo que retorna String. Compílalo con <code>javac Producto.java</code>. Si compila, avanza. Si no, lee el error.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 2: PRODUCTO FISICO -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">2</div>
+      <div class="piece-title">Pieza 2 — La clase ProductoFisico</div>
+    </div>
+
+    <p>Esta clase es la primera "hija" de <code>Producto</code>. Hereda todo lo que tiene el padre y agrega lo propio de un producto físico.</p>
+
+    <div class="sub-piece">
+      <h4>2A — Declarar la herencia con extends</h4>
+
+      <p>En Java, para decir que una clase hereda de otra, usas la palabra <code>extends</code>:</p>
+      <pre class="code-block"><code class="language-java">public class ProductoFisico extends Producto {
+    // contenido
+}</code></pre>
+
+      <p>Con esta línea, <code>ProductoFisico</code> ya tiene los tres atributos del padre (<code>nombre</code>, <code>precioBase</code>, <code>stock</code>), sus getters, su setter, y su <code>mostrarInfo()</code>. No necesitas volver a escribirlos.</p>
+
+      <div class="why-box">
+        <p><strong>¿Por qué <code>extends</code> y no copiar el código?</strong> Porque la herencia crea una relación de tipo: un <code>ProductoFisico</code> <em>es un</em> <code>Producto</code>. Esto permite que un <code>ArrayList&lt;Producto&gt;</code> acepte objetos de tipo <code>ProductoFisico</code>. Si solo copiaras el código, <code>ProductoFisico</code> no sería compatible con <code>Producto</code> — serían dos clases independientes y no podrías mezclarlos en la misma lista.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>2B — El atributo propio</h4>
+
+      <p><code>ProductoFisico</code> agrega un atributo que el padre no tiene: <code>costoEnvio</code>. Este dato es privado (igual que los del padre) y es exclusivo de esta clase.</p>
+
+      <pre class="code-block"><code class="language-java">private int costoEnvio;</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué no agregar costoEnvio en Producto?</strong> Porque un producto digital no tiene costo de envío. Si lo pusieras en el padre, <code>ProductoDigital</code> heredaría un dato que no le corresponde. Cada clase debe tener solo los atributos que le son relevantes.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>2C — El constructor y super()</h4>
+
+      <p><code>ProductoFisico</code> necesita un constructor que reciba 4 datos: los 3 del padre (nombre, precioBase, stock) más el propio (costoEnvio). Pero los 3 datos del padre los debe inicializar el constructor del padre. Para eso usas <code>super()</code>:</p>
+
+      <pre class="code-block"><code class="language-java">public ProductoFisico(String nombre, int precioBase, int stock, int costoEnvio) {
+    super(nombre, precioBase, stock);
+    this.costoEnvio = costoEnvio;
+}</code></pre>
+
+      <div class="why-box">
+        <p><strong>¿Qué hace <code>super(nombre, precioBase, stock)</code>?</strong> Llama al constructor de la clase padre (<code>Producto</code>) y le pasa los tres valores. El padre se encarga de guardarlos en sus atributos con <code>this.nombre = nombre</code>, etc. La hija no debería tocar los atributos privados del padre directamente — no puede, porque son privados.</p>
+      </div>
+
+      <div class="trap-box">
+        <p><strong>Error frecuente:</strong> Intentar escribir <code>this.nombre = nombre;</code> dentro del constructor de <code>ProductoFisico</code>. Esto falla porque <code>nombre</code> es <code>private</code> en <code>Producto</code>, y <code>private</code> significa que solo la propia clase puede acceder. La hija usa <code>super()</code> para delegar esa responsabilidad al padre.</p>
+      </div>
+
+      <div class="trap-box">
+        <p><strong>Error frecuente:</strong> <code>super()</code> debe ser la <strong>primera línea</strong> del constructor de la hija. Si intentas poner <code>this.costoEnvio = costoEnvio;</code> antes de <code>super()</code>, el compilador da error. Java exige que el padre se inicialice primero.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>2D — Implementar calcularPrecioFinal()</h4>
+
+      <p>Como <code>Producto</code> declaró <code>calcularPrecioFinal()</code> como abstracto, <code>ProductoFisico</code> <strong>está obligada</strong> a implementarlo. Si no lo hace, el compilador da error.</p>
+
+      <p>Para un producto físico, el precio final es <code>precioBase + costoEnvio</code>. Pero <code>precioBase</code> es privado en el padre. ¿Cómo accedes? Usando el getter: <code>getPrecioBase()</code>.</p>
+
+      <pre class="code-block"><code class="language-java">@Override
+public int calcularPrecioFinal() {
+    return getPrecioBase() + costoEnvio;
+}</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Qué es <code>@Override</code>?</strong> Es una anotación que le dice al compilador: "estoy sobrescribiendo un método del padre". No es obligatorio escribirla, pero es una buena práctica. Si te equivocas en el nombre del método (por ejemplo, escribes <code>calcularPrecioFianl</code>), sin <code>@Override</code> Java cree que estás creando un método nuevo y no te avisa. Con <code>@Override</code>, el compilador verifica que realmente exista un método con ese nombre en el padre, y si no lo encuentra, te da error. Es una red de seguridad.</p>
+      </div>
+
+      <div class="why-box">
+        <p><strong>¿Por qué <code>getPrecioBase()</code> y no <code>precioBase</code>?</strong> Porque <code>precioBase</code> es <code>private</code> en <code>Producto</code>. La clase hija no puede acceder a atributos privados del padre. Solo puede acceder a lo que sea <code>public</code> o <code>protected</code>. Los getters son públicos, así que por ahí se accede. Es encapsulamiento funcionando.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>2E — Sobrescribir mostrarInfo()</h4>
+
+      <p><code>Producto</code> ya tiene un <code>mostrarInfo()</code> funcional. Pero para <code>ProductoFisico</code> queremos agregar información adicional: el tipo ("Físico") y el costo de envío.</p>
+
+      <p>Sobrescribes el método con <code>@Override</code> y construyes un String que incluya toda la información relevante. Puedes armar el texto desde cero o reutilizar parte de lo que ya tiene el padre.</p>
+
+      <div class="thinking-box">
+        <p><strong>¿Qué formato usar?</strong> Mira el ejemplo de ejecución en la pestaña "Caso de negocio". Los productos se muestran como: <code>Físico | The Legend of Zelda | Base: $49990 | Envío: $3990 | Final: $53980 | Stock: 10</code>. Tu <code>mostrarInfo()</code> debe armar un String con ese formato o uno similar.</p>
+      </div>
+    </div>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint — Pieza 2 completa:</strong> Tu archivo <code>ProductoFisico.java</code> debería tener: <code>extends Producto</code>, un atributo privado propio, un constructor con <code>super()</code> como primera línea, un getter, y dos métodos con <code>@Override</code>. Compila con <code>javac Producto.java ProductoFisico.java</code>. Ambos archivos deben compilar juntos.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 3: PRODUCTO DIGITAL -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">3</div>
+      <div class="piece-title">Pieza 3 — La clase ProductoDigital</div>
+    </div>
+
+    <p>La estructura es casi idéntica a <code>ProductoFisico</code>. La diferencia está en los atributos propios y en la fórmula del precio final.</p>
+
+    <div class="sub-piece">
+      <h4>3A — ¿Qué cambia respecto a ProductoFisico?</h4>
+
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Aspecto</th><th>ProductoFisico</th><th>ProductoDigital</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Atributos propios</td>
+            <td><code>costoEnvio</code> (int)</td>
+            <td><code>descuento</code> (int), <code>plataforma</code> (String)</td>
+          </tr>
+          <tr>
+            <td>Parámetros del constructor</td>
+            <td>4 (3 del padre + 1)</td>
+            <td>5 (3 del padre + 2)</td>
+          </tr>
+          <tr>
+            <td>calcularPrecioFinal()</td>
+            <td><code>precioBase + costoEnvio</code></td>
+            <td><code>precioBase - (precioBase * descuento / 100)</code></td>
+          </tr>
+          <tr>
+            <td>mostrarInfo() agrega</td>
+            <td>Tipo "Físico", costo de envío</td>
+            <td>Tipo "Digital", plataforma, descuento</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Sigue el mismo patrón de construcción: <code>extends Producto</code>, atributos privados, constructor con <code>super()</code>, getters, y los dos <code>@Override</code>.</p>
+    </div>
+
+    <div class="sub-piece">
+      <h4>3B — La fórmula del descuento</h4>
+
+      <p>El descuento es un porcentaje entero. Si el precio base es 29990 y el descuento es 15:</p>
+      <pre class="code-block"><code class="language-java">// precioBase * descuento / 100
+// 29990 * 15 / 100 = 4498 (el monto del descuento)
+// precioBase - 4498 = 25492 (el precio final)</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué se usa división entera?</strong> Porque tanto <code>precioBase</code> como <code>descuento</code> son <code>int</code>, la operación <code>precioBase * descuento / 100</code> produce un resultado <code>int</code>. Java trunca los decimales automáticamente. Para este caso de negocio, eso es aceptable — estamos trabajando con pesos enteros. Si necesitaras precisión decimal, usarías <code>double</code>.</p>
+      </div>
+    </div>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint — Pieza 3 completa:</strong> Compila los tres archivos juntos: <code>javac Producto.java ProductoFisico.java ProductoDigital.java</code>. Si los tres compilan sin error, tus piezas base están listas. Ya puedes empezar con el Main.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 4: MAIN — ESTRUCTURA BASE -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">4</div>
+      <div class="piece-title">Pieza 4 — Main.java: la estructura base</div>
+    </div>
+
+    <p><code>Main.java</code> es donde vive el método <code>main</code> — el punto de entrada del programa. También es donde declararás los métodos que implementan cada opción del menú.</p>
+
+    <div class="sub-piece">
+      <h4>4A — Las herramientas que necesitas al inicio</h4>
+
+      <p>Antes de la declaración de la clase, necesitas importar las herramientas que vas a usar:</p>
+      <ul>
+        <li><code>java.util.ArrayList</code> — la colección para guardar productos.</li>
+        <li><code>java.util.Scanner</code> — para leer datos del teclado.</li>
+      </ul>
+
+      <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+import java.util.Scanner;</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué importar?</strong> En Java, las clases que no son del paquete base (<code>java.lang</code>) necesitan ser importadas explícitamente. <code>String</code>, <code>int</code> y <code>System</code> no necesitan import porque son parte de <code>java.lang</code>. Pero <code>ArrayList</code> y <code>Scanner</code> están en <code>java.util</code>, así que hay que importarlos. Si no los importas, el compilador no sabe qué son y da error.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>4B — Las variables del método main</h4>
+
+      <p>Dentro del <code>main</code>, necesitas crear dos objetos que usarás durante toda la ejecución:</p>
+      <ol>
+        <li><strong>El Scanner:</strong> para leer entradas del teclado.</li>
+        <li><strong>El ArrayList:</strong> la colección que almacena todos los productos.</li>
+        <li><strong>Una variable boolean:</strong> para controlar cuándo termina el menú.</li>
+      </ol>
+
+      <pre class="code-block"><code class="language-java">Scanner scanner = new Scanner(System.in);
+ArrayList&lt;Producto&gt; inventario = new ArrayList&lt;&gt;();
+boolean ejecutando = true;</code></pre>
+
+      <div class="why-box">
+        <p><strong>¿Por qué <code>ArrayList&lt;Producto&gt;</code> y no <code>ArrayList&lt;ProductoFisico&gt;</code>?</strong> Porque necesitas guardar <em>ambos tipos</em> de productos en la misma lista. Si declaras <code>ArrayList&lt;ProductoFisico&gt;</code>, solo podrías agregar productos físicos. Al usar el tipo padre <code>Producto</code>, la lista acepta cualquier objeto que sea un <code>Producto</code> — ya sea físico o digital. Esto es polimorfismo aplicado a colecciones.</p>
+      </div>
+
+      <div class="why-box">
+        <p><strong>¿Por qué estas variables se declaran dentro de <code>main</code> y no a nivel de clase?</strong> Porque solo se usan durante la ejecución del programa. No son datos permanentes de una entidad — son herramientas temporales del flujo de ejecución. En POO, los atributos de clase representan el estado de una entidad. El Scanner y la variable <code>ejecutando</code> no son "estado" de nada; son herramientas del programa.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>4C — El bucle del menú</h4>
+
+      <p>El menú se repite mientras <code>ejecutando</code> sea <code>true</code>. En cada iteración, imprime las opciones, lee lo que escribe el usuario, y usa un <code>switch</code> para decidir qué hacer.</p>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué <code>while</code> y no <code>for</code>?</strong> Un <code>for</code> se usa cuando sabes cuántas veces va a iterar (por ejemplo, recorrer una lista de 10 elementos). Un <code>while</code> se usa cuando la condición de parada depende de algo que cambia durante la ejecución (en este caso, que el usuario elija "Salir"). No sabes de antemano cuántas veces el usuario va a usar el menú.</p>
+      </div>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué leer la opción como String y no como int?</strong> Si usas <code>scanner.nextInt()</code> y el usuario escribe "abc", el programa lanza una excepción. Si lees como String con <code>scanner.nextLine()</code>, nunca falla — puedes comparar el texto con los casos del switch. Es más seguro y más simple para un menú.</p>
+      </div>
+
+      <p>Estructura del menú:</p>
+      <pre class="code-block"><code class="language-java">while (ejecutando) {
+    System.out.println("\n=== TIENDA DE VIDEOJUEGOS ===");
+    System.out.println("1. Registrar producto");
+    // ... las demás opciones ...
+    System.out.print("Seleccione una opción: ");
+    String opcion = scanner.nextLine().trim();
+
+    switch (opcion) {
+        case "1":
+            // llamar al método correspondiente
+            break;
+        // ... los demás casos ...
+        case "6":
+            ejecutando = false;
+            break;
+        default:
+            // opción no válida
+            break;
+    }
+}</code></pre>
+
+      <div class="why-box">
+        <p><strong>¿Por qué cada opción llama a un método separado?</strong> Si pones toda la lógica dentro del <code>switch</code>, el <code>main</code> se convierte en un bloque de cientos de líneas imposible de leer. Al separar cada funcionalidad en un método, el <code>main</code> se lee como un índice: "caso 1 → registrar, caso 2 → listar, caso 3 → buscar...". Además, si un método tiene un bug, sabes exactamente dónde buscarlo. Esto es <strong>modularización</strong>.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>4D — ¿Por qué los métodos son static?</h4>
+
+      <p>Todos los métodos auxiliares en <code>Main</code> (registrar, listar, buscar, vender, resumen) deben ser <code>static</code>.</p>
+
+      <div class="why-box">
+        <p><strong>Razón técnica:</strong> El método <code>main</code> es <code>static</code>. Un método estático solo puede llamar a otros métodos estáticos de la misma clase. Si tus métodos auxiliares no son <code>static</code>, el compilador da error al intentar llamarlos desde <code>main</code>. Esto se debe a que un método estático no tiene una instancia (<code>this</code>) asociada — pertenece a la clase, no a un objeto.</p>
+      </div>
+
+      <p>Cada método auxiliar recibe como parámetro lo que necesita para trabajar. Típicamente el <code>Scanner</code> (para leer datos) y el <code>ArrayList</code> (para acceder al inventario).</p>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué pasar el ArrayList como parámetro y no declararlo a nivel de clase?</strong> Ambas opciones funcionan. Declararlo a nivel de clase (como <code>static ArrayList&lt;Producto&gt; inventario</code>) es más simple. Pasarlo como parámetro es más explícito — cada método declara qué datos necesita. Para esta evaluación, ambas opciones son válidas. Lo importante es que lo uses de forma consistente.</p>
+      </div>
+    </div>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint — Pieza 4 completa:</strong> Tu <code>Main.java</code> debería tener: imports, la clase, el método <code>main</code> con Scanner + ArrayList + boolean + while + switch, y llamadas a métodos que aún no existen. Aún no compila porque los métodos no están creados. Eso es normal — los crearás en las piezas siguientes.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 5: REGISTRAR PRODUCTO -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">5</div>
+      <div class="piece-title">Pieza 5 — Registrar producto</div>
+    </div>
+
+    <p>Este método muestra un submenú (Físico / Digital), pide los datos correspondientes, crea el objeto y lo agrega al ArrayList.</p>
+
+    <div class="sub-piece">
+      <h4>5A — El flujo lógico paso a paso</h4>
+      <ol style="max-width:860px;">
+        <li>Mostrar submenú: "1. Físico / 2. Digital".</li>
+        <li>Leer la elección del usuario.</li>
+        <li>Pedir los datos comunes (nombre, precioBase, stock).</li>
+        <li>Según la elección, pedir los datos específicos (costoEnvio o descuento + plataforma).</li>
+        <li>Crear el objeto correspondiente (<code>new ProductoFisico(...)</code> o <code>new ProductoDigital(...)</code>).</li>
+        <li>Agregarlo al ArrayList con <code>.add()</code>.</li>
+        <li>Confirmar al usuario.</li>
+      </ol>
+    </div>
+
+    <div class="sub-piece">
+      <h4>5B — Leer números del teclado con protección</h4>
+
+      <p>Los datos como precio, stock y descuento son numéricos. El usuario escribe texto en la consola, y tú necesitas convertirlo a <code>int</code>. Esa conversión puede fallar si el usuario escribe letras.</p>
+
+      <pre class="code-block"><code class="language-java">System.out.print("Precio base: ");
+int precioBase = Integer.parseInt(scanner.nextLine());</code></pre>
+
+      <p>Si el usuario escribe "abc", <code>Integer.parseInt</code> lanza una <code>NumberFormatException</code> y el programa se detiene. Para evitar eso, envuelves la conversión en un <code>try-catch</code>:</p>
+
+      <pre class="code-block"><code class="language-java">try {
+    System.out.print("Precio base: ");
+    int precioBase = Integer.parseInt(scanner.nextLine());
+    // ... continuar con el registro ...
+} catch (NumberFormatException e) {
+    System.out.println("Error: debe ingresar un número válido.");
+}</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Dónde poner el try-catch?</strong> Puedes envolver todo el proceso de registro en un solo try-catch grande. Si cualquier dato numérico falla, el catch captura el error, muestra el mensaje y el método termina. El flujo vuelve al menú principal automáticamente porque el método retorna.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>5C — La sobrecarga de métodos</h4>
+
+      <p>El caso pide implementar al menos un método sobrecargado. La sobrecarga es crear <strong>dos o más métodos con el mismo nombre pero diferentes parámetros</strong>. Java los distingue por la cantidad y tipo de parámetros, no por el nombre.</p>
+
+      <pre class="code-block"><code class="language-java">// Versión 1: solo mensaje
+private static void mostrarMensaje(String mensaje) {
+    System.out.println(mensaje);
+}
+
+// Versión 2: mensaje con tipo
+private static void mostrarMensaje(String mensaje, String tipo) {
+    System.out.println("[" + tipo + "] " + mensaje);
+}</code></pre>
+
+      <p>Cuando escribas <code>mostrarMensaje("Producto registrado")</code>, Java ejecuta la versión 1. Cuando escribas <code>mostrarMensaje("Producto registrado", "OK")</code>, ejecuta la versión 2. Java decide cuál usar según los argumentos que le pasaste.</p>
+
+      <div class="why-box">
+        <p><strong>¿Cuál es la diferencia entre sobrecarga y sobrescritura?</strong> La sobrecarga (<em>overload</em>) ocurre en la misma clase: mismo nombre, diferentes parámetros. La sobrescritura (<em>override</em>) ocurre entre padre e hija: mismo nombre, mismos parámetros, diferente implementación. <code>mostrarMensaje</code> con 1 y 2 parámetros es sobrecarga. <code>calcularPrecioFinal()</code> en <code>Producto</code> y <code>ProductoFisico</code> es sobrescritura.</p>
+      </div>
+
+      <p>Usa tus métodos sobrecargados en diferentes partes del código: al confirmar un registro, al mostrar un error, al dar información. Así demuestras que entiendes el concepto.</p>
+    </div>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint — Pieza 5:</strong> Después de implementar este método, deberías poder compilar todo (<code>javac *.java</code>), ejecutar (<code>java Main</code>), registrar un producto físico y un digital, y verlos aparecer en la lista.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 6: LISTAR Y BUSCAR -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">6</div>
+      <div class="piece-title">Pieza 6 — Listar inventario y buscar</div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>6A — Listar: donde el polimorfismo se hace visible</h4>
+
+      <p>Este método recorre el ArrayList e imprime cada producto. Lo notable es que usas un solo bucle y un solo método (<code>mostrarInfo()</code>), pero cada producto se muestra con su formato propio.</p>
+
+      <pre class="code-block"><code class="language-java">for (int i = 0; i &lt; inventario.size(); i++) {
+    Producto p = inventario.get(i);
+    System.out.println("[" + (i + 1) + "] " + p.mostrarInfo());
+}</code></pre>
+
+      <div class="why-box">
+        <p><strong>¿Por qué funciona esto sin preguntar si es físico o digital?</strong> Porque <code>mostrarInfo()</code> está sobrescrito en cada clase hija. Cuando <code>p</code> es realmente un <code>ProductoFisico</code>, Java ejecuta la versión de <code>ProductoFisico</code>. Cuando es un <code>ProductoDigital</code>, ejecuta la versión de <code>ProductoDigital</code>. Tú no necesitas hacer ningún <code>if</code> ni <code>instanceof</code>. Esto es polimorfismo: la decisión de qué método ejecutar la toma Java en tiempo de ejecución, según el tipo real del objeto.</p>
+      </div>
+
+      <div class="trap-box">
+        <p><strong>Error frecuente:</strong> Olvidar verificar si la lista está vacía antes de recorrerla. Si la lista está vacía, el bucle no ejecuta ninguna iteración, pero el usuario no ve nada y cree que el programa falló. Agrega un <code>if (inventario.isEmpty())</code> al inicio del método para mostrar un mensaje claro.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>6B — Buscar: recorrer con condición</h4>
+
+      <p>La búsqueda pide un texto al usuario y recorre la lista comparando. Para buscar sin distinguir mayúsculas/minúsculas y de forma parcial:</p>
+
+      <pre class="code-block"><code class="language-java">// Convertir ambos a minúsculas para comparar
+if (p.getNombre().toLowerCase().contains(textoBusqueda.toLowerCase())) {
+    // mostrar este producto
+}</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué <code>toLowerCase()</code> en ambos lados?</strong> Porque <code>"Zelda".contains("zelda")</code> es <code>false</code> — Java distingue mayúsculas de minúsculas por defecto. Al convertir ambos a minúsculas, <code>"zelda".contains("zelda")</code> es <code>true</code>. Es una técnica estándar para búsqueda insensible a mayúsculas.</p>
+      </div>
+
+      <p>Lleva un contador o una variable boolean para saber si encontraste resultados. Si al terminar el bucle no encontraste nada, muestra un mensaje.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 7: VENDER -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">7</div>
+      <div class="piece-title">Pieza 7 — Vender producto</div>
+    </div>
+
+    <p>Este método combina varias cosas: listar productos, leer un índice numérico, validar el stock y modificar el estado de un objeto.</p>
+
+    <div class="sub-piece">
+      <h4>7A — El flujo lógico</h4>
+      <ol style="max-width:860px;">
+        <li>Verificar que hay productos. Si la lista está vacía, avisar y retornar.</li>
+        <li>Mostrar los productos con su índice y stock actual.</li>
+        <li>Pedir el número de producto (leer como String, convertir a int con try-catch).</li>
+        <li>Validar que el número esté en rango.</li>
+        <li>Pedir la cantidad a vender (leer, convertir, validar).</li>
+        <li>Validar que la cantidad no supere el stock y sea positiva.</li>
+        <li>Calcular el total (cantidad × precioFinal).</li>
+        <li>Actualizar el stock con <code>setStock()</code>.</li>
+        <li>Mostrar el resultado.</li>
+      </ol>
+    </div>
+
+    <div class="sub-piece">
+      <h4>7B — Obtener y modificar un objeto de la lista</h4>
+
+      <p>Para acceder a un producto por su posición, usas <code>inventario.get(indice)</code>. Recuerda que el ArrayList es base 0 (la primera posición es 0), pero al usuario le muestras posiciones empezando en 1. Entonces si el usuario escribe "1", el índice real es <code>0</code>.</p>
+
+      <pre class="code-block"><code class="language-java">Producto p = inventario.get(indice - 1);  // usuario dice 1, índice es 0
+int nuevoStock = p.getStock() - cantidad;
+p.setStock(nuevoStock);</code></pre>
+
+      <div class="thinking-box">
+        <p><strong>¿Por qué <code>setStock()</code> funciona si <code>p</code> es de tipo <code>Producto</code>?</strong> Porque <code>setStock()</code> está definido en <code>Producto</code>. Aunque <code>p</code> sea realmente un <code>ProductoFisico</code>, el método existe en el padre y es accesible. Además, como <code>p</code> es una referencia al objeto original (no una copia), al modificar el stock a través de <code>p</code>, el cambio se refleja en el objeto que está dentro del ArrayList.</p>
+      </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 8: RESUMEN -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">8</div>
+      <div class="piece-title">Pieza 8 — Resumen del inventario</div>
+    </div>
+
+    <p>Este método recorre la lista y calcula estadísticas. Es el único lugar donde usas <code>instanceof</code>.</p>
+
+    <div class="sub-piece">
+      <h4>8A — Contar por tipo con instanceof</h4>
+
+      <p><code>instanceof</code> pregunta: "¿este objeto es realmente de este tipo?". Lo usas aquí para contar cuántos productos son físicos y cuántos digitales.</p>
+
+      <pre class="code-block"><code class="language-java">int fisicos = 0;
+int digitales = 0;
+int valorTotal = 0;
+
+for (Producto p : inventario) {
+    if (p instanceof ProductoFisico) {
+        fisicos++;
+    } else if (p instanceof ProductoDigital) {
+        digitales++;
+    }
+    valorTotal += p.calcularPrecioFinal() * p.getStock();
+}</code></pre>
+
+      <div class="why-box">
+        <p><strong>¿Por qué usar instanceof aquí pero no en listar?</strong> Porque al listar, no necesitas saber el tipo — el polimorfismo se encarga de que cada producto se muestre correctamente. Pero para <em>contar</em> cuántos hay de cada tipo, necesitas preguntar explícitamente. Son dos situaciones diferentes: mostrar comportamiento distinto (polimorfismo) vs. clasificar objetos por tipo (instanceof).</p>
+      </div>
+
+      <div class="thinking-box">
+        <p><strong>Sobre el valor total:</strong> La fórmula es <code>precioFinal × stock</code> para cada producto, sumados. Nota que <code>calcularPrecioFinal()</code> ya calcula el precio correcto según el tipo (con envío o con descuento), gracias al polimorfismo. No necesitas hacer cálculos diferentes según el tipo.</p>
+      </div>
+    </div>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint — Piezas 6, 7 y 8:</strong> Compila todo con <code>javac *.java</code>. Ejecuta y prueba: registra 2 productos (uno físico, uno digital), lista, busca por nombre, vende unidades, revisa el resumen. Todo debería funcionar.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 9: EXCEPCIONES Y COMENTARIOS -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">9</div>
+      <div class="piece-title">Pieza 9 — Excepciones y comentarios de paradigma</div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>9A — Revisa todos los puntos donde el programa puede fallar</h4>
+
+      <p>Recorre tu código y busca todas las líneas donde usas <code>Integer.parseInt()</code> o accedes a una posición de la lista. Cada una de esas líneas puede lanzar una excepción si el dato es incorrecto.</p>
+
+      <p>Los puntos típicos donde necesitas <code>try-catch</code>:</p>
+      <ul style="max-width:860px;">
+        <li>Al registrar: precio, stock, costoEnvio, descuento (<code>NumberFormatException</code>).</li>
+        <li>Al vender: número de producto, cantidad (<code>NumberFormatException</code>).</li>
+        <li>Al acceder a la lista por índice (<code>IndexOutOfBoundsException</code>, o puedes validar con un <code>if</code> antes).</li>
+      </ul>
+
+      <div class="thinking-box">
+        <p><strong>¿try-catch o validación con if?</strong> Ambos son válidos. El <code>try-catch</code> es mejor para errores impredecibles (el usuario escribe "abc" donde se espera un número). El <code>if</code> es mejor para validaciones lógicas (cantidad mayor que stock). Puedes combinar ambos: <code>try-catch</code> para la conversión numérica y <code>if</code> para las reglas de negocio.</p>
+      </div>
+    </div>
+
+    <div class="sub-piece">
+      <h4>9B — Los comentarios de paradigma (R1)</h4>
+
+      <p>Este es el requerimiento más sencillo pero no lo olvides. Al inicio de <code>Main.java</code>, escribe un bloque de comentario multilínea que explique:</p>
+      <ul style="max-width:860px;">
+        <li>Que estás usando el paradigma orientado a objetos.</li>
+        <li>Dos diferencias concretas con Python funcional. Piensa en lo que has experimentado durante el semestre:</li>
+      </ul>
+
+      <table class="comparison-table">
+        <thead>
+          <tr><th>Aspecto</th><th>Python (lo que hacías antes)</th><th>Java (lo que haces ahora)</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Tipado</td>
+            <td>Dinámico: <code>x = 5</code> y luego <code>x = "hola"</code> es válido</td>
+            <td>Estático: debes declarar <code>int x = 5;</code> y no puedes asignar un String después</td>
+          </tr>
+          <tr>
+            <td>Compilación</td>
+            <td>Interpretado: se ejecuta línea por línea</td>
+            <td>Compilado: primero <code>javac</code>, luego <code>java</code></td>
+          </tr>
+          <tr>
+            <td>Organización</td>
+            <td>Funciones sueltas en un archivo</td>
+            <td>Todo dentro de clases; cada clase en su archivo</td>
+          </tr>
+          <tr>
+            <td>Puntuación</td>
+            <td>Indentación define los bloques</td>
+            <td>Llaves <code>{}</code> definen los bloques; punto y coma al final de cada instrucción</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Elige al menos dos de estas diferencias y exprésalas con tus propias palabras en el comentario.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- PIEZA 10: VERIFICACIÓN FINAL -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <div class="piece-header">
+      <div class="piece-number">10</div>
+      <div class="piece-title">Pieza 10 — Verificación final</div>
+    </div>
+
+    <p>Antes de comprimir y entregar, ejecuta estas pruebas:</p>
+
+    <table class="comparison-table">
+      <thead>
+        <tr><th style="width:50%;">Prueba</th><th>Resultado esperado</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>javac *.java</code></td>
+          <td>Sin errores. Si hay errores, léelos desde el primero — los siguientes suelen ser consecuencia del primero.</td>
+        </tr>
+        <tr>
+          <td>Registrar un producto físico</td>
+          <td>Pide nombre, precio, stock, costo envío. Confirma el registro.</td>
+        </tr>
+        <tr>
+          <td>Registrar un producto digital</td>
+          <td>Pide nombre, precio, stock, descuento, plataforma. Confirma el registro.</td>
+        </tr>
+        <tr>
+          <td>Listar inventario</td>
+          <td>Muestra ambos productos con su formato propio (físico muestra envío, digital muestra plataforma y descuento).</td>
+        </tr>
+        <tr>
+          <td>Buscar por nombre parcial</td>
+          <td>Escribir parte del nombre encuentra el producto. No distingue mayúsculas.</td>
+        </tr>
+        <tr>
+          <td>Vender unidades</td>
+          <td>Descuenta stock, muestra total. Stock actualizado al volver a listar.</td>
+        </tr>
+        <tr>
+          <td>Resumen</td>
+          <td>Muestra totales, conteo por tipo y valor del inventario.</td>
+        </tr>
+        <tr>
+          <td>Escribir "abc" en un campo numérico</td>
+          <td>Muestra error, vuelve al menú. No se detiene.</td>
+        </tr>
+        <tr>
+          <td>Opción de menú inválida (ej: "99")</td>
+          <td>Muestra mensaje, vuelve al menú.</td>
+        </tr>
+        <tr>
+          <td>Vender más de lo que hay en stock</td>
+          <td>Muestra error, no modifica el stock.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="checkpoint-box">
+      <p><strong>Checkpoint final:</strong> Si todas las pruebas pasan, tu programa está listo. Comprime los 4 archivos <code>.java</code> en un ZIP y súbelos a AVA.</p>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- MAPA VISUAL DE LA SOLUCIÓN -->
+    <!-- ============================================== -->
+    <div class="section-divider"></div>
+    <h2>Mapa visual: cómo encajan las piezas</h2>
+
+    <p>Este esquema muestra la relación entre los 4 archivos y quién usa a quién:</p>
+
+    <div class="uml-box" style="text-align:center; font-size:14px; line-height:2;">
+      <strong>Main.java</strong><br>
+      <span style="color:var(--ink-muted);">Crea Scanner, crea ArrayList&lt;Producto&gt;, menú while/switch</span><br>
+      <span style="color:var(--ink-muted);">Cada opción llama a un método static</span><br>
+      <span style="color:var(--ink-muted);">Métodos sobrecargados: mostrarMensaje()</span><br>
+      <span style="font-size:20px;">↓ usa</span><br><br>
+      <strong>ArrayList&lt;Producto&gt;</strong><br>
+      <span style="color:var(--ink-muted);">Almacena objetos de tipo Producto (polimorfismo)</span><br>
+      <span style="color:var(--ink-muted);">Puede contener ProductoFisico y ProductoDigital mezclados</span><br>
+      <span style="font-size:20px;">↓ contiene</span><br><br>
+      <div class="uml-row" style="justify-content:center; gap:24px;">
+        <div style="background:var(--pastel-celeste); padding:16px 24px; border-radius:var(--radius-md); min-width:200px;">
+          <strong>ProductoFisico</strong><br>
+          <span style="font-size:13px; color:var(--accent-celeste);">extends Producto<br>+ costoEnvio<br>precio = base + envío</span>
+        </div>
+        <div style="background:var(--pastel-lavanda); padding:16px 24px; border-radius:var(--radius-md); min-width:200px;">
+          <strong>ProductoDigital</strong><br>
+          <span style="font-size:13px; color:var(--accent-lavanda);">extends Producto<br>+ descuento, plataforma<br>precio = base − descuento</span>
+        </div>
+      </div>
+      <span style="font-size:20px;">↑ heredan de</span><br><br>
+      <div style="background:var(--pastel-menta); padding:16px 24px; border-radius:var(--radius-md); display:inline-block; min-width:280px;">
+        <strong>Producto (abstracta)</strong><br>
+        <span style="font-size:13px; color:var(--accent-menta);">nombre, precioBase, stock<br>constructor, getters, setStock()<br>abstract calcularPrecioFinal()<br>mostrarInfo()</span>
+      </div>
+    </div>
+
+
+    <!-- CIERRE GUÍA -->
+    <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+      <p class="lead" style="margin:0 auto;">Cada pieza tiene un propósito. Si entendiste por qué cada línea va donde va, resolviste algo más valioso que el ejercicio: desarrollaste pensamiento algorítmico orientado a objetos.</p>
+    </div>
+
+    </div><!-- /tab guia -->
+
+    <!-- ============================================== -->
+    <!-- TAB 3: SOLUCIÓN COMPLETA                       -->
+    <!-- ============================================== -->
+    <div class="tab-content" :class="{active: tab==='solucion'}">
+
+      <div style="margin-top:32px;">
+        <div class="callout callout-menta" style="margin-bottom:32px;">
+          <h4 style="margin:0 0 8px;">Código fuente completo de la solución</h4>
+          <p style="margin:0 0 8px;">A continuación encontrarás los <strong>4 archivos Java</strong> completamente implementados, comentados pedagógicamente y probados para cumplir con el 100% de los requisitos (R1 al R11) de la Evaluación Parcial 1.</p>
+          <p style="margin:0;">Úsalos como material de estudio, contraste y verificación tras haber recorrido la <strong>Guía de resolución</strong>.</p>
+        </div>
+      </div>
+
+      <!-- COMANDOS DE COMPILACIÓN -->
+      <div style="background:var(--bg-soft); border:1px solid var(--line); border-radius:var(--radius-md); padding:20px; margin-bottom:32px;">
+        <h4 style="margin:0 0 8px;">⚙️ Compilación y ejecución en laboratorio</h4>
+        <p style="margin:0 0 12px; font-size:14px; color:var(--ink-soft);">Para compilar y correr el proyecto en la terminal (TAITE9) en el laboratorio de clases:</p>
+        <pre class="code-block"><code class="language-bash"># 1. Compilar todos los archivos .java del proyecto juntos:
+javac *.java
+
+# 2. Ejecutar la clase principal que contiene el método main:
+java Main</code></pre>
+      </div>
+
+      <!-- SELECTOR / FILTRO DE ARCHIVOS -->
+      <div class="file-pills">
+        <button class="file-pill" :class="{active: activeFile === 'all'}" @click="selectFile('all')">📂 Ver todos (4 archivos)</button>
+        <button class="file-pill" :class="{active: activeFile === 'Producto'}" @click="selectFile('Producto')">📄 Producto.java</button>
+        <button class="file-pill" :class="{active: activeFile === 'ProductoFisico'}" @click="selectFile('ProductoFisico')">📄 ProductoFisico.java</button>
+        <button class="file-pill" :class="{active: activeFile === 'ProductoDigital'}" @click="selectFile('ProductoDigital')">📄 ProductoDigital.java</button>
+        <button class="file-pill" :class="{active: activeFile === 'Main'}" @click="selectFile('Main')">📄 Main.java</button>
+      </div>
+
+      <!-- ARCHIVO 1: Producto.java -->
+      <div class="code-file-card" v-show="activeFile === 'all' || activeFile === 'Producto'" id="file-producto">
+        <div class="code-file-header">
+          <div class="code-file-title-wrap">
+            <div class="code-file-title">
+              <span>📄 Producto.java</span>
+              <span class="code-file-badge abstract">Clase Abstracta</span>
+              <span class="il-tag">R2 · IL 1.3 · IL 1.4</span>
+            </div>
+            <p class="code-file-desc">Superclase abstracta base. Encapsula atributos comunes, define el método abstracto calcularPrecioFinal() e implementa mostrarInfo().</p>
+          </div>
+          <button class="copy-btn" :class="{copied: copiedFile === 'Producto'}" @click="copyFile('Producto')">
+            <span v-if="copiedFile === 'Producto'">✓ ¡Copiado!</span>
+            <span v-else>📋 Copiar Producto.java</span>
+          </button>
+        </div>
+        <pre class="code-block"><code class="language-java">/**
+ * CLASE ABSTRACTA: Producto
+ * 
+ * Cumple con R2 (IL 1.3, IL 1.4).
+ * Representa la abstracción base de cualquier artículo en la tienda.
+ * Es abstracta porque no existen productos "genéricos": todo producto
+ * comercializable es o Físico o Digital.
+ */
+public abstract class Producto {
+
+    // --- Atributos privados (Principio de Encapsulamiento) ---
+    // Ninguna clase externa ni subclase puede modificarlos directamente.
+    private String nombre;
+    private int precioBase;
+    private int stock;
+
+    /**
+     * Constructor base. Inicializa el estado común a todo producto.
+     * Es invocado por las subclases mediante super(nombre, precioBase, stock).
+     */
+    public Producto(String nombre, int precioBase, int stock) {
+        this.nombre = nombre;
+        this.precioBase = precioBase;
+        this.stock = stock;
+    }
+
+    // --- Getters (lectura pública y controlada) ---
+
+    public String getNombre() {
+        return this.nombre;
+    }
+
+    public int getPrecioBase() {
+        return this.precioBase;
+    }
+
+    public int getStock() {
+        return this.stock;
+    }
+
+    // --- Setter para stock ---
+    // El único atributo mutable: se actualiza cuando se concretan ventas.
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    /**
+     * MÉTODO ABSTRACTO: calcularPrecioFinal()
+     * 
+     * Define el contrato polimórfico. No posee cuerpo en esta clase porque
+     * cada categoría calcula su precio con fórmulas distintas:
+     * - Físico: suma costo de envío.
+     * - Digital: aplica porcentaje de descuento.
+     * 
+     * Toda subclase no abstracta está OBLIGADA a proveer una implementación.
+     */
+    public abstract int calcularPrecioFinal();
+
+    /**
+     * MÉTODO CONCRETO: mostrarInfo()
+     * 
+     * Retorna un String con la información base del producto.
+     * Las subclases pueden sobrescribirlo (@Override) para enriquecer el texto.
+     * Invoque a calcularPrecioFinal(), resolviéndose polimórficamente en tiempo de ejecución.
+     */
+    public String mostrarInfo() {
+        return "Producto: " + this.nombre +
+               " | Base: $" + this.precioBase +
+               " | Final: $" + calcularPrecioFinal() +
+               " | Stock: " + this.stock;
+    }
+}</code></pre>
+      </div>
+
+      <!-- ARCHIVO 2: ProductoFisico.java -->
+      <div class="code-file-card" v-show="activeFile === 'all' || activeFile === 'ProductoFisico'" id="file-productofisico">
+        <div class="code-file-header">
+          <div class="code-file-title-wrap">
+            <div class="code-file-title">
+              <span>📄 ProductoFisico.java</span>
+              <span class="code-file-badge subclass">Subclase Concreta</span>
+              <span class="il-tag">R3 · IL 1.3 · IL 1.4</span>
+            </div>
+            <p class="code-file-desc">Especialización de Producto para copias físicas. Añade costoEnvio y sobrescribe calcularPrecioFinal() y mostrarInfo().</p>
+          </div>
+          <button class="copy-btn" :class="{copied: copiedFile === 'ProductoFisico'}" @click="copyFile('ProductoFisico')">
+            <span v-if="copiedFile === 'ProductoFisico'">✓ ¡Copiado!</span>
+            <span v-else>📋 Copiar ProductoFisico.java</span>
+          </button>
+        </div>
+        <pre class="code-block"><code class="language-java">/**
+ * CLASE HIJA: ProductoFisico
+ * 
+ * Cumple con R3 (IL 1.3, IL 1.4).
+ * Hereda de Producto y añade características de productos tangibles:
+ * - Requiere costo de envío (costoEnvio).
+ * - Su precio final se calcula sumando el costo de envío al precio base.
+ */
+public class ProductoFisico extends Producto {
+
+    // Atributo propio y exclusivo de la versión física
+    private int costoEnvio;
+
+    /**
+     * Constructor de ProductoFisico.
+     * Recibe 4 parámetros: los 3 que requiere el padre + el costo de envío.
+     * La llamada super(...) DEBE ser la primera línea del constructor.
+     */
+    public ProductoFisico(String nombre, int precioBase, int stock, int costoEnvio) {
+        super(nombre, precioBase, stock); // Delegamos la inicialización al padre
+        this.costoEnvio = costoEnvio;
+    }
+
+    // Getter propio
+    public int getCostoEnvio() {
+        return this.costoEnvio;
+    }
+
+    /**
+     * Sobrescritura (@Override) de calcularPrecioFinal().
+     * Regla de negocio: Precio Base + Costo de Envío.
+     */
+    @Override
+    public int calcularPrecioFinal() {
+        return getPrecioBase() + this.costoEnvio;
+    }
+
+    /**
+     * Sobrescritura (@Override) de mostrarInfo().
+     * Retorna el texto formateado para juegos físicos con el tag "Físico" y el costo de envío.
+     */
+    @Override
+    public String mostrarInfo() {
+        return "Físico | " + getNombre() +
+               " | Base: $" + getPrecioBase() +
+               " | Envío: $" + this.costoEnvio +
+               " | Final: $" + calcularPrecioFinal() +
+               " | Stock: " + getStock();
+    }
+}</code></pre>
+      </div>
+
+      <!-- ARCHIVO 3: ProductoDigital.java -->
+      <div class="code-file-card" v-show="activeFile === 'all' || activeFile === 'ProductoDigital'" id="file-productodigital">
+        <div class="code-file-header">
+          <div class="code-file-title-wrap">
+            <div class="code-file-title">
+              <span>📄 ProductoDigital.java</span>
+              <span class="code-file-badge subclass">Subclase Concreta</span>
+              <span class="il-tag">R4 · IL 1.3 · IL 1.4</span>
+            </div>
+            <p class="code-file-desc">Especialización de Producto para licencias descargables. Añade descuento y plataforma, sobrescribiendo calcularPrecioFinal() y mostrarInfo().</p>
+          </div>
+          <button class="copy-btn" :class="{copied: copiedFile === 'ProductoDigital'}" @click="copyFile('ProductoDigital')">
+            <span v-if="copiedFile === 'ProductoDigital'">✓ ¡Copiado!</span>
+            <span v-else>📋 Copiar ProductoDigital.java</span>
+          </button>
+        </div>
+        <pre class="code-block"><code class="language-java">/**
+ * CLASE HIJA: ProductoDigital
+ * 
+ * Cumple con R4 (IL 1.3, IL 1.4).
+ * Hereda de Producto y añade características de distribución digital:
+ * - Plataforma (Steam, PS Store, Nintendo eShop, Xbox, etc.).
+ * - Descuento promocional en porcentaje entero (0 al 100%).
+ * - Su precio final descuenta el monto de descuento del precio base.
+ */
+public class ProductoDigital extends Producto {
+
+    // Atributos exclusivos de la versión digital
+    private int descuento;       // Porcentaje de descuento (ej: 15 para 15%)
+    private String plataforma;   // Plataforma de activación o descarga
+
+    /**
+     * Constructor de ProductoDigital.
+     * Recibe 5 parámetros: 3 del padre + 2 propios.
+     */
+    public ProductoDigital(String nombre, int precioBase, int stock, int descuento, String plataforma) {
+        super(nombre, precioBase, stock);
+        this.descuento = descuento;
+        this.plataforma = plataforma;
+    }
+
+    // Getters propios
+    public int getDescuento() {
+        return this.descuento;
+    }
+
+    public String getPlataforma() {
+        return this.plataforma;
+    }
+
+    /**
+     * Sobrescritura (@Override) de calcularPrecioFinal().
+     * Regla de negocio: Precio Base - (Precio Base * descuento / 100).
+     * Se usa división entera ya que los montos se gestionan en pesos enteros.
+     */
+    @Override
+    public int calcularPrecioFinal() {
+        int montoDescuento = (getPrecioBase() * this.descuento) / 100;
+        return getPrecioBase() - montoDescuento;
+    }
+
+    /**
+     * Sobrescritura (@Override) de mostrarInfo().
+     * Retorna el texto con el tag "Digital", la plataforma entre corchetes y el descuento aplicado.
+     */
+    @Override
+    public String mostrarInfo() {
+        return "Digital [" + this.plataforma + "] | " + getNombre() +
+               " | Base: $" + getPrecioBase() +
+               " | Desc: " + this.descuento + "%" +
+               " | Final: $" + calcularPrecioFinal() +
+               " | Stock: " + getStock();
+    }
+}</code></pre>
+      </div>
+
+      <!-- ARCHIVO 4: Main.java -->
+      <div class="code-file-card" v-show="activeFile === 'all' || activeFile === 'Main'" id="file-main">
+        <div class="code-file-header">
+          <div class="code-file-title-wrap">
+            <div class="code-file-title">
+              <span>📄 Main.java</span>
+              <span class="code-file-badge main">Programa Principal</span>
+              <span class="il-tag">R1 · R5 · R6 · R7 · R8 · R9 · R10 · R11</span>
+            </div>
+            <p class="code-file-desc">Punto de entrada con menú interactivo while/switch, métodos sobrecargados, colecciones polimórficas y control defensivo con try-catch.</p>
+          </div>
+          <button class="copy-btn" :class="{copied: copiedFile === 'Main'}" @click="copyFile('Main')">
+            <span v-if="copiedFile === 'Main'">✓ ¡Copiado!</span>
+            <span v-else>📋 Copiar Main.java</span>
+          </button>
+        </div>
+        <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+import java.util.Scanner;
+
+/*
+ * =============================================================================
+ * EVALUACIÓN PARCIAL 1 — TIENDA DE VIDEOJUEGOS
+ * Alumno: Solución de Referencia
+ * Asignatura: Desarrollo Orientado a Objetos (2° Semestre 2026)
+ * =============================================================================
+ * 
+ * REQUERIMIENTO 1 (R1) — Justificación del Paradigma:
+ * 
+ * Este sistema fue desarrollado bajo el Paradigma Orientado a Objetos (POO).
+ * En POO, modelamos el dominio mediante clases (Producto, ProductoFisico, ProductoDigital)
+ * que encapsulan tanto sus datos (atributos privados) como su comportamiento (métodos).
+ * 
+ * Dos diferencias concretas con el paradigma funcional en Python visto previamente:
+ * 
+ * 1. Tipado Estático y Seguridad en Tiempo de Compilación:
+ *    En Python el tipado es dinámico (una variable puede cambiar de tipo en cualquier momento
+ *    y los errores de tipo saltan en ejecución). En Java, cada variable, parámetro y método
+ *    debe declarar explícitamente su tipo (int, String, Producto), permitiendo al compilador
+ *    (javac) verificar la coherencia de los tipos antes de que el programa se ejecute.
+ * 
+ * 2. Organización del Código y Encapsulamiento:
+ *    En Python funcional el código se estructura en funciones independientes y sueltas
+ *    que operan sobre diccionarios o tuplas mutables. En Java POO, no existen funciones libres:
+ *    todo método debe pertenecer a una clase, protegiendo el estado interno mediante
+ *    modificadores de acceso (private) y exponiendo únicamente interfaces seguras (getters/setters).
+ * =============================================================================
+ */
+
+public class Main {
+
+    // Colección polimórfica en memoria para almacenar productos físicos y digitales
+    private static ArrayList&lt;Producto&gt; inventario = new ArrayList&lt;&gt;();
+    
+    // Scanner para lectura de entradas de consola
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        // Datos iniciales de prueba para facilitar la demostración de la evaluación
+        precargarDatosPrueba();
+
+        boolean ejecutando = true;
+
+        // Bucle principal del menú de consola (R5)
+        while (ejecutando) {
+            mostrarMenuPrincipal();
+            System.out.print("Seleccione una opción: ");
+            String opcion = scanner.nextLine().trim();
+
+            switch (opcion) {
+                case "1":
+                    registrarProducto(); // R6
+                    break;
+                case "2":
+                    listarInventario(); // R7
+                    break;
+                case "3":
+                    buscarProducto(); // R8
+                    break;
+                case "4":
+                    venderProducto(); // R9
+                    break;
+                case "5":
+                    resumenInventario(); // R10
+                    break;
+                case "6":
+                    mostrarMensaje("¡Gracias por usar el sistema de la Tienda de Videojuegos! Hasta pronto.", "OK");
+                    ejecutando = false;
+                    break;
+                default:
+                    // Manejo de opción inexistente sin interrumpir el programa (R5, R11)
+                    mostrarMensaje("Opción no válida. Por favor, ingrese un número del 1 al 6.", "ERROR");
+                    break;
+            }
+            System.out.println(); // Salto de línea estético entre opciones
+        }
+    }
+
+    // =========================================================================
+    // MÉTODOS SOBRECARGADOS (R6)
+    // Demuestran polimorfismo en tiempo de compilación (overload):
+    // mismo nombre de método, distinta lista de parámetros.
+    // =========================================================================
+
+    /**
+     * Sobrecarga 1: imprime un mensaje simple por consola.
+     */
+    public static void mostrarMensaje(String mensaje) {
+        System.out.println(mensaje);
+    }
+
+    /**
+     * Sobrecarga 2: imprime un mensaje formateado con prefijo según el tipo.
+     */
+    public static void mostrarMensaje(String mensaje, String tipo) {
+        String prefijo = "";
+        switch (tipo.toUpperCase()) {
+            case "OK":
+                prefijo = "✓ [OK] ";
+                break;
+            case "ERROR":
+                prefijo = "✗ [ERROR] ";
+                break;
+            case "INFO":
+                prefijo = "ℹ [INFO] ";
+                break;
+            case "ALERTA":
+                prefijo = "⚠ [ALERTA] ";
+                break;
+            default:
+                prefijo = "[" + tipo + "] ";
+                break;
+        }
+        System.out.println(prefijo + mensaje);
+    }
+
+    // =========================================================================
+    // INTERFAZ DE MENÚ (R5)
+    // =========================================================================
+
+    private static void mostrarMenuPrincipal() {
+        System.out.println("=========================================");
+        System.out.println("       TIENDA DE VIDEOJUEGOS             ");
+        System.out.println("=========================================");
+        System.out.println("1. Registrar producto (Físico / Digital)");
+        System.out.println("2. Listar inventario");
+        System.out.println("3. Buscar producto por nombre");
+        System.out.println("4. Vender producto");
+        System.out.println("5. Resumen del inventario");
+        System.out.println("6. Salir");
+        System.out.println("-----------------------------------------");
+    }
+
+    // =========================================================================
+    // R6: REGISTRAR PRODUCTO (con submenú y manejo de excepciones)
+    // =========================================================================
+
+    private static void registrarProducto() {
+        System.out.println("\n--- REGISTRAR NUEVO PRODUCTO ---");
+        System.out.println("1. Juego Físico");
+        System.out.println("2. Juego Digital");
+        System.out.print("Seleccione el tipo de producto: ");
+        String tipoStr = scanner.nextLine().trim();
+
+        if (!tipoStr.equals("1") && !tipoStr.equals("2")) {
+            mostrarMensaje("Tipo de producto inválido. Operación cancelada.", "ERROR");
+            return;
+        }
+
+        try {
+            // Datos comunes a todo producto
+            System.out.print("Nombre del videojuego: ");
+            String nombre = scanner.nextLine().trim();
+            if (nombre.isEmpty()) {
+                mostrarMensaje("El nombre no puede estar vacío.", "ERROR");
+                return;
+            }
+
+            System.out.print("Precio base ($): ");
+            int precioBase = Integer.parseInt(scanner.nextLine().trim());
+            if (precioBase <= 0) {
+                mostrarMensaje("El precio base debe ser un valor positivo.", "ERROR");
+                return;
+            }
+
+            System.out.print("Cantidad en stock: ");
+            int stock = Integer.parseInt(scanner.nextLine().trim());
+            if (stock < 0) {
+                mostrarMensaje("El stock no puede ser negativo.", "ERROR");
+                return;
+            }
+
+            if (tipoStr.equals("1")) {
+                // Producto Físico
+                System.out.print("Costo de envío ($): ");
+                int costoEnvio = Integer.parseInt(scanner.nextLine().trim());
+                if (costoEnvio < 0) {
+                    mostrarMensaje("El costo de envío no puede ser negativo.", "ERROR");
+                    return;
+                }
+
+                ProductoFisico nuevoFisico = new ProductoFisico(nombre, precioBase, stock, costoEnvio);
+                inventario.add(nuevoFisico);
+                mostrarMensaje("Producto físico registrado exitosamente: " + nombre, "OK");
+
+            } else {
+                // Producto Digital
+                System.out.print("Porcentaje de descuento (0-100): ");
+                int descuento = Integer.parseInt(scanner.nextLine().trim());
+                if (descuento < 0 || descuento > 100) {
+                    mostrarMensaje("El descuento debe estar entre 0 y 100.", "ERROR");
+                    return;
+                }
+
+                System.out.print("Plataforma (ej: Steam, PS5, Switch, Xbox): ");
+                String plataforma = scanner.nextLine().trim();
+                if (plataforma.isEmpty()) {
+                    plataforma = "Digital";
+                }
+
+                ProductoDigital nuevoDigital = new ProductoDigital(nombre, precioBase, stock, descuento, plataforma);
+                inventario.add(nuevoDigital);
+                mostrarMensaje("Producto digital registrado exitosamente: " + nombre, "OK");
+            }
+
+        } catch (NumberFormatException e) {
+            // R11: Manejo de excepción ante entrada de texto donde se esperaba número
+            mostrarMensaje("Entrada no válida: debe ingresar un valor numérico entero.", "ERROR");
+        }
+    }
+
+    // =========================================================================
+    // R7: LISTAR INVENTARIO (Polimorfismo en acción)
+    // =========================================================================
+
+    private static void listarInventario() {
+        System.out.println("\n--- INVENTARIO ACTUAL ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("No hay productos registrados en el inventario actualmente.", "INFO");
+            return;
+        }
+
+        // Recorrido polimórfico: una sola llamada a mostrarInfo() se adapta
+        // automáticamente según si el producto real es ProductoFisico o ProductoDigital.
+        for (int i = 0; i < inventario.size(); i++) {
+            Producto p = inventario.get(i);
+            System.out.println("[" + (i + 1) + "] " + p.mostrarInfo());
+        }
+        System.out.println("Total de productos en catálogo: " + inventario.size());
+    }
+
+    // =========================================================================
+    // R8: BUSCAR PRODUCTO POR NOMBRE (búsqueda parcial insensible a mayúsculas)
+    // =========================================================================
+
+    private static void buscarProducto() {
+        System.out.println("\n--- BÚSQUEDA DE PRODUCTOS ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("El inventario está vacío. No hay productos para buscar.", "INFO");
+            return;
+        }
+
+        System.out.print("Ingrese el término o nombre a buscar: ");
+        String termino = scanner.nextLine().trim().toLowerCase();
+
+        if (termino.isEmpty()) {
+            mostrarMensaje("Debe ingresar un término para la búsqueda.", "ALERTA");
+            return;
+        }
+
+        int coincidencias = 0;
+        System.out.println("\nResultados encontrados:");
+        for (Producto p : inventario) {
+            if (p.getNombre().toLowerCase().contains(termino)) {
+                System.out.println("  • " + p.mostrarInfo());
+                coincidencias++;
+            }
+        }
+
+        if (coincidencias == 0) {
+            mostrarMensaje("No se encontraron productos que coincidan con '" + termino + "'.", "INFO");
+        } else {
+            mostrarMensaje("Se encontraron " + coincidencias + " producto(s) coincidentes.", "OK");
+        }
+    }
+
+    // =========================================================================
+    // R9: VENDER PRODUCTO (descontar stock, cálculo de venta y validación)
+    // =========================================================================
+
+    private static void venderProducto() {
+        System.out.println("\n--- VENDER PRODUCTO ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("No hay productos en inventario para vender.", "INFO");
+            return;
+        }
+
+        // Mostramos la lista numerada para que el usuario elija
+        for (int i = 0; i < inventario.size(); i++) {
+            Producto p = inventario.get(i);
+            System.out.println("[" + (i + 1) + "] " + p.getNombre() + 
+                               " | Stock actual: " + p.getStock() + 
+                               " | Precio c/u: $" + p.calcularPrecioFinal());
+        }
+
+        try {
+            System.out.print("\nIngrese el número de producto a vender (1 a " + inventario.size() + "): ");
+            int numProducto = Integer.parseInt(scanner.nextLine().trim());
+
+            // Validación de índice dentro del rango (R9, R11)
+            if (numProducto < 1 || numProducto > inventario.size()) {
+                mostrarMensaje("Número de producto fuera de rango. Operación abortada.", "ERROR");
+                return;
+            }
+
+            Producto productoSeleccionado = inventario.get(numProducto - 1);
+
+            System.out.print("Ingrese la cantidad de unidades a vender: ");
+            int cantidad = Integer.parseInt(scanner.nextLine().trim());
+
+            // Validación de cantidad positiva (R9)
+            if (cantidad <= 0) {
+                mostrarMensaje("La cantidad a vender debe ser un número entero mayor a 0.", "ERROR");
+                return;
+            }
+
+            // Validación de stock disponible (R9)
+            if (cantidad > productoSeleccionado.getStock()) {
+                mostrarMensaje("Stock insuficiente. Disponibles: " + productoSeleccionado.getStock() + 
+                               " unidades, solicitadas: " + cantidad + " unidades.", "ERROR");
+                return;
+            }
+
+            // Descontar stock usando el setter
+            productoSeleccionado.setStock(productoSeleccionado.getStock() - cantidad);
+
+            // Calcular monto final polimórficamente
+            int totalVenta = productoSeleccionado.calcularPrecioFinal() * cantidad;
+
+            System.out.println("\n-----------------------------------------");
+            mostrarMensaje("¡Venta realizada con éxito!", "OK");
+            System.out.println("Producto vendido: " + productoSeleccionado.getNombre());
+            System.out.println("Unidades vendidas: " + cantidad);
+            System.out.println("Precio unitario final: $" + productoSeleccionado.calcularPrecioFinal());
+            System.out.println("TOTAL A PAGAR: $" + totalVenta);
+            System.out.println("Stock remanente: " + productoSeleccionado.getStock() + " unidades");
+            System.out.println("-----------------------------------------");
+
+        } catch (NumberFormatException e) {
+            mostrarMensaje("Entrada no válida: debe ingresar valores numéricos enteros.", "ERROR");
+        }
+    }
+
+    // =========================================================================
+    // R10: RESUMEN DEL INVENTARIO (Uso de instanceof y acumulador polimórfico)
+    // =========================================================================
+
+    private static void resumenInventario() {
+        System.out.println("\n--- RESUMEN GENERAL DEL INVENTARIO ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("El inventario está actualmente vacío.", "INFO");
+            return;
+        }
+
+        int totalFisicos = 0;
+        int totalDigitales = 0;
+        long valorTotalInventario = 0; // Usamos long para prevenir desbordes si hay valores altos
+
+        for (Producto p : inventario) {
+            // Diferenciación explícita mediante operador instanceof (R10)
+            if (p instanceof ProductoFisico) {
+                totalFisicos++;
+            } else if (p instanceof ProductoDigital) {
+                totalDigitales++;
+            }
+
+            // Acumulación polimórfica: precioFinal * stock de cada producto
+            valorTotalInventario += (long) p.calcularPrecioFinal() * p.getStock();
+        }
+
+        System.out.println("Total de productos distintos: " + inventario.size());
+        System.out.println("  • Juegos en formato físico : " + totalFisicos);
+        System.out.println("  • Juegos en formato digital: " + totalDigitales);
+        System.out.println("-----------------------------------------");
+        System.out.println("VALORIZACIÓN TOTAL DEL INVENTARIO: $" + valorTotalInventario);
+        System.out.println("-----------------------------------------");
+    }
+
+    // =========================================================================
+    // DATOS DE PRUEBA INICIALES
+    // =========================================================================
+
+    private static void precargarDatosPrueba() {
+        // Dos productos de ejemplo para iniciar con inventario demostrativo
+        inventario.add(new ProductoFisico("The Legend of Zelda: Tears of the Kingdom", 49990, 10, 3990));
+        inventario.add(new ProductoDigital("Hollow Knight: Silksong", 15000, 50, 20, "Steam"));
+    }
+}</code></pre>
+      </div>
+
+      <!-- CHECKLIST DE ENTREGA -->
+      <div style="background:var(--pastel-lavanda); border-radius:var(--radius-md); padding:24px; margin-top:40px;">
+        <h3 style="color:var(--accent-lavanda); margin-top:0;">📋 Lista de cotejo antes de entregar tu evaluación</h3>
+        <p style="font-size:15px; color:var(--accent-lavanda); margin-bottom:16px;">Verifica cada uno de estos puntos en tu solución de laboratorio:</p>
+        <ul style="color:var(--accent-lavanda); font-size:14px; line-height:1.7;">
+          <li>✓ <strong>Producto.java</strong> tiene la palabra <code>abstract</code> y su método <code>calcularPrecioFinal()</code> no tiene llaves <code>{}</code>.</li>
+          <li>✓ <strong>ProductoFisico</strong> y <strong>ProductoDigital</strong> usan <code>extends Producto</code> y llaman a <code>super(...)</code> en la <strong>primera línea</strong> de su constructor.</li>
+          <li>✓ Todos los atributos son <code>private</code> y se accede a ellos exclusivamente por getters/setters.</li>
+          <li>✓ En <strong>Main.java</strong>, el bloque de comentario explica al menos 2 diferencias con Python funcional (R1).</li>
+          <li>✓ <code>ArrayList&lt;Producto&gt;</code> se recorre sin <code>instanceof</code> para listar o vender, aprovechando el polimorfismo dinámico.</li>
+          <li>✓ Todas las conversiones numéricas con <code>Integer.parseInt()</code> están dentro de bloques <code>try-catch (NumberFormatException e)</code>.</li>
+          <li>✓ El programa compila limpio con <code>javac *.java</code> sin advertencias ni errores.</li>
+        </ul>
+      </div>
+
+    </div><!-- /tab solucion -->
+
+    <!-- ============================================== -->
+    <!-- TAB 4: CHEQUEO DE COMPRENSIÓN                  -->
+    <!-- ============================================== -->
+    <div class="tab-content" :class="{active: tab==='chequeo'}">
+
+      <div style="margin-top:32px;">
+        <div class="callout callout-durazno" style="margin-bottom:32px;">
+          <h4 style="margin:0 0 8px;">🎯 Actividades de chequeo de comprensión</h4>
+          <p style="margin:0 0 8px;">Pon a prueba tu dominio conceptual y técnico antes de rendir la evaluación. Cada actividad evalúa un aspecto crítico: <strong>encapsulamiento, herencia, clases abstractas, polimorfismo, colecciones y excepciones</strong>.</p>
+          <p style="margin:0;">Todas las actividades cuentan con <strong>retroalimentación inmediata explicativa</strong> para que aprendas tanto de tus aciertos como de tus errores.</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:32px;">
+        <span class="tag tag-base">🟢 Base — Reconocer e identificar</span>
+        <span class="tag tag-inter">🔵 Intermedio — Aplicar y analizar</span>
+        <span class="tag tag-avanzado">🟣 Avanzado — Evaluar y diseñar</span>
+      </div>
+
+      <!-- SECCIÓN 1: ALTERNATIVAS -->
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--pastel-celeste);">📝</div>
+        Preguntas de alternativas conceptuales
+      </div>
+
+      <quiz-question v-bind="quizzes.q1"></quiz-question>
+      <quiz-question v-bind="quizzes.q2"></quiz-question>
+      <quiz-question v-bind="quizzes.q3"></quiz-question>
+      <quiz-question v-bind="quizzes.q4"></quiz-question>
+      <quiz-question v-bind="quizzes.q5"></quiz-question>
+
+      <!-- SECCIÓN 2: VERDADERO / FALSO -->
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--pastel-menta);">✓✗</div>
+        Verdadero o Falso
+      </div>
+
+      <quiz-question v-bind="vf.v1"></quiz-question>
+      <quiz-question v-bind="vf.v2"></quiz-question>
+      <quiz-question v-bind="vf.v3"></quiz-question>
+      <quiz-question v-bind="vf.v4"></quiz-question>
+      <quiz-question v-bind="vf.v5"></quiz-question>
+
+      <!-- SECCIÓN 3: TÉRMINOS PAREADOS -->
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--pastel-durazno);">🔗</div>
+        Términos pareados — Conceptos y su rol en el caso
+      </div>
+
+      <matching-pairs v-bind="matching"></matching-pairs>
+
+      <!-- SECCIÓN 4: ENCUENTRA EL ERROR -->
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--pastel-rosa);">🐛</div>
+        Encuentra el error en el código
+      </div>
+
+      <code-error v-bind="errors.e1"></code-error>
+      <code-error v-bind="errors.e2"></code-error>
+      <code-error v-bind="errors.e3"></code-error>
+
+      <!-- SECCIÓN 5: COMPLETA EL CÓDIGO -->
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--pastel-lavanda);">✏️</div>
+        Completa el código faltante
+      </div>
+
+      <code-fill v-bind="fills.f1"></code-fill>
+      <code-fill v-bind="fills.f2"></code-fill>
+
+      <!-- SECCIÓN 6: ORDENA LOS PASOS -->
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--pastel-amarillo);">🔢</div>
+        Ordena los pasos — Algoritmo seguro de venta
+      </div>
+
+      <order-steps v-bind="orderData"></order-steps>
+
+      <!-- SECCIÓN 7: SELECCIÓN MÚLTIPLE -->
+      <div class="section-title">
+        <div class="section-icon" style="background:var(--pastel-celeste);">☑️</div>
+        Selección múltiple (varias opciones correctas)
+      </div>
+
+      <multi-select v-bind="multiSel.m1"></multi-select>
+      <multi-select v-bind="multiSel.m2"></multi-select>
+
+      <!-- CIERRE ACTIVIDADES -->
+      <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+        <div style="font-size:40px; margin-bottom:12px;">🏆</div>
+        <h3>¡Preparación para la Evaluación Parcial 1 completada!</h3>
+        <p class="lead" style="margin:0 auto; max-width:700px;">Si completaste estas actividades entendiendo el porqué de cada respuesta, tienes las herramientas conceptuales y prácticas para rendir una evaluación sobresaliente en el laboratorio.</p>
+      </div>
+
+    </div><!-- /tab chequeo -->
+
+  </div>
+</div>
+
+<script src="../../shared/activity-engine.js"></script>
+<script>
+const { createApp } = Vue;
+
+const app = createApp({
+  data() {
+    return {
+      tab: 'caso',
+      activeFile: 'all',
+      copiedFile: null,
+
+      // CÓDIGO FUENTE DE LA SOLUCIÓN
+      sourceCodes: {
+        Producto: `public abstract class Producto {
+
+    private String nombre;
+    private int precioBase;
+    private int stock;
+
+    public Producto(String nombre, int precioBase, int stock) {
+        this.nombre = nombre;
+        this.precioBase = precioBase;
+        this.stock = stock;
+    }
+
+    public String getNombre() {
+        return this.nombre;
+    }
+
+    public int getPrecioBase() {
+        return this.precioBase;
+    }
+
+    public int getStock() {
+        return this.stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public abstract int calcularPrecioFinal();
+
+    public String mostrarInfo() {
+        return "Producto: " + this.nombre +
+               " | Base: $" + this.precioBase +
+               " | Final: $" + calcularPrecioFinal() +
+               " | Stock: " + this.stock;
+    }
+}`,
+        ProductoFisico: `public class ProductoFisico extends Producto {
+
+    private int costoEnvio;
+
+    public ProductoFisico(String nombre, int precioBase, int stock, int costoEnvio) {
+        super(nombre, precioBase, stock);
+        this.costoEnvio = costoEnvio;
+    }
+
+    public int getCostoEnvio() {
+        return this.costoEnvio;
+    }
+
+    @Override
+    public int calcularPrecioFinal() {
+        return getPrecioBase() + this.costoEnvio;
+    }
+
+    @Override
+    public String mostrarInfo() {
+        return "Físico | " + getNombre() +
+               " | Base: $" + getPrecioBase() +
+               " | Envío: $" + this.costoEnvio +
+               " | Final: $" + calcularPrecioFinal() +
+               " | Stock: " + getStock();
+    }
+}`,
+        ProductoDigital: `public class ProductoDigital extends Producto {
+
+    private int descuento;
+    private String plataforma;
+
+    public ProductoDigital(String nombre, int precioBase, int stock, int descuento, String plataforma) {
+        super(nombre, precioBase, stock);
+        this.descuento = descuento;
+        this.plataforma = plataforma;
+    }
+
+    public int getDescuento() {
+        return this.descuento;
+    }
+
+    public String getPlataforma() {
+        return this.plataforma;
+    }
+
+    @Override
+    public int calcularPrecioFinal() {
+        int montoDescuento = (getPrecioBase() * this.descuento) / 100;
+        return getPrecioBase() - montoDescuento;
+    }
+
+    @Override
+    public String mostrarInfo() {
+        return "Digital [" + this.plataforma + "] | " + getNombre() +
+               " | Base: $" + getPrecioBase() +
+               " | Desc: " + this.descuento + "%" +
+               " | Final: $" + calcularPrecioFinal() +
+               " | Stock: " + getStock();
+    }
+}`,
+        Main: `import java.util.ArrayList;
+import java.util.Scanner;
+
+/*
+ * =============================================================================
+ * EVALUACIÓN PARCIAL 1 — TIENDA DE VIDEOJUEGOS
+ * Alumno: Solución de Referencia
+ * Asignatura: Desarrollo Orientado a Objetos (2° Semestre 2026)
+ * =============================================================================
+ * 
+ * REQUERIMIENTO 1 (R1) — Justificación del Paradigma:
+ * 
+ * Este sistema fue desarrollado bajo el Paradigma Orientado a Objetos (POO).
+ * En POO, modelamos el dominio mediante clases (Producto, ProductoFisico, ProductoDigital)
+ * que encapsulan tanto sus datos (atributos privados) como su comportamiento (métodos).
+ * 
+ * Dos diferencias concretas con el paradigma funcional en Python visto previamente:
+ * 
+ * 1. Tipado Estático y Seguridad en Tiempo de Compilación:
+ *    En Python el tipado es dinámico (una variable puede cambiar de tipo en cualquier momento
+ *    y los errores de tipo saltan en ejecución). En Java, cada variable, parámetro y método
+ *    debe declarar explícitamente su tipo (int, String, Producto), permitiendo al compilador
+ *    (javac) verificar la coherencia de los tipos antes de que el programa se ejecute.
+ * 
+ * 2. Organización del Código y Encapsulamiento:
+ *    En Python funcional el código se estructura en funciones independientes y sueltas
+ *    que operan sobre diccionarios o tuplas mutables. En Java POO, no existen funciones libres:
+ *    todo método debe pertenecer a una clase, protegiendo el estado interno mediante
+ *    modificadores de acceso (private) y exponiendo únicamente interfaces seguras (getters/setters).
+ * =============================================================================
+ */
+
+public class Main {
+
+    private static ArrayList<Producto> inventario = new ArrayList<>();
+    private static Scanner scanner = new Scanner(System.in);
+
+    public static void main(String[] args) {
+        precargarDatosPrueba();
+
+        boolean ejecutando = true;
+
+        while (ejecutando) {
+            mostrarMenuPrincipal();
+            System.out.print("Seleccione una opción: ");
+            String opcion = scanner.nextLine().trim();
+
+            switch (opcion) {
+                case "1":
+                    registrarProducto();
+                    break;
+                case "2":
+                    listarInventario();
+                    break;
+                case "3":
+                    buscarProducto();
+                    break;
+                case "4":
+                    venderProducto();
+                    break;
+                case "5":
+                    resumenInventario();
+                    break;
+                case "6":
+                    mostrarMensaje("¡Gracias por usar el sistema de la Tienda de Videojuegos! Hasta pronto.", "OK");
+                    ejecutando = false;
+                    break;
+                default:
+                    mostrarMensaje("Opción no válida. Por favor, ingrese un número del 1 al 6.", "ERROR");
+                    break;
+            }
+            System.out.println();
+        }
+    }
+
+    public static void mostrarMensaje(String mensaje) {
+        System.out.println(mensaje);
+    }
+
+    public static void mostrarMensaje(String mensaje, String tipo) {
+        String prefijo = "";
+        switch (tipo.toUpperCase()) {
+            case "OK":
+                prefijo = "✓ [OK] ";
+                break;
+            case "ERROR":
+                prefijo = "✗ [ERROR] ";
+                break;
+            case "INFO":
+                prefijo = "ℹ [INFO] ";
+                break;
+            case "ALERTA":
+                prefijo = "⚠ [ALERTA] ";
+                break;
+            default:
+                prefijo = "[" + tipo + "] ";
+                break;
+        }
+        System.out.println(prefijo + mensaje);
+    }
+
+    private static void mostrarMenuPrincipal() {
+        System.out.println("=========================================");
+        System.out.println("       TIENDA DE VIDEOJUEGOS             ");
+        System.out.println("=========================================");
+        System.out.println("1. Registrar producto (Físico / Digital)");
+        System.out.println("2. Listar inventario");
+        System.out.println("3. Buscar producto por nombre");
+        System.out.println("4. Vender producto");
+        System.out.println("5. Resumen del inventario");
+        System.out.println("6. Salir");
+        System.out.println("-----------------------------------------");
+    }
+
+    private static void registrarProducto() {
+        System.out.println("\\n--- REGISTRAR NUEVO PRODUCTO ---");
+        System.out.println("1. Juego Físico");
+        System.out.println("2. Juego Digital");
+        System.out.print("Seleccione el tipo de producto: ");
+        String tipoStr = scanner.nextLine().trim();
+
+        if (!tipoStr.equals("1") && !tipoStr.equals("2")) {
+            mostrarMensaje("Tipo de producto inválido. Operación cancelada.", "ERROR");
+            return;
+        }
+
+        try {
+            System.out.print("Nombre del videojuego: ");
+            String nombre = scanner.nextLine().trim();
+            if (nombre.isEmpty()) {
+                mostrarMensaje("El nombre no puede estar vacío.", "ERROR");
+                return;
+            }
+
+            System.out.print("Precio base ($): ");
+            int precioBase = Integer.parseInt(scanner.nextLine().trim());
+            if (precioBase <= 0) {
+                mostrarMensaje("El precio base debe ser un valor positivo.", "ERROR");
+                return;
+            }
+
+            System.out.print("Cantidad en stock: ");
+            int stock = Integer.parseInt(scanner.nextLine().trim());
+            if (stock < 0) {
+                mostrarMensaje("El stock no puede ser negativo.", "ERROR");
+                return;
+            }
+
+            if (tipoStr.equals("1")) {
+                System.out.print("Costo de envío ($): ");
+                int costoEnvio = Integer.parseInt(scanner.nextLine().trim());
+                if (costoEnvio < 0) {
+                    mostrarMensaje("El costo de envío no puede ser negativo.", "ERROR");
+                    return;
+                }
+
+                ProductoFisico nuevoFisico = new ProductoFisico(nombre, precioBase, stock, costoEnvio);
+                inventario.add(nuevoFisico);
+                mostrarMensaje("Producto físico registrado exitosamente: " + nombre, "OK");
+
+            } else {
+                System.out.print("Porcentaje de descuento (0-100): ");
+                int descuento = Integer.parseInt(scanner.nextLine().trim());
+                if (descuento < 0 || descuento > 100) {
+                    mostrarMensaje("El descuento debe estar entre 0 y 100.", "ERROR");
+                    return;
+                }
+
+                System.out.print("Plataforma (ej: Steam, PS5, Switch, Xbox): ");
+                String plataforma = scanner.nextLine().trim();
+                if (plataforma.isEmpty()) {
+                    plataforma = "Digital";
+                }
+
+                ProductoDigital nuevoDigital = new ProductoDigital(nombre, precioBase, stock, descuento, plataforma);
+                inventario.add(nuevoDigital);
+                mostrarMensaje("Producto digital registrado exitosamente: " + nombre, "OK");
+            }
+
+        } catch (NumberFormatException e) {
+            mostrarMensaje("Entrada no válida: debe ingresar un valor numérico entero.", "ERROR");
+        }
+    }
+
+    private static void listarInventario() {
+        System.out.println("\\n--- INVENTARIO ACTUAL ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("No hay productos registrados en el inventario actualmente.", "INFO");
+            return;
+        }
+
+        for (int i = 0; i < inventario.size(); i++) {
+            Producto p = inventario.get(i);
+            System.out.println("[" + (i + 1) + "] " + p.mostrarInfo());
+        }
+        System.out.println("Total de productos en catálogo: " + inventario.size());
+    }
+
+    private static void buscarProducto() {
+        System.out.println("\\n--- BÚSQUEDA DE PRODUCTOS ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("El inventario está vacío. No hay productos para buscar.", "INFO");
+            return;
+        }
+
+        System.out.print("Ingrese el término o nombre a buscar: ");
+        String termino = scanner.nextLine().trim().toLowerCase();
+
+        if (termino.isEmpty()) {
+            mostrarMensaje("Debe ingresar un término para la búsqueda.", "ALERTA");
+            return;
+        }
+
+        int coincidencias = 0;
+        System.out.println("\\nResultados encontrados:");
+        for (Producto p : inventario) {
+            if (p.getNombre().toLowerCase().contains(termino)) {
+                System.out.println("  • " + p.mostrarInfo());
+                coincidencias++;
+            }
+        }
+
+        if (coincidencias == 0) {
+            mostrarMensaje("No se encontraron productos que coincidan con '" + termino + "'.", "INFO");
+        } else {
+            mostrarMensaje("Se encontraron " + coincidencias + " producto(s) coincidentes.", "OK");
+        }
+    }
+
+    private static void venderProducto() {
+        System.out.println("\\n--- VENDER PRODUCTO ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("No hay productos en inventario para vender.", "INFO");
+            return;
+        }
+
+        for (int i = 0; i < inventario.size(); i++) {
+            Producto p = inventario.get(i);
+            System.out.println("[" + (i + 1) + "] " + p.getNombre() + 
+                               " | Stock actual: " + p.getStock() + 
+                               " | Precio c/u: $" + p.calcularPrecioFinal());
+        }
+
+        try {
+            System.out.print("\\nIngrese el número de producto a vender (1 a " + inventario.size() + "): ");
+            int numProducto = Integer.parseInt(scanner.nextLine().trim());
+
+            if (numProducto < 1 || numProducto > inventario.size()) {
+                mostrarMensaje("Número de producto fuera de rango. Operación abortada.", "ERROR");
+                return;
+            }
+
+            Producto productoSeleccionado = inventario.get(numProducto - 1);
+
+            System.out.print("Ingrese la cantidad de unidades a vender: ");
+            int cantidad = Integer.parseInt(scanner.nextLine().trim());
+
+            if (cantidad <= 0) {
+                mostrarMensaje("La cantidad a vender debe ser un número entero mayor a 0.", "ERROR");
+                return;
+            }
+
+            if (cantidad > productoSeleccionado.getStock()) {
+                mostrarMensaje("Stock insuficiente. Disponibles: " + productoSeleccionado.getStock() + 
+                               " unidades, solicitadas: " + cantidad + " unidades.", "ERROR");
+                return;
+            }
+
+            productoSeleccionado.setStock(productoSeleccionado.getStock() - cantidad);
+            int totalVenta = productoSeleccionado.calcularPrecioFinal() * cantidad;
+
+            System.out.println("\\n-----------------------------------------");
+            mostrarMensaje("¡Venta realizada con éxito!", "OK");
+            System.out.println("Producto vendido: " + productoSeleccionado.getNombre());
+            System.out.println("Unidades vendidas: " + cantidad);
+            System.out.println("Precio unitario final: $" + productoSeleccionado.calcularPrecioFinal());
+            System.out.println("TOTAL A PAGAR: $" + totalVenta);
+            System.out.println("Stock remanente: " + productoSeleccionado.getStock() + " unidades");
+            System.out.println("-----------------------------------------");
+
+        } catch (NumberFormatException e) {
+            mostrarMensaje("Entrada no válida: debe ingresar valores numéricos enteros.", "ERROR");
+        }
+    }
+
+    private static void resumenInventario() {
+        System.out.println("\\n--- RESUMEN GENERAL DEL INVENTARIO ---");
+        if (inventario.isEmpty()) {
+            mostrarMensaje("El inventario está actualmente vacío.", "INFO");
+            return;
+        }
+
+        int totalFisicos = 0;
+        int totalDigitales = 0;
+        long valorTotalInventario = 0;
+
+        for (Producto p : inventario) {
+            if (p instanceof ProductoFisico) {
+                totalFisicos++;
+            } else if (p instanceof ProductoDigital) {
+                totalDigitales++;
+            }
+            valorTotalInventario += (long) p.calcularPrecioFinal() * p.getStock();
+        }
+
+        System.out.println("Total de productos distintos: " + inventario.size());
+        System.out.println("  • Juegos en formato físico : " + totalFisicos);
+        System.out.println("  • Juegos en formato digital: " + totalDigitales);
+        System.out.println("-----------------------------------------");
+        System.out.println("VALORIZACIÓN TOTAL DEL INVENTARIO: $" + valorTotalInventario);
+        System.out.println("-----------------------------------------");
+    }
+
+    private static void precargarDatosPrueba() {
+        inventario.add(new ProductoFisico("The Legend of Zelda: Tears of the Kingdom", 49990, 10, 3990));
+        inventario.add(new ProductoDigital("Hollow Knight: Silksong", 15000, 50, 20, "Steam"));
+    }
+}`
+      },
+
+      // ACTIVIDADES DE CHEQUEO
+      quizzes: {
+        q1: {
+          question: '¿Por qué la clase <code>Producto</code> debe declararse con la palabra clave <code>abstract</code> en este sistema?',
+          options: [
+            { text: 'Porque una clase abstracta ejecuta sus métodos más rápido en la Máquina Virtual de Java.', correct: false },
+            { text: 'Porque modela una generalización conceptual que no debe instanciarse directamente con <code>new Producto(...)</code>, obligando a usar sus subtipos específicos.', correct: true },
+            { text: 'Porque en Java es obligatorio que todas las clases padre sean abstractas.', correct: false },
+            { text: 'Porque de lo contrario no se podría almacenar en una colección <code>ArrayList</code>.', correct: false }
+          ],
+          explanation: 'Producto representa una abstracción del negocio. No vendemos "un producto abstracto", sino un juego físico o uno digital. Al marcarla abstract, el compilador impide instanciarla directamente con new y exige implementar el cálculo de precio en las hijas.',
+          hint: 'Piensa en si tiene sentido vender un producto sin saber si requiere envío o si tiene plataforma digital.',
+          level: 'base'
+        },
+        q2: {
+          question: 'En el constructor de <code>ProductoFisico</code>, ¿por qué la llamada <code>super(nombre, precioBase, stock);</code> DEBE ser la primera línea?',
+          options: [
+            { text: 'Es solo una recomendación estilística; compilaría igual si se coloca al final.', correct: false },
+            { text: 'Porque Java exige que el estado del padre se inicialice por completo antes de que la clase hija configure sus propios atributos.', correct: true },
+            { text: 'Porque super() reserva el espacio en el disco duro para la base de datos.', correct: false },
+            { text: 'Para convertir automáticamente los atributos del padre en variables públicas.', correct: false }
+          ],
+          explanation: 'Regla fundamental de Java: antes de construir la especialización (la clase hija), la base (la clase padre) debe estar completamente inicializada. Por eso super() debe ser obligatoriamente la primera sentencia ejecutable del constructor.',
+          hint: 'Igual que en un LEGO: no puedes montar el segundo piso sin haber colocado primero la base.',
+          level: 'base'
+        },
+        q3: {
+          question: 'Al recorrer el inventario con <code>for (Producto p : inventario)</code> e invocar <code>p.mostrarInfo()</code>, ¿cómo sabe Java cuál versión del método ejecutar si hay juegos físicos y digitales mezclados?',
+          options: [
+            { text: 'Java incluye internamente una instrucción <code>if-else</code> oculta que revisa el nombre de la clase.', correct: false },
+            { text: 'Mediante polimorfismo dinámico (late binding): en tiempo de ejecución, Java consulta el tipo real del objeto en memoria apuntado por la referencia.', correct: true },
+            { text: 'Siempre ejecuta la versión de <code>Producto</code> padre porque la variable de referencia fue declarada como <code>Producto p</code>.', correct: false },
+            { text: 'Ejecuta al azar una de las dos versiones disponibles.', correct: false }
+          ],
+          explanation: 'Ese es el corazón del polimorfismo: aunque la variable de referencia sea de tipo Producto, la Máquina Virtual resuelve dinámicamente el método de la instancia real (ProductoFisico o ProductoDigital) en tiempo de ejecución sin requerir condicionales.',
+          hint: 'Recuerda el concepto de enlace dinámico o despacho dinámico de métodos.',
+          level: 'inter'
+        },
+        q4: {
+          question: 'Dentro de <code>calcularPrecioFinal()</code> en <code>ProductoFisico</code>, ¿por qué se escribe <code>getPrecioBase() + this.costoEnvio</code> en lugar de <code>this.precioBase + this.costoEnvio</code>?',
+          options: [
+            { text: 'Porque <code>precioBase</code> es <code>private</code> en <code>Producto</code>, por lo que las hijas no tienen acceso directo y deben usar el getter público.', correct: true },
+            { text: 'Porque los getters incrementan automáticamente el valor en memoria.', correct: false },
+            { text: 'Porque <code>precioBase</code> es una constante estática de Java.', correct: false },
+            { text: 'No hay ninguna diferencia técnica; ambas formas compilan idéntico.', correct: false }
+          ],
+          explanation: 'El modificador private restringe la visibilidad exclusivamente al interior de la clase Producto. Ni siquiera sus clases hijas pueden acceder directamente a variables privadas; el encapsulamiento exige acceder a través de métodos públicos como getPrecioBase().',
+          hint: 'Recuerda el significado del modificador private frente al principio de encapsulamiento.',
+          level: 'base'
+        },
+        q5: {
+          question: '¿Qué sucedería si el usuario escribe la palabra <code>"gratis"</code> cuando el sistema pide ingresar el precio base y NO existe un bloque <code>try-catch</code>?',
+          options: [
+            { text: 'Java convierte automáticamente la palabra "gratis" al número 0.', correct: false },
+            { text: 'El método <code>Integer.parseInt()</code> lanza una excepción <code>NumberFormatException</code> no capturada y el programa se cae abruptamente.', correct: true },
+            { text: 'El sistema ignora la entrada y continúa sin guardar cambios.', correct: false },
+            { text: 'El compilador javac detecta el error en tiempo de diseño.', correct: false }
+          ],
+          explanation: 'Integer.parseInt() requiere caracteres numéricos válidos. Al recibir texto no convertible, lanza NumberFormatException. Si no está protegida con try-catch, la excepción detiene la ejecución del programa, violando el requerimiento R11.',
+          hint: 'Revisa el requerimiento R11: ¿por qué se exige que el programa "nunca se detenga"?',
+          level: 'inter'
+        }
+      },
+
+      vf: {
+        v1: {
+          question: '1. Una clase abstracta en Java puede contener un constructor con parámetros que inicialice sus atributos.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Aunque no se pueda hacer "new Producto()", la clase abstracta necesita un constructor para que las clases hijas puedan inicializar sus datos comunes a través de super().',
+          level: 'base'
+        },
+        v2: {
+          question: '2. En una clase abstracta es obligatorio que absolutamente TODOS sus métodos sean abstractos.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Falso. Una clase abstracta puede tener métodos con implementación completa (concretos), como mostrarInfo(), junto a métodos sin cuerpo (abstractos) como calcularPrecioFinal().',
+          level: 'base'
+        },
+        v3: {
+          question: '3. La sobrecarga (overload) ocurre cuando una clase hija redefine un método heredado con el mismo nombre y mismos parámetros.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Falso. Eso es sobrescritura (@Override). La sobrecarga (overload) ocurre dentro de una misma clase cuando existen métodos con el mismo nombre pero diferente firma (distintos parámetros), como mostrarMensaje(String) y mostrarMensaje(String, String).',
+          level: 'inter'
+        },
+        v4: {
+          question: '4. Al vender un producto, si ejecutamos <code>p.setStock(nuevoStock)</code>, la modificación persiste en el <code>ArrayList</code> porque <code>p</code> es una referencia al objeto en memoria.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Verdadero. En Java los objetos no se copian por valor; las variables guardan referencias a la memoria heap. Modificar el objeto a través de p impacta directamente al elemento guardado en la lista.',
+          level: 'inter'
+        },
+        v5: {
+          question: '5. Para generar el resumen del inventario (R10) y contar cuántos productos físicos y digitales existen, el operador <code>instanceof</code> es la herramienta adecuada en Java.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Verdadero. instanceof permite consultar en tiempo de ejecución si un objeto concreto pertenece o deriva de una clase específica (ej: p instanceof ProductoFisico).',
+          level: 'base'
+        }
+      },
+
+      matching: {
+        instruction: 'Conecta cada concepto de POO con su aplicación concreta en el caso de la tienda:',
+        pairs: [
+          { term: 'Clase Abstracta (Producto)', definition: 'Molde base no instanciable que define atributos comunes y métodos obligatorios.' },
+          { term: 'Invocación super(...)', definition: 'Llamada que delega la inicialización de atributos privados a la superclase directa.' },
+          { term: 'Sobrescritura (@Override)', definition: 'Redefinición de calcularPrecioFinal() en cada subclase según las reglas comerciales de envío o descuento.' },
+          { term: 'ArrayList<Producto>', definition: 'Colección dinámica polimórfica que almacena tanto objetos físicos como digitales bajo un tipo común.' },
+          { term: 'try-catch (NumberFormatException)', definition: 'Estructura defensiva que intercepta errores de tipeo evitando que la aplicación se caiga.' },
+          { term: 'Operador instanceof', definition: 'Inspección de tipos en tiempo de ejecución para contabilizar cantidades por categoría en el resumen.' }
+        ],
+        level: 'inter'
+      },
+
+      errors: {
+        e1: {
+          instruction: 'Observa la definición de este constructor en <code>ProductoFisico</code>. Identifica la línea que provocará un <strong>error de compilación</strong>:',
+          codeLines: [
+            { text: 'public class ProductoFisico extends Producto {', hasError: false },
+            { text: '    private int costoEnvio;', hasError: false },
+            { text: '    public ProductoFisico(String nombre, int precioBase, int stock, int costoEnvio) {', hasError: false },
+            { text: '        this.nombre = nombre; // Intentando asignar directamente', hasError: true },
+            { text: '        this.precioBase = precioBase;', hasError: false },
+            { text: '        this.stock = stock;', hasError: false },
+            { text: '        this.costoEnvio = costoEnvio;', hasError: false },
+            { text: '    }', hasError: false },
+            { text: '}', hasError: false }
+          ],
+          explanation: 'Línea 4: "nombre" tiene modificador private en la clase Producto. Una subclase jamás puede acceder ni asignar atributos privados del padre con "this.". La forma correcta y requerida por Java es invocar super(nombre, precioBase, stock) en la primera línea.',
+          hint: '¿Cómo deben interactuar las clases hijas con los atributos privados del padre?',
+          level: 'inter'
+        },
+        e2: {
+          instruction: 'Un estudiante intentó registrar un producto de prueba en el método <code>main</code>. ¿Cuál línea genera un <strong>error de compilación</strong>?',
+          codeLines: [
+            { text: 'ArrayList<Producto> lista = new ArrayList<>();', hasError: false },
+            { text: 'Producto p1 = new ProductoFisico("Zelda", 49990, 10, 3990);', hasError: false },
+            { text: 'Producto p2 = new Producto("Juego Genérico", 25000, 5);', hasError: true },
+            { text: 'Producto p3 = new ProductoDigital("Silksong", 15000, 20, 10, "Steam");', hasError: false },
+            { text: 'lista.add(p1);', hasError: false },
+            { text: 'lista.add(p2);', hasError: false },
+            { text: 'lista.add(p3);', hasError: false }
+          ],
+          explanation: 'Línea 3: "Producto is abstract; cannot be instantiated". Java prohíbe taxativamente crear instancias directas de clases declaradas como abstract. Solo se pueden instanciar sus subclases concretas.',
+          hint: 'Recuerda qué significa que una clase sea "abstract".',
+          level: 'base'
+        },
+        e3: {
+          instruction: 'Revisa la declaración de este método en <code>Producto.java</code>. ¿Cuál línea contiene un <strong>error de sintaxis</strong> de POO?',
+          codeLines: [
+            { text: 'public abstract class Producto {', hasError: false },
+            { text: '    private String nombre;', hasError: false },
+            { text: '    // Declaración de método abstracto:', hasError: false },
+            { text: '    public abstract int calcularPrecioFinal() {', hasError: true },
+            { text: '        return this.precioBase;', hasError: false },
+            { text: '    }', hasError: false },
+            { text: '}', hasError: false }
+          ],
+          explanation: 'Línea 4: Los métodos abstractos en Java NO deben tener cuerpo ni llaves {}. Su declaración finaliza con punto y coma: "public abstract int calcularPrecioFinal();". La lógica la proveen las subclases.',
+          hint: 'Los métodos abstractos definen firmas obligatorias, no cuerpos de ejecución.',
+          level: 'inter'
+        }
+      },
+
+      fills: {
+        f1: {
+          instruction: 'Completa la primera línea del constructor de <code>ProductoFisico</code> para delegar la inicialización al padre:',
+          segments: [
+            { text: 'public ProductoFisico(String nombre, int precioBase, int stock, int costoEnvio) {\n    ', isBlank: false },
+            { text: '', isBlank: true, answer: 'super' },
+            { text: '(nombre, precioBase, stock);\n    this.costoEnvio = costoEnvio;\n}', isBlank: false }
+          ],
+          explanation: 'super(...) delega la inicialización de atributos privados al constructor de la superclase.',
+          hint: 'Palabra reservada de Java para referirse a la superclase.',
+          level: 'base'
+        },
+        f2: {
+          instruction: 'Completa la acumulación del valor total del inventario llamando al método polimórfico:',
+          segments: [
+            { text: 'long total = 0;\nfor (Producto p : inventario) {\n    total += (long) p.', isBlank: false },
+            { text: '', isBlank: true, answer: 'calcularPrecioFinal' },
+            { text: '() * p.getStock();\n}', isBlank: false }
+          ],
+          explanation: 'p.calcularPrecioFinal() calcula dinámicamente el precio real con envío o descuento sin importar la categoría.',
+          hint: 'El método que calcula el precio con envío o descuento.',
+          level: 'inter'
+        }
+      },
+
+      orderData: {
+        instruction: 'Ordena secuencialmente los pasos que debe seguir el método <code>venderProducto()</code> para garantizar una operación segura y robusta:',
+        steps: [
+          { text: '1. Mostrar la lista numerada de productos con su stock actual y precio final.', correctOrder: 1 },
+          { text: '2. Solicitar al usuario el número de producto y validar con try-catch que sea un número entero.', correctOrder: 2 },
+          { text: '3. Comprobar que el número ingresado esté dentro del rango válido de la lista (1 a size).', correctOrder: 3 },
+          { text: '4. Solicitar la cantidad a comprar y verificar que sea mayor a cero y no supere el stock disponible.', correctOrder: 4 },
+          { text: '5. Descontar las unidades vendidas del producto usando su método setter: setStock().', correctOrder: 5 },
+          { text: '6. Calcular el total a pagar (precio final × cantidad) y emitir el comprobante de venta.', correctOrder: 6 }
+        ],
+        explanation: 'Esta secuencia valida en capas: formato numérico, rango de existencia, regla de negocio de stock disponible, y finalmente mutación de datos con emisión de comprobante.',
+        level: 'inter'
+      },
+
+      multiSel: {
+        m1: {
+          question: '¿Cuáles de las siguientes decisiones de diseño en esta solución demuestran la aplicación correcta de <strong>ENCAPSULAMIENTO</strong>?',
+          options: [
+            { text: 'Declarar los atributos <code>nombre</code>, <code>precioBase</code> y <code>stock</code> como <code>private</code> en <code>Producto</code>.', correct: true },
+            { text: 'Proporcionar métodos <code>getters</code> públicos para permitir la lectura segura de los datos desde otras clases.', correct: true },
+            { text: 'Proveer un método <code>setStock()</code> como único punto autorizado para modificar la cantidad en existencia.', correct: true },
+            { text: 'Usar la palabra clave <code>extends Producto</code> para que <code>ProductoFisico</code> herede las características.', correct: false },
+            { text: 'Implementar un bucle <code>while</code> para mantener activo el menú principal.', correct: false }
+          ],
+          explanation: 'El encapsulamiento consiste en ocultar el estado interno de los objetos (atributos private) y ofrecer acceso controlado a través de métodos públicos (getters y setters). La herencia (extends) y las estructuras de control (while) pertenecen a otros conceptos.',
+          hint: 'El encapsulamiento se refiere a la protección y visibilidad de los datos.',
+          level: 'base'
+        },
+        m2: {
+          question: '¿En cuáles de las siguientes situaciones el programa se beneficia directamente del <strong>POLIMORFISMO</strong>?',
+          options: [
+            { text: 'Al almacenar instancias de <code>ProductoFisico</code> y <code>ProductoDigital</code> dentro de una misma lista <code>ArrayList&lt;Producto&gt;</code>.', correct: true },
+            { text: 'Al recorrer el inventario con <code>for (Producto p : inventario)</code> e imprimir <code>p.mostrarInfo()</code> sin condicionales <code>if</code> por tipo.', correct: true },
+            { text: 'Al calcular el valor total del inventario llamando a <code>p.calcularPrecioFinal()</code> para cada producto sin importar su categoría.', correct: true },
+            { text: 'Al interceptar un error de formato numérico con <code>catch (NumberFormatException e)</code>.', correct: false },
+            { text: 'Al declarar la variable <code>boolean ejecutando = true</code> para controlar el ciclo del menú.', correct: false }
+          ],
+          explanation: 'El polimorfismo permite tratar objetos de diferentes clases hijas a través de una interfaz o tipo común (Producto), tanto en colecciones heterogéneas como en el despacho dinámico de métodos (mostrarInfo y calcularPrecioFinal) sin requerir código condicional.',
+          hint: 'Piensa en "muchas formas": un mismo llamado comportándose según el objeto real.',
+          level: 'inter'
+        }
+      }
+    };
+  },
+  methods: {
+    switchTab(t) {
+      this.tab = t;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      this.highlightCode();
+    },
+    selectFile(f) {
+      this.activeFile = f;
+      this.highlightCode();
+    },
+    copyFile(codeKey) {
+      const code = this.sourceCodes[codeKey];
+      if (!code) return;
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(code).then(() => {
+          this.copiedFile = codeKey;
+          setTimeout(() => {
+            if (this.copiedFile === codeKey) {
+              this.copiedFile = null;
+            }
+          }, 2000);
+        });
+      } else {
+        // Fallback
+        const textarea = document.createElement('textarea');
+        textarea.value = code;
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        this.copiedFile = codeKey;
+        setTimeout(() => {
+          if (this.copiedFile === codeKey) {
+            this.copiedFile = null;
+          }
+        }, 2000);
+      }
+    },
+    highlightCode() {
+      this.$nextTick(() => {
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code').forEach(block => {
+            if (!block.dataset.highlighted) {
+              hljs.highlightElement(block);
+            }
+          });
+        }
+      });
+    }
+  },
+  mounted() {
+    this.highlightCode();
+  }
+});
+
+ActivityEngine.register(app);
+app.mount('#app');
+</script>
+</body>
+</html>
