@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuración JavaFX — Java OOP · Profe Carlitos</title>
+  <meta name="description" content="Presentación: Configuración de JavaFX, controles básicos y CSS — Desarrollo Orientado a Objetos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+  <style>
+    body { overflow: hidden; }
+    .diagram-box {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      margin: 4px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 140px;
+    }
+    .diagram-box.parent { background: var(--pastel-lavanda); }
+    .diagram-box.child { background: var(--pastel-celeste); }
+    .diagram-box.alt { background: var(--pastel-menta); }
+    .diagram-box.warn { background: var(--pastel-durazno); }
+    .diagram-arrow {
+      display: block;
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+    }
+    .diagram-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .ui-preview {
+      background: #191414;
+      border: 2px solid #333;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      color: #fff;
+      font-family: var(--font-main);
+      max-width: 500px;
+      margin: 16px auto;
+    }
+    .ui-preview .ui-label { color: #b3b3b3; font-size: 13px; margin-bottom: 4px; }
+    .ui-preview .ui-input {
+      background: #333;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: #fff;
+      width: 100%;
+      font-size: 14px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+    .ui-preview .ui-btn {
+      background: #1db954;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 24px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    .ui-preview h3 { color: #1db954; margin: 0 0 16px; font-size: 20px; }
+    .method-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    .method-table th, .method-table td {
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .method-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+    }
+    .method-table tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+    @media (max-width: 760px) {
+      .ui-preview { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="app">
+
+<header class="topbar">
+  <div class="topbar-brand"><span class="alien">👽</span> Java · Configuración JavaFX</div>
+  <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
+  <div class="progress-bar" :style="{width: ((current+1)/total*100)+'%'}"></div>
+</header>
+
+<main class="slide-area">
+
+<!-- ============================================== -->
+<!-- SLIDE 0: PORTADA -->
+<!-- ============================================== -->
+<section v-if="current===0" data-slide class="slide">
+  <div class="kicker">Unidad 2.1 · Configuración JavaFX</div>
+  <h1 style="font-size:clamp(36px,5vw,56px);">JavaFX</h1>
+  <p class="lead">De la consola a la ventana: tu primera interfaz gráfica en Java.</p>
+  <div style="font-size:64px; margin-top:24px;">🛸</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 1: PUENTE CON LO ANTERIOR -->
+<!-- ============================================== -->
+<section v-else-if="current===1" data-slide class="slide">
+  <div class="kicker">Puente</div>
+  <h2>Lo que ya sabes vs. lo que viene</h2>
+  <p>Hasta ahora trabajaste con aplicaciones de <strong>consola</strong>: texto que entra por teclado y sale por pantalla. Ahora vamos a crear aplicaciones con <strong>ventanas</strong>.</p>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-lavanda">
+      <strong>Consola (lo que ya sabes)</strong>
+      <p><code>Scanner</code> para leer texto</p>
+      <p><code>System.out.println()</code> para mostrar</p>
+      <p>Menú con <code>switch</code></p>
+      <p>Todo es texto, línea por línea</p>
+    </div>
+    <div class="card card-menta">
+      <strong>JavaFX (lo que viene)</strong>
+      <p><code>TextField</code> para que el usuario escriba</p>
+      <p><code>Label</code> para mostrar texto</p>
+      <p><code>Button</code> para acciones</p>
+      <p>Interfaz visual con diseño</p>
+    </div>
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:16px;">
+    <p style="margin:0;"><strong>Buena noticia:</strong> La lógica de tu programa (clases, ArrayList, constructores) no cambia. Solo cambia <em>cómo</em> el usuario interactúa con tu aplicación.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 2: QUÉ ES JAVAFX -->
+<!-- ============================================== -->
+<section v-else-if="current===2" data-slide class="slide">
+  <div class="kicker">Concepto</div>
+  <h2>¿Qué es JavaFX?</h2>
+  <p>JavaFX es el <strong>framework oficial</strong> para crear interfaces gráficas (GUI) en Java. Reemplazó a Swing, que era viejo y limitado visualmente.</p>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-rosa">
+      <strong>Swing (antes) 👴</strong>
+      <p>Aspecto visual anticuado</p>
+      <p>No soporta CSS</p>
+      <p>Difícil de personalizar</p>
+      <p>Aún existe, pero ya no se recomienda para proyectos nuevos</p>
+    </div>
+    <div class="card card-menta">
+      <strong>JavaFX (ahora) 🚀</strong>
+      <p>Aspecto visual moderno</p>
+      <p>Soporta CSS para estilos</p>
+      <p>Controles modernos listos para usar</p>
+      <p>Es lo que la industria usa para Java de escritorio</p>
+    </div>
+  </div>
+
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;">JavaFX no viene incluido en Java por defecto. Por eso necesitas Maven: para descargarlo como dependencia.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 3: POM.XML PARA JAVAFX -->
+<!-- ============================================== -->
+<section v-else-if="current===3" data-slide class="slide">
+  <div class="kicker">Configuración</div>
+  <h2>El pom.xml para JavaFX</h2>
+  <p>Este es el <code>pom.xml</code> completo que necesitas. En la guía de actividad lo vas a copiar tal cual.</p>
+
+  <pre class="code-block"><code class="language-xml">&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.spotify.mini&lt;/groupId&gt;
+    &lt;artifactId&gt;spotify-mini&lt;/artifactId&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+        &lt;javafx.version&gt;21.0.2&lt;/javafx.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+            &lt;version&gt;${javafx.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+                &lt;artifactId&gt;javafx-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;0.0.8&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;mainClass&gt;com.spotify.mini.SpotifyMiniApp&lt;/mainClass&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:8px;">
+    <p style="margin:0;"><strong>No lo memorices.</strong> Solo entiende que: <code>javafx-controls</code> es la dependencia que trae los botones, labels, etc. El plugin <code>javafx-maven-plugin</code> le dice a Maven cómo ejecutar tu app JavaFX.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 4: TU PRIMERA VENTANA -->
+<!-- ============================================== -->
+<section v-else-if="current===4" data-slide class="slide">
+  <div class="kicker">Primera ventana</div>
+  <h2>Tu primera ventana en JavaFX</h2>
+  <p>Este es el código mínimo para abrir una ventana vacía:</p>
+
+  <pre class="code-block"><code class="language-java">package com.spotify.mini;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class SpotifyMiniApp extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        VBox root = new VBox();                    // Contenedor principal
+        Scene scene = new Scene(root, 600, 400);   // Escena de 600x400 px
+        stage.setTitle("Spotify Mini");            // Título de la ventana
+        stage.setScene(scene);                     // Asignar la escena
+        stage.show();                              // Mostrar la ventana
+    }
+
+    public static void main(String[] args) {
+        launch(args);    // Arranca JavaFX
+    }
+}</code></pre>
+
+  <div class="callout callout-celeste" style="margin-top:12px;">
+    <h4 style="margin:0 0 8px;">Línea por línea:</h4>
+    <p style="margin:0;">• Tu clase <strong>extiende</strong> <code>Application</code> — esto la convierte en una app JavaFX<br>
+    • <code>start(Stage stage)</code> — JavaFX llama a este método al iniciar. El <code>Stage</code> es la ventana<br>
+    • <code>VBox</code> — contenedor que apila elementos verticalmente<br>
+    • <code>Scene</code> — el contenido que se muestra dentro de la ventana<br>
+    • <code>launch(args)</code> — arranca todo el sistema JavaFX</p>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <p style="margin:0;"><strong>¿Cómo se ejecuta?</strong> En la terminal con <code>mvn javafx:run</code>, o creando una clase <code>Main.java</code> con <code>SpotifyMiniApp.main(args);</code> para usar el botón "Run Java" / <code>F5</code> de VS Code.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 5: LABEL -->
+<!-- ============================================== -->
+<section v-else-if="current===5" data-slide class="slide">
+  <div class="kicker">Controles básicos</div>
+  <h2>Label — Mostrar texto</h2>
+  <p>Un <code>Label</code> muestra texto en la ventana. Es el equivalente visual de <code>System.out.println()</code>.</p>
+
+  <pre class="code-block"><code class="language-java">import javafx.scene.control.Label;
+
+// Crear un label
+Label titulo = new Label("Spotify Mini 🎧");
+Label subtitulo = new Label("Gestiona tu colección de canciones");
+
+// Agregar al contenedor
+VBox root = new VBox(10);    // 10 = espacio entre elementos
+root.getChildren().addAll(titulo, subtitulo);</code></pre>
+
+  <div class="ui-preview" style="margin-top:16px;">
+    <h3>Spotify Mini 🎧</h3>
+    <div style="color:#b3b3b3; font-size:14px;">Gestiona tu colección de canciones</div>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Patrón:</strong> Crear el control → Agregarlo al contenedor con <code>getChildren().add()</code> o <code>addAll()</code>. Este patrón se repite para todos los controles.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 6: BUTTON -->
+<!-- ============================================== -->
+<section v-else-if="current===6" data-slide class="slide">
+  <div class="kicker">Controles básicos</div>
+  <h2>Button — Ejecutar acciones</h2>
+  <p>Un <code>Button</code> ejecuta código cuando el usuario hace clic. Es el reemplazo del menú <code>switch</code> de la consola.</p>
+
+  <pre class="code-block"><code class="language-java">import javafx.scene.control.Button;
+
+// Crear un botón
+Button btnAgregar = new Button("Agregar Canción");
+
+// Definir qué pasa al hacer clic
+btnAgregar.setOnAction(e -> {
+    System.out.println("Botón clickeado!");
+    // Aquí irá la lógica real
+});</code></pre>
+
+  <div class="callout callout-lavanda" style="margin-top:16px;">
+    <h4 style="margin:0 0 8px;">¿Qué es <code>e -> { ... }</code>?</h4>
+    <p style="margin:0;">Es una <strong>expresión lambda</strong> — una forma corta de escribir "cuando ocurra el evento, ejecuta este código". La <code>e</code> es el evento (no lo usamos por ahora, pero debe estar).</p>
+  </div>
+
+  <div class="ui-preview" style="margin-top:12px;">
+    <button class="ui-btn">Agregar Canción</button>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 7: TEXTFIELD -->
+<!-- ============================================== -->
+<section v-else-if="current===7" data-slide class="slide">
+  <div class="kicker">Controles básicos</div>
+  <h2>TextField — Entrada de texto</h2>
+  <p>Un <code>TextField</code> permite al usuario escribir texto. Es el reemplazo de <code>Scanner</code>.</p>
+
+  <pre class="code-block"><code class="language-java">import javafx.scene.control.TextField;
+
+// Crear campo de texto
+TextField txtTitulo = new TextField();
+txtTitulo.setPromptText("Nombre de la canción");  // Texto gris de ayuda
+
+// Obtener lo que el usuario escribió
+String titulo = txtTitulo.getText();
+
+// Limpiar el campo después de usarlo
+txtTitulo.clear();</code></pre>
+
+  <div class="ui-preview" style="margin-top:16px;">
+    <div class="ui-label">Nombre de la canción</div>
+    <input class="ui-input" placeholder="Nombre de la canción" disabled>
+  </div>
+
+  <table class="method-table" style="margin-top:16px;">
+    <thead>
+      <tr><th>Método</th><th>Descripción</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>getText()</code></td><td>Obtiene el texto que escribió el usuario</td></tr>
+      <tr><td><code>setText("texto")</code></td><td>Establece el texto del campo por código</td></tr>
+      <tr><td><code>setPromptText("...")</code></td><td>Texto gris de ayuda que se muestra cuando el campo está vacío</td></tr>
+      <tr><td><code>clear()</code></td><td>Borra el contenido del campo</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 8: JUNTANDO TODO -->
+<!-- ============================================== -->
+<section v-else-if="current===8" data-slide class="slide">
+  <div class="kicker">Ejemplo completo</div>
+  <h2>Juntando Label + TextField + Button</h2>
+
+  <pre class="code-block"><code class="language-java">@Override
+public void start(Stage stage) {
+    // Controles
+    Label titulo = new Label("Spotify Mini 🎧");
+    TextField txtCancion = new TextField();
+    txtCancion.setPromptText("Nombre de la canción");
+    Button btnAgregar = new Button("Agregar");
+
+    // Evento del botón
+    btnAgregar.setOnAction(e -> {
+        String cancion = txtCancion.getText();
+        System.out.println("Canción agregada: " + cancion);
+        txtCancion.clear();
+    });
+
+    // Contenedor vertical con 10px de espacio
+    VBox root = new VBox(10, titulo, txtCancion, btnAgregar);
+    root.setStyle("-fx-padding: 20;");
+
+    // Escena y Stage
+    Scene scene = new Scene(root, 400, 300);
+    stage.setTitle("Spotify Mini");
+    stage.setScene(scene);
+    stage.show();
+}</code></pre>
+
+  <div class="ui-preview">
+    <h3>Spotify Mini 🎧</h3>
+    <input class="ui-input" placeholder="Nombre de la canción" disabled>
+    <button class="ui-btn">Agregar</button>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 9: CSS EN JAVAFX — INTRO -->
+<!-- ============================================== -->
+<section v-else-if="current===9" data-slide class="slide">
+  <div class="kicker">Estilo visual</div>
+  <h2>CSS en JavaFX</h2>
+  <p>JavaFX usa <strong>CSS</strong> para definir el aspecto visual de los controles. Es muy similar al CSS de páginas web, pero con algunas diferencias.</p>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-celeste">
+      <strong>Igual que en web</strong>
+      <p>Selectores por tipo, clase e id</p>
+      <p>Propiedades como color, padding, font-size</p>
+      <p>Pseudoclases como <code>:hover</code> y <code>:focused</code></p>
+      <p>Se escribe en un archivo <code>.css</code> externo</p>
+    </div>
+    <div class="card card-durazno">
+      <strong>Diferente a la web</strong>
+      <p>Las propiedades llevan el prefijo <code>-fx-</code></p>
+      <p>Ejemplo: <code>-fx-background-color</code> en vez de <code>background-color</code></p>
+      <p>Los selectores de tipo usan el nombre de la clase Java: <code>.label</code>, <code>.button</code>, <code>.text-field</code></p>
+    </div>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <p style="margin:0;"><strong>¿Por qué CSS?</strong> Separar el diseño del código. Puedes cambiar toda la apariencia de tu app sin tocar una línea de Java.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 10: CSS — PROPIEDADES PRINCIPALES -->
+<!-- ============================================== -->
+<section v-else-if="current===10" data-slide class="slide">
+  <div class="kicker">CSS JavaFX</div>
+  <h2>Propiedades CSS más usadas</h2>
+
+  <table class="method-table">
+    <thead>
+      <tr><th>Propiedad CSS JavaFX</th><th>Qué hace</th><th>Ejemplo</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><code>-fx-background-color</code></td><td>Color de fondo</td><td><code>#191414</code></td></tr>
+      <tr><td><code>-fx-text-fill</code></td><td>Color del texto</td><td><code>#ffffff</code></td></tr>
+      <tr><td><code>-fx-font-size</code></td><td>Tamaño de letra</td><td><code>16px</code></td></tr>
+      <tr><td><code>-fx-font-weight</code></td><td>Grosor de letra</td><td><code>bold</code></td></tr>
+      <tr><td><code>-fx-padding</code></td><td>Espacio interior</td><td><code>10 20 10 20</code></td></tr>
+      <tr><td><code>-fx-border-color</code></td><td>Color del borde</td><td><code>#333333</code></td></tr>
+      <tr><td><code>-fx-border-radius</code></td><td>Bordes redondeados</td><td><code>8</code></td></tr>
+      <tr><td><code>-fx-background-radius</code></td><td>Fondo redondeado</td><td><code>8</code></td></tr>
+      <tr><td><code>-fx-cursor</code></td><td>Cursor del mouse</td><td><code>hand</code></td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Regla:</strong> Casi toda propiedad CSS de la web existe en JavaFX, solo agrégale el prefijo <code>-fx-</code>. Si no estás seguro, busca "JavaFX CSS Reference" en Google.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 11: CSS — ARCHIVO EXTERNO Y SELECTORES -->
+<!-- ============================================== -->
+<section v-else-if="current===11" data-slide class="slide">
+  <div class="kicker">CSS JavaFX</div>
+  <h2>Archivo CSS externo y selectores</h2>
+  <p>El archivo CSS se guarda en <code>src/main/resources/styles.css</code> y se vincula a la escena desde Java:</p>
+
+  <pre class="code-block"><code class="language-java">// En tu método start(), después de crear la Scene:
+scene.getStylesheets().add(
+    getClass().getResource("/styles.css").toExternalForm()
+);</code></pre>
+
+  <p style="margin-top:16px;">Y en <code>styles.css</code>:</p>
+
+  <pre class="code-block"><code class="language-css">/* Selector por tipo: aplica a TODOS los Label */
+.label {
+    -fx-text-fill: #ffffff;
+}
+
+/* Selector por clase CSS (la asignas desde Java) */
+.titulo-principal {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1db954;
+}
+
+/* Selector por ID */
+#btn-agregar {
+    -fx-background-color: #1db954;
+    -fx-text-fill: #ffffff;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+/* Pseudoclase: hover (cuando el mouse está encima) */
+#btn-agregar:hover {
+    -fx-background-color: #1ed760;
+}
+
+/* Pseudoclase: focused (cuando el campo tiene foco) */
+.text-field:focused {
+    -fx-border-color: #1db954;
+    -fx-border-width: 2;
+}</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:8px;">
+    <h4 style="margin:0 0 6px;">Asignar clase o ID desde Java:</h4>
+    <p style="margin:0;"><code>titulo.getStyleClass().add("titulo-principal");</code><br>
+    <code>btnAgregar.setId("btn-agregar");</code></p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 12: VERIFICACIÓN -->
+<!-- ============================================== -->
+<section v-else-if="current===12" data-slide class="slide">
+  <div class="kicker">Verificación</div>
+  <h2>¿Entendiste JavaFX?</h2>
+
+  <quiz-question v-bind="quiz1"></quiz-question>
+  <quiz-question v-bind="quiz2"></quiz-question>
+  <quiz-question v-bind="quiz3"></quiz-question>
+  <quiz-question v-bind="quiz4"></quiz-question>
+</section>
+
+</main>
+
+<footer class="controls-bar">
+  <button class="btn" @click="prev">← Anterior</button>
+  <div class="dots">
+    <span v-for="i in total" :key="i" class="dot" :class="{active: current===i-1}" @click="goTo(i-1)"></span>
+  </div>
+  <button class="btn" @click="next">Siguiente →</button>
+</footer>
+
+</div>
+
+<script src="../../shared/activity-engine.js"></script>
+<script>
+const { createApp } = Vue;
+const app = createApp({
+  data() {
+    return {
+      current: 0,
+      total: 13,
+      quiz1: {
+        question: '¿Qué clase debe extender tu clase principal para crear una aplicación JavaFX?',
+        options: [
+          { text: '<code>JFrame</code>', correct: false },
+          { text: '<code>Application</code>', correct: true },
+          { text: '<code>Window</code>', correct: false },
+          { text: '<code>Stage</code>', correct: false }
+        ],
+        explanation: 'La clase principal de una app JavaFX debe extender Application y sobreescribir el método start(Stage stage). JFrame es de Swing (el framework anterior).',
+        hint: 'El nombre de la clase padre es muy genérico — literalmente significa "aplicación" en inglés.',
+        level: 'base'
+      },
+      quiz2: {
+        question: '¿Cuál es el equivalente de <code>Scanner</code> en JavaFX?',
+        options: [
+          { text: '<code>Label</code>', correct: false },
+          { text: '<code>Button</code>', correct: false },
+          { text: '<code>TextField</code>', correct: true },
+          { text: '<code>TextArea</code>', correct: false }
+        ],
+        explanation: 'TextField permite al usuario escribir texto, igual que Scanner.nextLine() en consola. Label solo muestra texto (como println). TextArea es para texto multilínea.',
+        hint: 'El nombre del control incluye la palabra "Field" (campo) — donde el usuario ingresa datos.',
+        level: 'base'
+      },
+      quiz3: {
+        question: '¿Cómo se escribe la propiedad CSS para cambiar el color de fondo en JavaFX?',
+        options: [
+          { text: '<code>background-color</code>', correct: false },
+          { text: '<code>-fx-background-color</code>', correct: true },
+          { text: '<code>fx-background</code>', correct: false },
+          { text: '<code>-fx-color</code>', correct: false }
+        ],
+        explanation: 'En JavaFX CSS, las propiedades llevan el prefijo -fx-. Entonces background-color se convierte en -fx-background-color.',
+        hint: 'Todas las propiedades CSS de JavaFX comparten un mismo prefijo de dos letras.',
+        level: 'inter'
+      },
+      quiz4: {
+        question: '¿Qué método se usa para definir qué pasa cuando un <code>Button</code> es clickeado?',
+        options: [
+          { text: '<code>btn.onClick(() -> { })</code>', correct: false },
+          { text: '<code>btn.addActionListener(e -> { })</code>', correct: false },
+          { text: '<code>btn.setOnAction(e -> { })</code>', correct: true },
+          { text: '<code>btn.addEventListener("click", e -> { })</code>', correct: false }
+        ],
+        explanation: 'setOnAction() es el método de JavaFX para manejar clics en botones. addActionListener() es de Swing, y addEventListener() es de JavaScript.',
+        hint: 'El método empieza con "setOn" seguido del tipo de evento.',
+        level: 'inter'
+      }
+    };
+  },
+  computed: {
+    progressWidth() { return ((this.current + 1) / this.total * 100) + '%'; }
+  },
+  methods: {
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    goTo(i) { if (i >= 0 && i < this.total) this.current = i; },
+    highlightCode() {
+      this.$nextTick(() => {
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code:not(.hljs)').forEach(block => hljs.highlightElement(block));
+        }
+      });
+    }
+  },
+  watch: {
+    current() { this.highlightCode(); }
+  },
+  mounted() {
+    this.highlightCode();
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); this.next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); this.prev(); }
+      if (e.key === 'Home') { e.preventDefault(); this.current = 0; }
+      if (e.key === 'End') { e.preventDefault(); this.current = this.total - 1; }
+    });
+  }
+});
+ActivityEngine.register(app);
+app.mount('#app');
+</script>
+</body>
+</html>

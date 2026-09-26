@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicios Generales — Maven, JavaFX y Ciclo de Vida · Profe Carlitos</title>
+  <meta name="description" content="Ejercicios interactivos de Maven, JavaFX, CSS, layouts y ciclo de vida en Java">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .exercises-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .exercises-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 48px 0 24px;
+      padding: 12px 0;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="exercises-container">
+
+    <header class="exercises-header">
+      <div style="font-size:40px; margin-bottom:12px;">👽</div>
+      <div class="kicker">Ejercicios generales · 2.1.5</div>
+      <h1 style="font-size:clamp(32px,4vw,48px);">Maven, JavaFX y Ciclo de Vida</h1>
+      <p class="lead">Ejercicios para verificar tu comprensión. Cada actividad indica su nivel de dificultad e incluye retroalimentación inmediata.</p>
+      <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:16px;">
+        <span class="tag tag-base">🟢 Base — Reconocer e identificar</span>
+        <span class="tag tag-inter">🔵 Intermedio — Aplicar y analizar</span>
+        <span class="tag tag-avanzado">🟣 Avanzado — Evaluar y crear</span>
+      </div>
+    </header>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 1: ALTERNATIVAS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-celeste);">📝</div>
+      Preguntas de alternativas
+    </div>
+
+    <quiz-question v-bind="quizzes.q1"></quiz-question>
+    <quiz-question v-bind="quizzes.q2"></quiz-question>
+    <quiz-question v-bind="quizzes.q3"></quiz-question>
+    <quiz-question v-bind="quizzes.q4"></quiz-question>
+    <quiz-question v-bind="quizzes.q5"></quiz-question>
+    <quiz-question v-bind="quizzes.q6"></quiz-question>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 2: VERDADERO / FALSO -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-menta);">✓✗</div>
+      Verdadero o Falso
+    </div>
+
+    <quiz-question v-bind="vf.v1"></quiz-question>
+    <quiz-question v-bind="vf.v2"></quiz-question>
+    <quiz-question v-bind="vf.v3"></quiz-question>
+    <quiz-question v-bind="vf.v4"></quiz-question>
+    <quiz-question v-bind="vf.v5"></quiz-question>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 3: TÉRMINOS PAREADOS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-durazno);">🔗</div>
+      Términos pareados
+    </div>
+
+    <matching-pairs v-bind="matching1"></matching-pairs>
+    <matching-pairs v-bind="matching2"></matching-pairs>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 4: ENCUENTRA EL ERROR -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-rosa);">🐛</div>
+      Encuentra el error
+    </div>
+
+    <code-error v-bind="errors.e1"></code-error>
+    <code-error v-bind="errors.e2"></code-error>
+    <code-error v-bind="errors.e3"></code-error>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 5: COMPLETA EL CÓDIGO -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-lavanda);">✏️</div>
+      Completa el código
+    </div>
+
+    <code-fill v-bind="fills.f1"></code-fill>
+    <code-fill v-bind="fills.f2"></code-fill>
+    <code-fill v-bind="fills.f3"></code-fill>
+
+    <!-- ============================================== -->
+    <!-- SECCIÓN 6: ORDENA LOS PASOS -->
+    <!-- ============================================== -->
+    <div class="section-title">
+      <div class="section-icon" style="background:var(--pastel-amarillo);">🔢</div>
+      Ordena los pasos
+    </div>
+
+    <order-steps v-bind="orderData1"></order-steps>
+    <order-steps v-bind="orderData2"></order-steps>
+
+    <!-- ============================================== -->
+    <!-- CIERRE -->
+    <!-- ============================================== -->
+    <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+      <h3>Ejercicios completados</h3>
+      <p class="lead" style="margin:0 auto;">Revisa tus respuestas y reintenta los ejercicios donde no acertaste. Si completaste todo correctamente, tienes una buena comprensión de Maven, JavaFX y el ciclo de vida de una aplicación.</p>
+    </div>
+
+  </div>
+</div>
+
+<script src="../../shared/activity-engine.js"></script>
+<script>
+const { createApp } = Vue;
+
+const app = createApp({
+  data() {
+    return {
+      // ===== QUIZZES (alternativas) =====
+      quizzes: {
+        q1: {
+          question: '¿Qué archivo contiene las dependencias y configuración de un proyecto Maven?',
+          options: [
+            { text: '<code>build.xml</code>', correct: false },
+            { text: '<code>pom.xml</code>', correct: true },
+            { text: '<code>settings.json</code>', correct: false },
+            { text: '<code>project.gradle</code>', correct: false }
+          ],
+          explanation: 'El pom.xml (Project Object Model) es el archivo central de Maven. Contiene la identidad del proyecto, dependencias y configuración de compilación.',
+          hint: 'El nombre tiene 3 letras antes del punto y es exclusivo de Maven.',
+          level: 'base'
+        },
+        q2: {
+          question: '¿Qué clase debe extender la clase principal de una aplicación JavaFX?',
+          options: [
+            { text: '<code>JFrame</code>', correct: false },
+            { text: '<code>Stage</code>', correct: false },
+            { text: '<code>Application</code>', correct: true },
+            { text: '<code>Scene</code>', correct: false }
+          ],
+          explanation: 'La clase principal extiende Application y sobreescribe el método start(Stage stage). JFrame es de Swing (el framework anterior).',
+          hint: 'El nombre es literalmente la traducción al inglés de "aplicación".',
+          level: 'base'
+        },
+        q3: {
+          question: '¿Cuál es la diferencia entre Stage y Scene en JavaFX?',
+          options: [
+            { text: 'Stage es el contenido y Scene es la ventana', correct: false },
+            { text: 'Stage es la ventana y Scene es el contenido dentro de ella', correct: true },
+            { text: 'Son el mismo concepto con nombres diferentes', correct: false },
+            { text: 'Stage es para consola y Scene para interfaz gráfica', correct: false }
+          ],
+          explanation: 'Stage = la ventana (marco, barra de título). Scene = el contenido (controles, layouts). Puedes cambiar la Scene sin cerrar el Stage.',
+          hint: 'Piensa en un televisor: uno es el aparato, otro es lo que se muestra en la pantalla.',
+          level: 'base'
+        },
+        q4: {
+          question: '¿Qué prefijo llevan las propiedades CSS en JavaFX?',
+          options: [
+            { text: '<code>jfx-</code>', correct: false },
+            { text: '<code>-fx-</code>', correct: true },
+            { text: '<code>javafx-</code>', correct: false },
+            { text: 'No llevan prefijo, son iguales al CSS web', correct: false }
+          ],
+          explanation: 'Todas las propiedades CSS de JavaFX llevan el prefijo -fx-. Ejemplo: -fx-background-color en vez de background-color.',
+          hint: 'El prefijo son 3 caracteres: un guión, dos letras, otro guión.',
+          level: 'inter'
+        },
+        q5: {
+          question: '¿Qué método de <code>TextField</code> obtiene el texto que escribió el usuario?',
+          options: [
+            { text: '<code>readLine()</code>', correct: false },
+            { text: '<code>value()</code>', correct: false },
+            { text: '<code>getText()</code>', correct: true },
+            { text: '<code>toString()</code>', correct: false }
+          ],
+          explanation: 'getText() retorna el String que el usuario escribió en el campo. readLine() es de Scanner/BufferedReader, no de JavaFX.',
+          hint: 'El método literalmente dice "obtener texto" en inglés.',
+          level: 'inter'
+        },
+        q6: {
+          question: '¿Qué pasa si el archivo <code>canciones.txt</code> no existe cuando la app intenta cargar datos?',
+          options: [
+            { text: 'La app lanza una excepción y se cierra', correct: false },
+            { text: 'Maven crea el archivo automáticamente', correct: false },
+            { text: 'El método verifica con <code>archivo.exists()</code> y retorna sin hacer nada', correct: true },
+            { text: 'Se crea un archivo vacío automáticamente', correct: false }
+          ],
+          explanation: 'El método cargarCanciones() primero verifica si el archivo existe con File.exists(). Si no existe, simplemente retorna — la app inicia con la lista vacía.',
+          hint: 'Revisa el método cargarCanciones() en la guía — ¿qué es lo primero que hace?',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== VERDADERO / FALSO =====
+      vf: {
+        v1: {
+          question: '<strong>Verdadero o falso:</strong> En Maven, las dependencias se descargan automáticamente desde Maven Central cuando se agregan al <code>pom.xml</code>.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Verdadero. Maven Central es un repositorio público en internet. Maven descarga las dependencias automáticamente la primera vez que se necesitan.',
+          level: 'base'
+        },
+        v2: {
+          question: '<strong>Verdadero o falso:</strong> El método <code>init()</code> de Application se ejecuta después de <code>start()</code>.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Falso. El orden es: init() → start() → (la app corre) → stop(). init() se ejecuta ANTES de start().',
+          hint: '"init" viene de "initialize" (inicializar). ¿Cuándo tiene sentido inicializar?',
+          level: 'base'
+        },
+        v3: {
+          question: '<strong>Verdadero o falso:</strong> Un <code>Label</code> en JavaFX permite que el usuario escriba texto.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Falso. Label solo muestra texto (es de solo lectura). Para que el usuario escriba, se usa TextField.',
+          level: 'base'
+        },
+        v4: {
+          question: '<strong>Verdadero o falso:</strong> En JavaFX CSS, la pseudoclase <code>:hover</code> se activa cuando el mouse está sobre el control.',
+          options: [
+            { text: 'Verdadero', correct: true },
+            { text: 'Falso', correct: false }
+          ],
+          explanation: 'Verdadero. :hover funciona igual que en CSS web — se activa cuando el cursor del mouse está posicionado sobre el control.',
+          level: 'inter'
+        },
+        v5: {
+          question: '<strong>Verdadero o falso:</strong> El método <code>stop()</code> se ejecuta solo si la app termina sin errores.',
+          options: [
+            { text: 'Verdadero', correct: false },
+            { text: 'Falso', correct: true }
+          ],
+          explanation: 'Falso. stop() se ejecuta siempre que la ventana se cierra normalmente (click en X). Es como el finally del ciclo de vida de la app.',
+          hint: 'Piensa en stop() como el equivalente de finally en try-catch.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== TÉRMINOS PAREADOS =====
+      matching1: {
+        instruction: 'Conecta cada control JavaFX con su función:',
+        pairs: [
+          { term: 'Label', definition: 'Muestra texto en la ventana (solo lectura)' },
+          { term: 'TextField', definition: 'Campo donde el usuario escribe texto' },
+          { term: 'Button', definition: 'Ejecuta código cuando el usuario hace clic' },
+          { term: 'TextArea', definition: 'Área de texto multilínea (puede ser solo lectura)' },
+          { term: 'VBox', definition: 'Contenedor que apila elementos verticalmente' },
+          { term: 'HBox', definition: 'Contenedor que organiza elementos horizontalmente' },
+          { term: 'GridPane', definition: 'Organiza elementos en filas y columnas' }
+        ],
+        level: 'base'
+      },
+      matching2: {
+        instruction: 'Conecta cada concepto de Maven/JavaFX con su descripción:',
+        pairs: [
+          { term: 'pom.xml', definition: 'Archivo que define identidad, dependencias y plugins del proyecto' },
+          { term: 'Maven Central', definition: 'Repositorio público de donde se descargan las librerías' },
+          { term: 'Stage', definition: 'La ventana de la aplicación (marco y barra de título)' },
+          { term: 'Scene', definition: 'El contenido que se muestra dentro de la ventana' },
+          { term: 'launch()', definition: 'Método que arranca todo el ciclo de vida de JavaFX' },
+          { term: 'setOnAction()', definition: 'Define qué código se ejecuta al hacer clic en un botón' }
+        ],
+        level: 'inter'
+      },
+
+      // ===== ENCUENTRA EL ERROR =====
+      errors: {
+        e1: {
+          instruction: 'Este código intenta crear una ventana JavaFX, pero tiene un error. Haz clic en la línea incorrecta.',
+          codeLines: [
+            { text: 'public class MiApp extends Application {', hasError: false },
+            { text: '', hasError: false },
+            { text: '    @Override', hasError: false },
+            { text: '    public void start(Stage stage) {', hasError: false },
+            { text: '        Label titulo = new Label("Hola");', hasError: false },
+            { text: '        VBox root = new VBox(titulo);', hasError: false },
+            { text: '        Scene scene = new Scene(root, 400, 300);', hasError: false },
+            { text: '        stage.setScene(scene);', hasError: false },
+            { text: '        // Falta stage.show()', hasError: true },
+            { text: '    }', hasError: false },
+            { text: '}', hasError: false }
+          ],
+          explanation: 'Sin stage.show(), la ventana se crea pero nunca se muestra. Siempre debes llamar a stage.show() al final del método start() para que la ventana sea visible.',
+          hint: 'La ventana existe pero no se ve. ¿Qué método la hace visible?',
+          level: 'base'
+        },
+        e2: {
+          instruction: 'Este código intenta vincular un archivo CSS, pero tiene un error. Haz clic en la línea incorrecta.',
+          codeLines: [
+            { text: 'Scene scene = new Scene(root, 600, 400);', hasError: false },
+            { text: '', hasError: false },
+            { text: 'scene.getStylesheets().add("styles.css");', hasError: true },
+            { text: '', hasError: false },
+            { text: 'stage.setScene(scene);', hasError: false },
+            { text: 'stage.show();', hasError: false }
+          ],
+          explanation: 'El CSS no se puede agregar como un String simple. Debe usarse getClass().getResource("/styles.css").toExternalForm() para que JavaFX encuentre el archivo en la carpeta resources.',
+          hint: 'JavaFX necesita una ruta especial para encontrar archivos dentro de resources/. No basta con el nombre del archivo.',
+          level: 'inter'
+        },
+        e3: {
+          instruction: 'Este código intenta leer un archivo de canciones, pero tiene un error lógico. Haz clic en la línea incorrecta.',
+          codeLines: [
+            { text: 'BufferedReader reader = new BufferedReader(new FileReader("canciones.txt"));', hasError: false },
+            { text: 'String linea;', hasError: false },
+            { text: 'while ((linea = reader.readLine()) != null) {', hasError: false },
+            { text: '    String[] partes = linea.split("|");', hasError: true },
+            { text: '    if (partes.length == 3) {', hasError: false },
+            { text: '        canciones.add(new Cancion(partes[0], partes[1], partes[2]));', hasError: false },
+            { text: '    }', hasError: false },
+            { text: '}', hasError: false },
+            { text: 'reader.close();', hasError: false }
+          ],
+          explanation: 'El método split() usa expresiones regulares. En regex, | significa "o" (disyunción). Para usar el carácter literal |, debe escaparse: split("\\\\|"). Sin esto, el split separa cada carácter individual.',
+          hint: 'El problema está en cómo split() interpreta el carácter |. En expresiones regulares, | tiene un significado especial.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== COMPLETA EL CÓDIGO =====
+      fills: {
+        f1: {
+          instruction: 'Completa el código para crear un botón que muestre un mensaje en un Label al hacer clic.',
+          segments: [
+            { text: 'Button btn = new Button("Saludar");\nLabel lblMensaje = new Label("");\n\nbtn.', isBlank: false },
+            { text: '', isBlank: true, answer: 'setOnAction' },
+            { text: '(e -> {\n    lblMensaje.setText("Hola Mundo!");\n});', isBlank: false }
+          ],
+          explanation: 'setOnAction() es el método que define qué código se ejecuta cuando el usuario hace clic en el botón. Recibe una expresión lambda como argumento.',
+          hint: 'El método empieza con "setOn" y describe el tipo de evento que maneja.',
+          level: 'base'
+        },
+        f2: {
+          instruction: 'Completa el código para vincular un archivo CSS externo a la escena.',
+          segments: [
+            { text: 'Scene scene = new Scene(root, 600, 400);\nscene.', isBlank: false },
+            { text: '', isBlank: true, answer: 'getStylesheets' },
+            { text: '().add(\n    getClass().getResource("/styles.css").toExternalForm()\n);', isBlank: false }
+          ],
+          explanation: 'getStylesheets() retorna la lista de hojas de estilo CSS vinculadas a la escena. Se usa add() para agregar una nueva hoja de estilo.',
+          hint: 'El método retorna la lista de "hojas de estilo" (stylesheets) de la escena.',
+          level: 'inter'
+        },
+        f3: {
+          instruction: 'Completa el código para guardar una canción en un archivo de texto.',
+          segments: [
+            { text: 'try (BufferedWriter writer = new BufferedWriter(new ', isBlank: false },
+            { text: '', isBlank: true, answer: 'FileWriter' },
+            { text: '("canciones.txt"))) {\n    for (Cancion c : canciones) {\n        writer.', isBlank: false },
+            { text: '', isBlank: true, answer: 'write' },
+            { text: '(c.getTitulo() + "|" + c.getArtista() + "|" + c.getDuracion());\n        writer.newLine();\n    }\n}', isBlank: false }
+          ],
+          explanation: 'FileWriter crea un escritor de archivos, y el método write() escribe texto en el archivo. newLine() agrega un salto de línea.',
+          hint: 'Uno es la clase que escribe archivos (File____), otro es el método que escribe texto.',
+          level: 'avanzado'
+        }
+      },
+
+      // ===== ORDENA LOS PASOS =====
+      orderData1: {
+        instruction: 'Ordena los pasos para crear una aplicación JavaFX con Maven:',
+        steps: [
+          { text: 'Crear el proyecto Maven en VS Code', correctOrder: 1 },
+          { text: 'Configurar el pom.xml con la dependencia de JavaFX', correctOrder: 2 },
+          { text: 'Crear la clase que extiende Application', correctOrder: 3 },
+          { text: 'Crear controles (Label, TextField, Button) en start()', correctOrder: 4 },
+          { text: 'Organizar controles en un layout (VBox, HBox)', correctOrder: 5 },
+          { text: 'Crear la Scene y asignarla al Stage', correctOrder: 6 },
+          { text: 'Llamar a stage.show() para mostrar la ventana', correctOrder: 7 }
+        ],
+        explanation: 'Primero se prepara el proyecto y sus dependencias, luego se crea la clase principal, se arman los controles y layouts, y finalmente se muestra la ventana.',
+        level: 'inter'
+      },
+      orderData2: {
+        instruction: 'Ordena el ciclo de vida de una aplicación JavaFX con persistencia:',
+        steps: [
+          { text: 'Se ejecuta launch(args) en el main', correctOrder: 1 },
+          { text: 'JavaFX llama a init() — cargar datos del archivo', correctOrder: 2 },
+          { text: 'JavaFX llama a start(Stage) — crear la interfaz', correctOrder: 3 },
+          { text: 'El usuario interactúa con la app (agrega canciones)', correctOrder: 4 },
+          { text: 'El usuario cierra la ventana', correctOrder: 5 },
+          { text: 'JavaFX llama a stop() — guardar datos en archivo', correctOrder: 6 }
+        ],
+        explanation: 'launch() arranca el ciclo. init() prepara datos, start() crea la UI, el usuario interactúa, y al cerrar se ejecuta stop() para guardar.',
+        level: 'avanzado'
+      }
+    };
+  }
+});
+
+ActivityEngine.register(app);
+app.mount('#app');
+</script>
+</body>
+</html>

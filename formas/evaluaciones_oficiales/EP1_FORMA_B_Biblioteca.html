@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EP1 FORMA B — Biblioteca Municipal</title>
+  <meta name="description" content="Evaluacion Parcial 1 FORMA B: Sistema de Gestion de Biblioteca Municipal">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .eval-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .eval-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .eval-header .logo {
+      display: block;
+      max-width: 380px;
+      margin-bottom: 24px;
+    }
+    .eval-badge {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      border-radius: 999px;
+      margin: 16px 0;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+    .info-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 8px 14px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+    }
+    .info-table td {
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+    }
+    .section-divider {
+      margin: 40px 0 28px;
+      padding: 12px 0;
+      border-top: 2px solid var(--line);
+    }
+    .il-tag {
+      display: inline-block;
+      background: var(--pastel-celeste);
+      color: var(--accent-celeste);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin: 2px 2px 2px 0;
+      letter-spacing: 0.03em;
+    }
+    .req-block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      margin-bottom: var(--sp-md);
+    }
+    .req-block h4 {
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .req-block p, .req-block ul { font-size: 15px; color: var(--ink-soft); }
+    .req-block ul { padding-left: 20px; }
+    .req-block ul li { margin-bottom: 6px; }
+
+    .uml-box {
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .uml-class {
+      background: var(--bg);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      min-width: 280px;
+      margin: 8px;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    .uml-class-name {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 15px;
+      text-align: center;
+    }
+    .uml-class-name.abstract { font-style: italic; }
+    .uml-section {
+      padding: 8px 16px;
+      border-top: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .uml-arrow {
+      display: block;
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+      font-weight: 700;
+    }
+    .uml-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 16px 0;
+    }
+    .rubric-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--line);
+    }
+    .rubric-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .rubric-table tr:last-child td { border-bottom: none; }
+
+    .warning-box {
+      background: var(--incorrect);
+      color: var(--incorrect-ink);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .warning-box p { margin: 0; color: var(--incorrect-ink); }
+    .warning-box strong { color: var(--incorrect-ink); }
+
+    .git-step {
+      margin-bottom: 16px;
+    }
+    .git-step strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+    .action-bar-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+    .btn-back:hover {
+      color: var(--ink);
+      border-color: var(--ink-muted);
+      background: var(--bg-muted);
+    }
+    .action-bar-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      letter-spacing: 0.03em;
+    }
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ink);
+      color: var(--bg);
+      border: none;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.15s ease;
+    }
+    .btn-print:hover {
+      background: #2e2e4a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(26, 26, 46, 0.2);
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #1a1a2e !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 16mm 20mm !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .eval-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .eval-header {
+        margin-bottom: 24px !important;
+        padding-bottom: 16px !important;
+      }
+      .eval-badge {
+        border: 1px solid var(--ink) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .req-block, .uml-box, .uml-class, .info-table, .rubric-table, .warning-box, .checklist-item, .git-step, pre {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      h1, h2, h3, h4 {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+      .section-divider {
+        margin: 24px 0 16px !important;
+      }
+      .info-table th, .rubric-table th {
+        background: #f1f3f5 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .il-tag {
+        background: #d6eaf8 !important;
+        color: #2471a3 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .warning-box {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .uml-box {
+        background: #f1f3f5 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .uml-class-name {
+        background: #1a1a2e !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="top-action-bar no-print">
+  <div class="action-bar-inner">
+    <a href="../../index.html" class="btn-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Volver al Portal
+    </a>
+    <div class="action-bar-info">
+      <span class="action-bar-title">Evaluación Oficial EP1 — FORMA B (Biblioteca Universitaria)</span>
+    </div>
+    <div class="action-bar-btns">
+      <a href="EP1_FORMA_B_Biblioteca.pdf" download="EP1_FORMA_B_Biblioteca.pdf" class="btn-print" title="Descargar archivo PDF oficial">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Descargar PDF
+      </a>
+    </div>
+  </div>
+</div>
+<div class="eval-container">
+
+  <!-- ========== HEADER ========== -->
+  <header class="eval-header">
+    <img src="logo_escuela.png" alt="Duoc UC - Escuela de Informatica y Telecomunicaciones" class="logo">
+    <h1 style="font-size: clamp(28px, 3.5vw, 40px);">Enunciado Evaluacion Parcial 1</h1>
+    <p class="lead" style="margin-bottom: 0;">Programacion Orientada a Objetos</p>
+    <span class="eval-badge">FORMA B</span>
+
+    <table class="info-table">
+      <tr>
+        <th>Sigla</th>
+        <th>Asignatura</th>
+        <th>Experiencia de Aprendizaje</th>
+      </tr>
+      <tr>
+        <td>DSY1102</td>
+        <td>Programacion Orientada a Objetos</td>
+        <td>EA1: Fundamentos de Programacion Orientada a Objetos</td>
+      </tr>
+      <tr>
+        <th>Tiempo</th>
+        <th>Modalidad de Trabajo</th>
+        <th>Indicadores de logro</th>
+      </tr>
+      <tr>
+        <td>3 bloques</td>
+        <td>Individual</td>
+        <td>IL 1.1 al IL 1.6</td>
+      </tr>
+    </table>
+  </header>
+
+  <!-- ========== CONDICIONES ========== -->
+  <h2>Condiciones de la evaluacion</h2>
+
+  <h3>Del entorno y la entrega</h3>
+  <ul>
+    <li>La evaluacion es de caracter <strong>individual</strong>. No esta permitida ninguna forma de colaboracion entre estudiantes.</li>
+    <li>No se permite el acceso a internet ni el uso de telefonos, relojes inteligentes ni ningun otro dispositivo externo.</li>
+    <li>El programa debe compilar y ejecutarse correctamente. Una solucion que no compile no permite evidenciar ningun indicador de logro.</li>
+    <li>El proyecto debe entregarse comprimido en formato ZIP, con tu nombre completo como nombre del archivo, en la actividad habilitada en AVA antes de que finalice la sesion.</li>
+    <li>No se aceptan entregas por ningun otro medio ni fuera del horario establecido. La ausencia de entrega en AVA genera automaticamente la nota minima.</li>
+  </ul>
+
+  <h3>De tu solucion</h3>
+  <ul>
+    <li>El codigo debe organizarse en clases separadas, respetando las convenciones de nomenclatura de Java: <code>PascalCase</code> para nombres de clase, <code>camelCase</code> para metodos y atributos.</li>
+    <li>Puedes crear metodos o clases auxiliares siempre que no contradigan los requerimientos del caso.</li>
+    <li>No se admite el uso de herramientas de inteligencia artificial ni de recursos digitales externos.</li>
+    <li>Cualquier indicio de colaboracion no autorizada, uso de IA o plagio implica la anulacion inmediata de la evaluacion con nota minima de 1.0.</li>
+  </ul>
+
+  <!-- ========== GIT ========== -->
+  <div class="section-divider"></div>
+  <h2>Instrucciones de entrega con Git</h2>
+
+  <p>Antes de comenzar a codificar, debes configurar Git y preparar tu repositorio. Sigue estos pasos en orden:</p>
+
+  <div class="git-step">
+    <strong>Paso 1 — Configurar tu identidad en Git (si no lo has hecho previamente)</strong>
+    <pre class="code-block"><code>git config --global user.name "Tu Nombre Completo"
+git config --global user.email "tu.correo@duocuc.cl"</code></pre>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 2 — Clonar el repositorio de tu seccion</strong>
+    <p>Seccion 004D:</p>
+    <pre class="code-block"><code>git clone https://github.com/hachimaki-dev/004D_Desarrollo_orientado_a_Objeto_2026.git</code></pre>
+    <p>Seccion 002D:</p>
+    <pre class="code-block"><code>git clone https://github.com/hachimaki-dev/002D_desarrollo_orientado_a_objeto_2026.git</code></pre>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 3 — Ingresar al directorio del repositorio clonado</strong>
+    <pre class="code-block"><code>cd 004D_Desarrollo_orientado_a_Objeto_2026</code></pre>
+    <p style="font-size:13px; color: var(--ink-muted);">Ajusta el nombre del directorio segun tu seccion.</p>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 4 — Crear una rama nueva para tu entrega</strong>
+    <pre class="code-block"><code>git checkout -b evaluacion1/Nombre_Apellido</code></pre>
+    <p style="font-size:13px; color: var(--ink-muted);">Ejemplo: <code>git checkout -b evaluacion1/Carlos_Orellana</code></p>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 5 — Desarrollar tu solucion dentro de esta rama</strong>
+    <p>Crea tus archivos <code>.java</code> y trabaja tu solucion normalmente.</p>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 6 — Guardar tus cambios en un commit</strong>
+    <pre class="code-block"><code>git add .
+git commit -m "Entrega EP1 - Nombre Apellido - Confirmo que esta es mi entrega final"</code></pre>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 7 — Publicar tu rama en el repositorio remoto</strong>
+    <pre class="code-block"><code>git push origin evaluacion1/Nombre_Apellido</code></pre>
+  </div>
+
+  <div class="callout callout-celeste">
+    <p style="margin:0;"><strong>Importante:</strong> Ademas de publicar tu rama en Git, debes comprimir tu proyecto en formato ZIP (con tu nombre completo como nombre del archivo) y subirlo al AVA antes de que finalice la sesion. Ambas entregas son obligatorias.</p>
+  </div>
+
+  <!-- ========== CASO ========== -->
+  <div class="section-divider"></div>
+  <h2>Caso de negocio</h2>
+
+  <p>Una biblioteca municipal necesita un sistema de consola en Java para gestionar el prestamo de materiales de lectura. La biblioteca maneja dos tipos de materiales: <strong>libros</strong> y <strong>revistas</strong>. Ambos comparten datos generales como titulo, autor y cantidad de ejemplares disponibles, pero se diferencian en sus atributos especificos y en la cantidad de dias permitidos para el prestamo.</p>
+
+  <p>El sistema debe permitir registrar materiales, listar el catalogo, buscar materiales por titulo, prestar ejemplares y ver un resumen del catalogo. Todas las entradas del usuario deben estar protegidas contra errores de ingreso.</p>
+
+  <!-- ========== UML ========== -->
+  <div class="section-divider"></div>
+  <h2>Estructura de clases</h2>
+
+  <p>El siguiente diagrama muestra la jerarquia de clases a implementar. La clase <code>Material</code> es <strong>abstracta</strong> y define la estructura base. Las clases <code>Libro</code> y <code>Revista</code> heredan de ella y sobrescriben el calculo de los dias de prestamo.</p>
+
+  <div class="uml-box">
+    <div style="text-align:center;">
+      <div class="uml-class">
+        <div class="uml-class-name abstract">Material (abstracta)</div>
+        <div class="uml-section">
+          - titulo: String<br>
+          - autor: String<br>
+          - cantidadDisponible: int
+        </div>
+        <div class="uml-section">
+          + Material(titulo, autor, cantidadDisponible)<br>
+          + getTitulo(): String<br>
+          + getAutor(): String<br>
+          + getCantidadDisponible(): int<br>
+          + setCantidadDisponible(int): void<br>
+          + <em>calcularDiasPrestamo(): int</em><br>
+          + mostrarInfo(): String
+        </div>
+      </div>
+    </div>
+
+    <div class="uml-arrow">&#9650; extends</div>
+
+    <div class="uml-row">
+      <div class="uml-class">
+        <div class="uml-class-name">Libro</div>
+        <div class="uml-section">
+          - numPaginas: int
+        </div>
+        <div class="uml-section">
+          + Libro(titulo, autor, cantidadDisponible, numPaginas)<br>
+          + getNumPaginas(): int<br>
+          + calcularDiasPrestamo(): int<br>
+          + mostrarInfo(): String
+        </div>
+      </div>
+      <div class="uml-class">
+        <div class="uml-class-name">Revista</div>
+        <div class="uml-section">
+          - mesPublicacion: String
+        </div>
+        <div class="uml-section">
+          + Revista(titulo, autor, cantidadDisponible, mesPublicacion)<br>
+          + getMesPublicacion(): String<br>
+          + calcularDiasPrestamo(): int<br>
+          + mostrarInfo(): String
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:16px;">
+    <p style="margin:0;"><strong>Nota:</strong> Los dias de prestamo se manejan como <code>int</code> (dias enteros). La cantidad disponible representa el numero de ejemplares fisicos que la biblioteca tiene para prestar.</p>
+  </div>
+
+  <!-- ========== REQUERIMIENTOS ========== -->
+  <div class="section-divider"></div>
+  <h2>Requerimientos funcionales</h2>
+
+  <p>A continuacion se detalla cada requerimiento. Las etiquetas <span class="il-tag">IL</span> indican que indicador de logro se evalua en cada parte.</p>
+
+  <!-- R1 -->
+  <div class="req-block">
+    <h4>
+      R1 — Comentarios de paradigma
+      <span class="il-tag">IL 1.1</span>
+    </h4>
+    <p>Al inicio de la clase <code>Main.java</code>, incluye un bloque de comentarios que explique:</p>
+    <ul>
+      <li>Que paradigma de programacion se esta usando y sus caracteristicas principales.</li>
+      <li>Al menos <strong>2 diferencias concretas</strong> entre el paradigma orientado a objetos (Java) y el paradigma que usabas antes (Python funcional). Por ejemplo: tipado, estructura del programa, compilacion vs. interpretacion, o forma de organizar el codigo.</li>
+    </ul>
+  </div>
+
+  <!-- R2 -->
+  <div class="req-block">
+    <h4>
+      R2 — Clase abstracta Material
+      <span class="il-tag">IL 1.3</span>
+      <span class="il-tag">IL 1.4</span>
+    </h4>
+    <p>Implementa la clase abstracta <code>Material</code> segun el diagrama UML:</p>
+    <ul>
+      <li>Atributos <strong>privados</strong>: <code>titulo</code> (String), <code>autor</code> (String), <code>cantidadDisponible</code> (int).</li>
+      <li>Constructor que reciba los 3 atributos.</li>
+      <li>Getters para los tres atributos y setter para <code>cantidadDisponible</code>.</li>
+      <li>Metodo abstracto <code>calcularDiasPrestamo()</code> que retorna <code>int</code>.</li>
+      <li>Metodo <code>mostrarInfo()</code> que retorna un <code>String</code> con el titulo, autor, dias de prestamo y cantidad disponible. Este metodo puede ser sobrescrito por las clases hijas para agregar informacion adicional.</li>
+    </ul>
+  </div>
+
+  <!-- R3 -->
+  <div class="req-block">
+    <h4>
+      R3 — Clase Libro
+      <span class="il-tag">IL 1.3</span>
+      <span class="il-tag">IL 1.4</span>
+    </h4>
+    <p>Hereda de <code>Material</code>. Representa un libro de la biblioteca.</p>
+    <ul>
+      <li>Atributo privado adicional: <code>numPaginas</code> (int).</li>
+      <li>Constructor que reciba los 4 parametros (3 del padre + numPaginas). Usa <code>super()</code>.</li>
+      <li>Getter para <code>numPaginas</code>.</li>
+      <li><code>calcularDiasPrestamo()</code>: si <code>numPaginas</code> es mayor a <strong>300</strong>, retorna <strong>14</strong> dias. En caso contrario, retorna <strong>7</strong> dias.</li>
+      <li><code>mostrarInfo()</code>: sobrescribe (<code>@Override</code>) el metodo del padre. Agrega el tipo (<code>"Libro"</code>) y el numero de paginas al texto retornado.</li>
+    </ul>
+  </div>
+
+  <!-- R4 -->
+  <div class="req-block">
+    <h4>
+      R4 — Clase Revista
+      <span class="il-tag">IL 1.3</span>
+      <span class="il-tag">IL 1.4</span>
+    </h4>
+    <p>Hereda de <code>Material</code>. Representa una revista de la biblioteca.</p>
+    <ul>
+      <li>Atributo privado adicional: <code>mesPublicacion</code> (String).</li>
+      <li>Constructor que reciba los 4 parametros (3 del padre + mesPublicacion). Usa <code>super()</code>.</li>
+      <li>Getter para <code>mesPublicacion</code>.</li>
+      <li><code>calcularDiasPrestamo()</code>: retorna siempre <strong>3</strong> dias.</li>
+      <li><code>mostrarInfo()</code>: sobrescribe (<code>@Override</code>) el metodo del padre. Agrega el tipo (<code>"Revista"</code>) y el mes de publicacion al texto retornado.</li>
+    </ul>
+  </div>
+
+  <!-- R5 -->
+  <div class="req-block">
+    <h4>
+      R5 — Menu de consola con estructuras de control
+      <span class="il-tag">IL 1.2</span>
+    </h4>
+    <p>La clase <code>Main</code> debe presentar un menu de consola que se repita hasta que el usuario elija salir. Usa un bucle <code>while</code> y <code>switch</code> para controlar las opciones:</p>
+    <pre class="code-block"><code>=== BIBLIOTECA MUNICIPAL ===
+1. Registrar material
+2. Listar catalogo
+3. Buscar material por titulo
+4. Prestar material
+5. Resumen del catalogo
+6. Salir
+Seleccione una opcion: _</code></pre>
+    <p>Las opciones invalidas deben mostrar un mensaje y volver al menu sin que el programa se detenga.</p>
+  </div>
+
+  <!-- R6 -->
+  <div class="req-block">
+    <h4>
+      R6 — Registrar material (con submenu)
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>Al seleccionar "Registrar material", el sistema muestra un submenu para elegir entre Libro y Revista. Luego solicita los datos correspondientes y agrega el material a una coleccion <code>ArrayList&lt;Material&gt;</code>.</p>
+    <ul>
+      <li>Para libros, se solicita el numero de paginas como un valor entero positivo.</li>
+      <li>Para revistas, se solicita el mes de publicacion como texto.</li>
+      <li>La cantidad disponible debe ser un numero entero positivo.</li>
+    </ul>
+  </div>
+
+  <!-- R7 -->
+  <div class="req-block">
+    <h4>
+      R7 — Listar catalogo (polimorfismo en accion)
+      <span class="il-tag">IL 1.5</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>Recorre la coleccion <code>ArrayList&lt;Material&gt;</code> e imprime la informacion de cada material usando <code>mostrarInfo()</code>.</p>
+    <p>Cada material se muestra con su formato propio (libro o revista) sin necesidad de hacer <code>instanceof</code>. Esto es polimorfismo: el mismo metodo produce resultados distintos segun el tipo real del objeto.</p>
+    <p>Si la lista esta vacia, mostrar un mensaje indicando que no hay materiales registrados.</p>
+  </div>
+
+  <!-- R8 -->
+  <div class="req-block">
+    <h4>
+      R8 — Buscar material por titulo
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>El usuario ingresa un texto y el sistema busca materiales cuyo titulo contenga ese texto (busqueda parcial, sin distinguir mayusculas/minusculas). Muestra todos los resultados encontrados o un mensaje si no hay coincidencias.</p>
+  </div>
+
+  <!-- R9 -->
+  <div class="req-block">
+    <h4>
+      R9 — Prestar material (descontar disponibilidad)
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.5</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>El sistema lista los materiales con su indice. El usuario selecciona un material para prestar. El sistema valida:</p>
+    <ul>
+      <li>Que el numero de material sea valido (exista en la lista).</li>
+      <li>Que la cantidad disponible sea mayor a 0.</li>
+    </ul>
+    <p>Si el prestamo es valido, descuenta 1 unidad de <code>cantidadDisponible</code> y muestra un comprobante con el titulo del material, los dias de prestamo asignados (calculados con <code>calcularDiasPrestamo()</code>) y los ejemplares restantes.</p>
+  </div>
+
+  <!-- R10 -->
+  <div class="req-block">
+    <h4>
+      R10 — Resumen del catalogo
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.5</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>Muestra un resumen que incluya:</p>
+    <ul>
+      <li>Total de materiales registrados.</li>
+      <li>Cantidad de libros y cantidad de revistas (usa <code>instanceof</code>).</li>
+      <li>Total de ejemplares disponibles: la suma de <code>cantidadDisponible</code> de todos los materiales.</li>
+    </ul>
+  </div>
+
+  <!-- R11 -->
+  <div class="req-block">
+    <h4>
+      R11 — Manejo de excepciones
+      <span class="il-tag">IL 1.5</span>
+    </h4>
+    <p>Toda entrada numerica del usuario debe estar protegida con <code>try-catch</code>. El programa <strong>nunca debe detenerse</strong> por un error de ingreso. Situaciones que deben manejarse:</p>
+    <ul>
+      <li>El usuario escribe texto cuando se espera un numero (cantidad disponible, numero de paginas, indice de material).</li>
+      <li>El usuario ingresa un indice fuera de rango al prestar.</li>
+      <li>El usuario intenta prestar un material con 0 ejemplares disponibles.</li>
+      <li>El usuario ingresa una opcion de menu que no existe.</li>
+    </ul>
+    <p>En cada caso, muestra un mensaje claro al usuario y vuelve al menu sin interrumpir la ejecucion.</p>
+  </div>
+
+  <!-- ========== EJEMPLO ========== -->
+  <div class="section-divider"></div>
+  <h2>Ejemplo de ejecucion esperada</h2>
+
+  <p>Este ejemplo muestra como deberia verse la interaccion con el programa. Tu implementacion debe producir una salida similar (no necesariamente identica en formato).</p>
+
+  <pre class="code-block"><code>=== BIBLIOTECA MUNICIPAL ===
+1. Registrar material
+2. Listar catalogo
+3. Buscar material por titulo
+4. Prestar material
+5. Resumen del catalogo
+6. Salir
+Seleccione una opcion: 1
+
+--- Tipo de material ---
+1. Libro
+2. Revista
+Seleccione: 1
+Titulo: Cien anios de soledad
+Autor: Gabriel Garcia Marquez
+Cantidad disponible: 5
+Numero de paginas: 420
+[OK] Libro registrado.
+
+Seleccione una opcion: 1
+
+--- Tipo de material ---
+1. Libro
+2. Revista
+Seleccione: 2
+Titulo: National Geographic
+Autor: Varios
+Cantidad disponible: 10
+Mes de publicacion: Septiembre 2026
+[OK] Revista registrada.
+
+Seleccione una opcion: 2
+
+--- CATALOGO ---
+[1] Libro | Cien anios de soledad | Autor: Gabriel Garcia Marquez | Paginas: 420 | Prestamo: 14 dias | Disponibles: 5
+[2] Revista | National Geographic | Autor: Varios | Mes: Septiembre 2026 | Prestamo: 3 dias | Disponibles: 10
+
+Seleccione una opcion: 4
+
+--- PRESTAR MATERIAL ---
+[1] Cien anios de soledad (Disponibles: 5)
+[2] National Geographic (Disponibles: 10)
+Ingrese numero de material: 1
+Prestamo realizado.
+Material: Cien anios de soledad
+Dias de prestamo: 14
+Ejemplares restantes: 4
+
+Seleccione una opcion: 5
+
+--- RESUMEN DEL CATALOGO ---
+Total de materiales: 2
+Libros: 1
+Revistas: 1
+Total de ejemplares disponibles: 14
+
+Seleccione una opcion: 3
+
+--- BUSCAR MATERIAL ---
+Ingrese texto a buscar: national
+Resultados:
+  Revista | National Geographic | Autor: Varios | Mes: Septiembre 2026 | Prestamo: 3 dias | Disponibles: 10
+
+Seleccione una opcion: 4
+Ingrese numero de material: abc
+Error: Debe ingresar un numero valido.
+
+Seleccione una opcion: 6
+Programa finalizado.</code></pre>
+
+  <!-- ========== IL MAP ========== -->
+  <div class="section-divider"></div>
+  <h2>Mapa de indicadores de logro</h2>
+
+  <p>Esta tabla resume donde se evalua cada indicador. Usala como checklist antes de entregar.</p>
+
+  <table class="rubric-table">
+    <thead>
+      <tr>
+        <th>IL</th>
+        <th>Indicador</th>
+        <th>Donde se evidencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="il-tag">IL 1.1</span></td>
+        <td>Identificar el paradigma OO y diferenciarlo de otros</td>
+        <td>Comentarios en <code>Main.java</code> (R1)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.2</span></td>
+        <td>Estructuras de control y metodos con parametros y retorno</td>
+        <td>Menu while/switch (R5), submenu (R6), busqueda (R8), prestamo (R9)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.3</span></td>
+        <td>Clases con encapsulamiento y colaboracion</td>
+        <td>Atributos privados, getters/setters, constructores en <code>Material</code>, <code>Libro</code>, <code>Revista</code> (R2, R3, R4)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.4</span></td>
+        <td>Herencia, clases abstractas, jerarquias de tipos</td>
+        <td>Clase abstracta <code>Material</code>, herencia con <code>extends</code>, <code>super()</code>, metodo abstracto (R2, R3, R4)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.5</span></td>
+        <td>Polimorfismo y manejo de excepciones</td>
+        <td>Recorrido polimorfico del ArrayList (R7), <code>@Override</code> de metodos (R3, R4), try-catch (R11), instanceof en resumen (R10)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.6</span></td>
+        <td>Colecciones para almacenar y gestionar datos</td>
+        <td><code>ArrayList&lt;Material&gt;</code> como catalogo, agregar, iterar, buscar, modificar disponibilidad (R6, R7, R8, R9, R10)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ========== CHECKLIST ========== -->
+  <div class="section-divider"></div>
+  <h2>Antes de entregar</h2>
+
+  <div class="grid" style="max-width:860px;">
+    <div class="card card-menta">
+      <strong>Debe funcionar</strong>
+      <p>El programa compila con <code>javac *.java</code> y se ejecuta con <code>java Main</code> sin errores.</p>
+      <p>Cada opcion del menu hace lo que se pide.</p>
+      <p>Los metodos sobrescritos (<code>@Override</code>) funcionan correctamente en cada subclase.</p>
+    </div>
+    <div class="card card-rosa">
+      <strong>No debe romperse</strong>
+      <p>Escribir "abc" cuando se pide un numero.</p>
+      <p>Intentar prestar un material con 0 ejemplares disponibles.</p>
+      <p>Buscar un material cuando la lista esta vacia.</p>
+      <p>Seleccionar una opcion de menu inexistente.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:24px;">
+    <h4 style="margin:0 0 8px;">Archivos a entregar</h4>
+    <p style="margin:0;">Comprime en formato <strong>ZIP</strong> todos los archivos <code>.java</code> de tu proyecto. Como minimo debes tener:</p>
+    <ul style="margin:8px 0 0;">
+      <li><code>Main.java</code></li>
+      <li><code>Material.java</code></li>
+      <li><code>Libro.java</code></li>
+      <li><code>Revista.java</code></li>
+    </ul>
+  </div>
+
+  <div class="warning-box" style="margin-top:24px;">
+    <p><strong>Importante:</strong> No se permite el uso de herramientas de IA, acceso a internet, ni dispositivos externos durante la evaluacion. Cualquier indicio de colaboracion no autorizada o uso de IA implica la anulacion de la evaluacion con nota minima 1.0.</p>
+  </div>
+
+  <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+    <p class="lead" style="margin:0 auto;">Lee bien cada requerimiento, planifica antes de codificar y prueba tu programa antes de entregar.</p>
+  </div>
+
+</div>
+<script>
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('action') === 'pdf' || params.get('print') === '1') {
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          window.print();
+        }, 500);
+      });
+    }
+  })();
+</script>
+</body>
+</html>

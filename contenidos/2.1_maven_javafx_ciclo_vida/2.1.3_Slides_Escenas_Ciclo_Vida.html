@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Escenas y Ciclo de Vida — Java OOP · Profe Carlitos</title>
+  <meta name="description" content="Presentación: Escenas, Ciclo de Vida de Application, Layouts y Eventos — Desarrollo Orientado a Objetos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body { overflow: hidden; }
+    .diagram-box {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      margin: 4px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 140px;
+    }
+    .diagram-box.parent { background: var(--pastel-lavanda); }
+    .diagram-box.child { background: var(--pastel-celeste); }
+    .diagram-box.alt { background: var(--pastel-menta); }
+    .diagram-box.warn { background: var(--pastel-durazno); }
+    .diagram-arrow {
+      display: block;
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+    }
+    .diagram-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .lifecycle-flow {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 16px 0;
+    }
+    .lifecycle-step {
+      background: var(--pastel-celeste);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      font-family: var(--font-mono);
+      font-size: 15px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .lifecycle-step.active { background: var(--pastel-menta); border-color: #40a02b; }
+    .lifecycle-step.warn { background: var(--pastel-durazno); border-color: #e64553; }
+    .lifecycle-arrow { font-size: 22px; color: var(--ink-muted); }
+    .layout-demo {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      background: var(--bg-muted);
+      max-width: 500px;
+      margin: 12px auto;
+    }
+    .layout-demo .demo-item {
+      background: var(--pastel-celeste);
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      padding: 8px 16px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .layout-vbox { display: flex; flex-direction: column; gap: 8px; }
+    .layout-hbox { display: flex; flex-direction: row; gap: 8px; }
+    .layout-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; }
+    .layout-grid .demo-label { 
+      background: var(--pastel-lavanda);
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .method-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+    .method-table th, .method-table td {
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .method-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+    }
+    .method-table tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+    .tv-demo {
+      border: 4px solid #333;
+      border-radius: 12px;
+      background: #191414;
+      padding: 20px;
+      max-width: 400px;
+      margin: 16px auto;
+      text-align: center;
+      color: #fff;
+      position: relative;
+    }
+    .tv-label {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg);
+      padding: 0 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .tv-content {
+      border: 2px dashed #1db954;
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+    }
+    .tv-content-label {
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      background: #191414;
+      padding: 0 6px;
+      font-size: 12px;
+      color: #1db954;
+      font-weight: 700;
+    }
+    @media (max-width: 760px) {
+      .layout-demo { max-width: 100%; }
+      .tv-demo { max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="app">
+
+<header class="topbar">
+  <div class="topbar-brand"><span class="alien">👽</span> Java · Escenas y Ciclo de Vida</div>
+  <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
+  <div class="progress-bar" :style="{width: ((current+1)/total*100)+'%'}"></div>
+</header>
+
+<main class="slide-area">
+
+<!-- ============================================== -->
+<!-- SLIDE 0: PORTADA -->
+<!-- ============================================== -->
+<section v-if="current===0" data-slide class="slide">
+  <div class="kicker">Unidad 2.1 · Escenas y Ciclo de Vida</div>
+  <h1 style="font-size:clamp(36px,5vw,56px);">Escenas y Ciclo de Vida</h1>
+  <p class="lead">Stage, Scene, layouts, eventos y persistencia básica.</p>
+  <div style="font-size:64px; margin-top:24px;">🛸</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 1: STAGE VS SCENE -->
+<!-- ============================================== -->
+<section v-else-if="current===1" data-slide class="slide">
+  <div class="kicker">Conceptos clave</div>
+  <h2>Stage vs. Scene</h2>
+  <p>JavaFX separa la <strong>ventana</strong> del <strong>contenido</strong>. Esto permite cambiar lo que se muestra sin cerrar la ventana.</p>
+
+  <div class="tv-demo">
+    <span class="tv-label">Stage (ventana)</span>
+    <div class="tv-content">
+      <span class="tv-content-label">Scene (contenido)</span>
+      <div style="margin-top:8px; font-size:14px;">Label, Button, TextField...</div>
+    </div>
+  </div>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-lavanda">
+      <strong>Stage = la ventana</strong>
+      <p>El marco, la barra de título, los botones de minimizar/cerrar.</p>
+      <p>Solo hay <strong>un</strong> Stage principal (lo recibe <code>start()</code>).</p>
+      <p>Puedes cambiar su título, tamaño, e ícono.</p>
+    </div>
+    <div class="card card-menta">
+      <strong>Scene = el contenido</strong>
+      <p>Todo lo que hay <strong>dentro</strong> de la ventana: controles, layouts, estilos.</p>
+      <p>Puedes cambiar la Scene del Stage sin cerrar la ventana.</p>
+      <p>Cada Scene tiene un <strong>nodo raíz</strong> (root) que contiene todo.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Analogía:</strong> El Stage es un televisor. La Scene es el canal que estás viendo. Puedes cambiar de canal sin apagar la tele.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 2: CICLO DE VIDA -->
+<!-- ============================================== -->
+<section v-else-if="current===2" data-slide class="slide">
+  <div class="kicker">Ciclo de vida</div>
+  <h2>Ciclo de vida de Application</h2>
+  <p>Cuando ejecutas una app JavaFX, el framework llama a tres métodos en orden:</p>
+
+  <div class="lifecycle-flow">
+    <div class="lifecycle-step active">init()</div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step active">start(Stage)</div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step" style="background:var(--pastel-lavanda);">La app corre...</div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step warn">stop()</div>
+  </div>
+
+  <table class="method-table" style="margin-top:16px;">
+    <thead>
+      <tr><th>Método</th><th>Cuándo se ejecuta</th><th>Para qué sirve</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>init()</code></td>
+        <td>Antes de mostrar la ventana</td>
+        <td>Preparar datos: cargar archivos, crear colecciones iniciales</td>
+      </tr>
+      <tr>
+        <td><code>start(Stage)</code></td>
+        <td>Cuando la app está lista para mostrar la ventana</td>
+        <td>Crear la interfaz: controles, layouts, eventos, CSS</td>
+      </tr>
+      <tr>
+        <td><code>stop()</code></td>
+        <td>Cuando el usuario cierra la ventana</td>
+        <td>Limpieza: guardar datos en archivo, cerrar conexiones</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout callout-durazno" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Importante:</strong> Solo <code>start()</code> es obligatorio. <code>init()</code> y <code>stop()</code> son opcionales — los sobreescribes solo si los necesitas (ej: cargar/guardar datos).</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 3: LAUNCH -->
+<!-- ============================================== -->
+<section v-else-if="current===3" data-slide class="slide">
+  <div class="kicker">Punto de entrada</div>
+  <h2>El método launch()</h2>
+  <p><code>Application.launch(args)</code> es el punto de entrada de toda app JavaFX. Va en el método <code>main</code> y arranca todo el ciclo de vida.</p>
+
+  <pre class="code-block"><code class="language-java">public class SpotifyMiniApp extends Application {
+
+    @Override
+    public void init() {
+        // Se ejecuta PRIMERO — cargar datos del archivo
+        System.out.println("1. init() — Preparando datos...");
+    }
+
+    @Override
+    public void start(Stage stage) {
+        // Se ejecuta SEGUNDO — crear la interfaz
+        System.out.println("2. start() — Creando ventana...");
+        stage.setTitle("Spotify Mini");
+        stage.setScene(new Scene(new VBox(), 600, 400));
+        stage.show();
+    }
+
+    @Override
+    public void stop() {
+        // Se ejecuta AL CERRAR — guardar datos
+        System.out.println("3. stop() — Guardando datos...");
+    }
+
+    public static void main(String[] args) {
+        launch(args);   // Esto dispara init() → start() → ... → stop()
+    }
+}</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:8px;">
+    <p style="margin:0;"><strong>Pregunta para pensar:</strong> Si necesitas que tu app cargue las canciones guardadas de un archivo cuando abre, ¿en qué método pondrías ese código?</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 4: VBOX -->
+<!-- ============================================== -->
+<section v-else-if="current===4" data-slide class="slide">
+  <div class="kicker">Layouts</div>
+  <h2>VBox — Apilar verticalmente</h2>
+  <p><code>VBox</code> organiza sus elementos hijos <strong>uno debajo del otro</strong>. Es el layout más simple y el más usado.</p>
+
+  <pre class="code-block"><code class="language-java">import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+
+VBox root = new VBox(10);    // 10 = espacio entre elementos (en px)
+root.setPadding(new Insets(20));  // Margen interior de 20px
+root.getChildren().addAll(titulo, txtCancion, txtArtista, btnAgregar);</code></pre>
+
+  <div class="layout-demo">
+    <div style="text-align:center; margin-bottom:8px; font-weight:700; font-size:13px; color:var(--ink-muted);">VBox(10)</div>
+    <div class="layout-vbox">
+      <div class="demo-item">Label: título</div>
+      <div class="demo-item">TextField: canción</div>
+      <div class="demo-item">TextField: artista</div>
+      <div class="demo-item" style="background:var(--pastel-menta);">Button: Agregar</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 5: HBOX -->
+<!-- ============================================== -->
+<section v-else-if="current===5" data-slide class="slide">
+  <div class="kicker">Layouts</div>
+  <h2>HBox — Organizar horizontalmente</h2>
+  <p><code>HBox</code> organiza sus elementos hijos <strong>uno al lado del otro</strong>. Útil para barras de botones o filas de controles.</p>
+
+  <pre class="code-block"><code class="language-java">import javafx.scene.layout.HBox;
+
+HBox botones = new HBox(10);   // 10px de espacio entre botones
+botones.getChildren().addAll(btnAgregar, btnLimpiar, btnGuardar);</code></pre>
+
+  <div class="layout-demo">
+    <div style="text-align:center; margin-bottom:8px; font-weight:700; font-size:13px; color:var(--ink-muted);">HBox(10)</div>
+    <div class="layout-hbox">
+      <div class="demo-item" style="background:var(--pastel-menta);">Agregar</div>
+      <div class="demo-item" style="background:var(--pastel-durazno);">Limpiar</div>
+      <div class="demo-item" style="background:var(--pastel-lavanda);">Guardar</div>
+    </div>
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:16px;">
+    <h4 style="margin:0 0 6px;">Combinar VBox y HBox</h4>
+    <p style="margin:0;">Puedes poner un <code>HBox</code> dentro de un <code>VBox</code> (o al revés). Así creas layouts más complejos: formulario vertical con una fila de botones horizontal al final.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 6: GRIDPANE -->
+<!-- ============================================== -->
+<section v-else-if="current===6" data-slide class="slide">
+  <div class="kicker">Layouts</div>
+  <h2>GridPane — Formularios organizados</h2>
+  <p><code>GridPane</code> organiza elementos en una <strong>grilla de filas y columnas</strong>. Ideal para formularios tipo "etiqueta : campo".</p>
+
+  <pre class="code-block"><code class="language-java">import javafx.scene.layout.GridPane;
+
+GridPane form = new GridPane();
+form.setHgap(10);    // Espacio horizontal entre columnas
+form.setVgap(10);    // Espacio vertical entre filas
+
+//                   columna, fila
+form.add(lblTitulo,     0,      0);
+form.add(txtTitulo,     1,      0);
+form.add(lblArtista,    0,      1);
+form.add(txtArtista,    1,      1);
+form.add(lblDuracion,   0,      2);
+form.add(txtDuracion,   1,      2);</code></pre>
+
+  <div class="layout-demo">
+    <div style="text-align:center; margin-bottom:8px; font-weight:700; font-size:13px; color:var(--ink-muted);">GridPane</div>
+    <div class="layout-grid">
+      <div class="demo-label">Título:</div>
+      <div class="demo-item">TextField</div>
+      <div class="demo-label">Artista:</div>
+      <div class="demo-item">TextField</div>
+      <div class="demo-label">Duración:</div>
+      <div class="demo-item">TextField</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 7: EVENTOS -->
+<!-- ============================================== -->
+<section v-else-if="current===7" data-slide class="slide">
+  <div class="kicker">Interacción</div>
+  <h2>Eventos — Conectar la interfaz con la lógica</h2>
+  <p>En la consola, el usuario escribía y el programa leía con <code>Scanner</code>. En JavaFX, el usuario <strong>hace clic</strong> y el programa <strong>reacciona</strong>.</p>
+
+  <pre class="code-block"><code class="language-java">// El botón "Agregar" lee los campos y crea una canción
+btnAgregar.setOnAction(e -> {
+    String titulo = txtTitulo.getText();
+    String artista = txtArtista.getText();
+    String duracion = txtDuracion.getText();
+
+    if (titulo.isEmpty() || artista.isEmpty()) {
+        lblEstado.setText("Completa todos los campos");
+        return;
+    }
+
+    Cancion nueva = new Cancion(titulo, artista, duracion);
+    canciones.add(nueva);
+    actualizarLista();
+    txtTitulo.clear();
+    txtArtista.clear();
+    txtDuracion.clear();
+    lblEstado.setText("Canción agregada: " + titulo);
+});</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <h4 style="margin:0 0 6px;">El patrón es siempre el mismo:</h4>
+    <p style="margin:0;">1. Leer datos de los TextField con <code>getText()</code><br>
+    2. Validar que no estén vacíos<br>
+    3. Crear el objeto y agregarlo a la colección<br>
+    4. Actualizar la vista (un TextArea o Label)<br>
+    5. Limpiar los campos con <code>clear()</code></p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 8: TEXTAREA COMO LISTA -->
+<!-- ============================================== -->
+<section v-else-if="current===8" data-slide class="slide">
+  <div class="kicker">Mostrar datos</div>
+  <h2>TextArea como lista visual</h2>
+  <p>Para mostrar la lista de canciones, usamos un <code>TextArea</code> en modo solo lectura. Cada vez que cambia la colección, reconstruimos el texto.</p>
+
+  <pre class="code-block"><code class="language-java">import javafx.scene.control.TextArea;
+
+TextArea areaLista = new TextArea();
+areaLista.setEditable(false);    // Solo lectura
+areaLista.setPrefRowCount(10);   // Altura preferida
+
+// Método para actualizar la lista visual
+private void actualizarLista() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i &lt; canciones.size(); i++) {
+        Cancion c = canciones.get(i);
+        sb.append((i + 1) + ". " + c.toString() + "\n");
+    }
+    areaLista.setText(sb.toString());
+}</code></pre>
+
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;"><strong>¿Por qué TextArea y no algo más sofisticado?</strong> Porque es simple, funciona, y no necesita conocimientos avanzados. En futuras unidades podrías usar <code>ListView</code> o <code>TableView</code>, pero para empezar esto es suficiente.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 9: PERSISTENCIA EN TXT -->
+<!-- ============================================== -->
+<section v-else-if="current===9" data-slide class="slide">
+  <div class="kicker">Persistencia</div>
+  <h2>Guardar y cargar desde .txt</h2>
+  <p>Para que los datos no se pierdan al cerrar la app, los guardamos en un archivo de texto. Formato: una canción por línea, campos separados por <code>|</code>.</p>
+
+  <pre class="code-block"><code class="language-java">import java.io.*;
+import java.util.ArrayList;
+
+// GUARDAR canciones en archivo
+private void guardarCanciones() {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter("canciones.txt"))) {
+        for (Cancion c : canciones) {
+            writer.write(c.getTitulo() + "|" + c.getArtista() + "|" + c.getDuracion());
+            writer.newLine();
+        }
+    } catch (IOException e) {
+        System.out.println("Error al guardar: " + e.getMessage());
+    }
+}
+
+// CARGAR canciones desde archivo
+private void cargarCanciones() {
+    File archivo = new File("canciones.txt");
+    if (!archivo.exists()) return;   // Si no existe, no hay nada que cargar
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] partes = linea.split("\\|");
+            if (partes.length == 3) {
+                canciones.add(new Cancion(partes[0], partes[1], partes[2]));
+            }
+        }
+    } catch (IOException e) {
+        System.out.println("Error al cargar: " + e.getMessage());
+    }
+}</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 10: PERSISTENCIA EN EL CICLO DE VIDA -->
+<!-- ============================================== -->
+<section v-else-if="current===10" data-slide class="slide">
+  <div class="kicker">Persistencia + Ciclo de vida</div>
+  <h2>¿Dónde va cada método?</h2>
+  <p>Ahora conectamos la persistencia con el ciclo de vida de la aplicación:</p>
+
+  <div class="lifecycle-flow">
+    <div class="lifecycle-step active">init()<br><small>cargarCanciones()</small></div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step" style="background:var(--pastel-lavanda);">start(Stage)<br><small>crear interfaz</small></div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step" style="background:var(--pastel-celeste);">App corriendo<br><small>el usuario interactúa</small></div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step warn">stop()<br><small>guardarCanciones()</small></div>
+  </div>
+
+  <pre class="code-block"><code class="language-java">@Override
+public void init() {
+    canciones = new ArrayList&lt;&gt;();
+    cargarCanciones();    // Leer del archivo al iniciar
+}
+
+@Override
+public void stop() {
+    guardarCanciones();   // Guardar al cerrar
+}</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Resultado:</strong> El usuario agrega canciones, cierra la app, la vuelve a abrir, y las canciones siguen ahí. Los datos <em>persisten</em> entre ejecuciones.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 11: VERIFICACIÓN -->
+<!-- ============================================== -->
+<section v-else-if="current===11" data-slide class="slide">
+  <div class="kicker">Verificación</div>
+  <h2>¿Entendiste Escenas y Ciclo de Vida?</h2>
+
+  <quiz-question v-bind="quiz1"></quiz-question>
+  <quiz-question v-bind="quiz2"></quiz-question>
+  <quiz-question v-bind="quiz3"></quiz-question>
+  <quiz-question v-bind="quiz4"></quiz-question>
+</section>
+
+</main>
+
+<footer class="controls-bar">
+  <button class="btn" @click="prev">← Anterior</button>
+  <div class="dots">
+    <span v-for="i in total" :key="i" class="dot" :class="{active: current===i-1}" @click="goTo(i-1)"></span>
+  </div>
+  <button class="btn" @click="next">Siguiente →</button>
+</footer>
+
+</div>
+
+<script src="../../shared/activity-engine.js"></script>
+<script>
+const { createApp } = Vue;
+const app = createApp({
+  data() {
+    return {
+      current: 0,
+      total: 12,
+      quiz1: {
+        question: '¿Cuál es la diferencia entre Stage y Scene en JavaFX?',
+        options: [
+          { text: 'Stage es el contenido y Scene es la ventana', correct: false },
+          { text: 'Stage es la ventana y Scene es el contenido que se muestra dentro', correct: true },
+          { text: 'Son lo mismo, solo cambia el nombre', correct: false },
+          { text: 'Stage es para apps de consola y Scene para apps gráficas', correct: false }
+        ],
+        explanation: 'Stage = ventana (marco, barra de título). Scene = contenido (controles, layouts). Puedes cambiar la Scene sin cerrar el Stage.',
+        hint: 'Piensa en la analogía del televisor: uno es el aparato, otro es lo que se muestra.',
+        level: 'base'
+      },
+      quiz2: {
+        question: '¿En qué orden se ejecutan los métodos del ciclo de vida de Application?',
+        options: [
+          { text: '<code>start() → init() → stop()</code>', correct: false },
+          { text: '<code>main() → start() → init()</code>', correct: false },
+          { text: '<code>init() → start() → stop()</code>', correct: true },
+          { text: '<code>start() → stop() → init()</code>', correct: false }
+        ],
+        explanation: 'El orden es: init() (preparar datos), start() (crear interfaz), y stop() (guardar/limpiar al cerrar).',
+        hint: 'init viene de "initialize" (inicializar) — ¿cuándo tiene sentido inicializar?',
+        level: 'base'
+      },
+      quiz3: {
+        question: 'Si quieres guardar datos en un archivo cuando el usuario cierra la app, ¿en qué método lo haces?',
+        options: [
+          { text: '<code>init()</code>', correct: false },
+          { text: '<code>start()</code>', correct: false },
+          { text: '<code>stop()</code>', correct: true },
+          { text: '<code>main()</code>', correct: false }
+        ],
+        explanation: 'stop() se ejecuta automáticamente cuando el usuario cierra la ventana. Es el lugar ideal para guardar datos antes de que la app termine.',
+        hint: 'El nombre del método describe literalmente cuándo se ejecuta.',
+        level: 'inter'
+      },
+      quiz4: {
+        question: '¿Qué layout usarías para crear un formulario con etiquetas a la izquierda y campos a la derecha?',
+        options: [
+          { text: '<code>VBox</code> — apila todo verticalmente', correct: false },
+          { text: '<code>HBox</code> — pone todo en una fila', correct: false },
+          { text: '<code>GridPane</code> — organiza en filas y columnas', correct: true },
+          { text: '<code>StackPane</code> — apila elementos uno encima de otro', correct: false }
+        ],
+        explanation: 'GridPane permite colocar elementos en posiciones específicas de fila y columna. Es perfecto para formularios: columna 0 = etiquetas, columna 1 = campos de texto.',
+        hint: 'Un formulario tiene dos columnas: etiquetas y campos. ¿Qué layout trabaja con filas y columnas?',
+        level: 'inter'
+      }
+    };
+  },
+  computed: {
+    progressWidth() { return ((this.current + 1) / this.total * 100) + '%'; }
+  },
+  methods: {
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    goTo(i) { if (i >= 0 && i < this.total) this.current = i; },
+    highlightCode() {
+      this.$nextTick(() => {
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code:not(.hljs)').forEach(block => hljs.highlightElement(block));
+        }
+      });
+    }
+  },
+  watch: {
+    current() { this.highlightCode(); }
+  },
+  mounted() {
+    this.highlightCode();
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); this.next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); this.prev(); }
+      if (e.key === 'Home') { e.preventDefault(); this.current = 0; }
+      if (e.key === 'End') { e.preventDefault(); this.current = this.total - 1; }
+    });
+  }
+});
+ActivityEngine.register(app);
+app.mount('#app');
+</script>
+</body>
+</html>

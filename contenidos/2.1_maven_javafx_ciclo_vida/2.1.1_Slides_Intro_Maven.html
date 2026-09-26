@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Introducción a Maven — Java OOP · Profe Carlitos</title>
+  <meta name="description" content="Presentación: Introducción a Maven — Desarrollo Orientado a Objetos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <style>
+    body { overflow: hidden; }
+    .diagram-box {
+      display: inline-block;
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 12px 20px;
+      margin: 4px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 140px;
+    }
+    .diagram-box.parent { background: var(--pastel-lavanda); }
+    .diagram-box.child { background: var(--pastel-celeste); }
+    .diagram-box.alt { background: var(--pastel-menta); }
+    .diagram-box.warn { background: var(--pastel-durazno); }
+    .diagram-arrow {
+      display: block;
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+    }
+    .diagram-row {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .tree {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.8;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      max-width: 600px;
+    }
+    .tree .folder { color: var(--ink); font-weight: 700; }
+    .tree .file { color: var(--ink-soft); }
+    .tree .hl { color: #e64553; font-weight: 700; }
+    .vs-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 16px;
+      align-items: start;
+      max-width: 1000px;
+    }
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--ink-muted);
+      padding-top: 30px;
+    }
+    .lifecycle-flow {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 16px 0;
+    }
+    .lifecycle-step {
+      background: var(--pastel-celeste);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 10px 18px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+    }
+    .lifecycle-step.active { background: var(--pastel-menta); border-color: #40a02b; }
+    .lifecycle-arrow { font-size: 22px; color: var(--ink-muted); }
+    @media (max-width: 760px) {
+      .vs-grid { grid-template-columns: 1fr; }
+      .vs-divider { display: none; }
+    }
+  </style>
+</head>
+<body>
+<div id="app" class="app">
+
+<header class="topbar">
+  <div class="topbar-brand"><span class="alien">👽</span> Java · Introducción a Maven</div>
+  <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
+  <div class="progress-bar" :style="{width: ((current+1)/total*100)+'%'}"></div>
+</header>
+
+<main class="slide-area">
+
+<!-- ============================================== -->
+<!-- SLIDE 0: PORTADA -->
+<!-- ============================================== -->
+<section v-if="current===0" data-slide class="slide">
+  <div class="kicker">Unidad 2.1 · Introducción a Maven</div>
+  <h1 style="font-size:clamp(36px,5vw,56px);">Maven</h1>
+  <p class="lead">El gestor de proyectos que organiza tu código, tus dependencias y tu vida.</p>
+  <div style="font-size:64px; margin-top:24px;">🛸</div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 1: ANTES DE MAVEN -->
+<!-- ============================================== -->
+<section v-else-if="current===1" data-slide class="slide">
+  <div class="kicker">Motivación</div>
+  <h2>¿Qué hacíamos antes?</h2>
+  <p>Hasta ahora, programaste en Java con un solo archivo o con pocos archivos en una carpeta. Todo lo que necesitabas ya venía incluido en Java (<code>Scanner</code>, <code>ArrayList</code>, etc.).</p>
+
+  <div class="grid" style="margin-top:20px;">
+    <div class="card card-rosa">
+      <strong>Pero ahora necesitamos algo nuevo</strong>
+      <p>Queremos crear ventanas con botones, campos de texto y diseño visual. Eso <strong>no viene incluido</strong> en Java por defecto.</p>
+      <p>Necesitamos agregar una librería externa llamada <strong>JavaFX</strong>.</p>
+    </div>
+    <div class="card card-durazno">
+      <strong>Sin Maven, eso significa...</strong>
+      <p>Descargar archivos JAR manualmente de internet.</p>
+      <p>Configurar rutas en tu IDE a mano.</p>
+      <p>Compartir el proyecto con compañeros y que no les funcione.</p>
+      <p>Actualizar una librería y romper todo.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-lavanda" style="margin-top:16px;">
+    <p style="margin:0;"><strong>Analogía:</strong> Es como armar un mueble sin instrucciones, sin lista de piezas, y sin herramientas. Puedes hacerlo... pero vas a sufrir.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 2: QUÉ ES MAVEN -->
+<!-- ============================================== -->
+<section v-else-if="current===2" data-slide class="slide">
+  <div class="kicker">Concepto</div>
+  <h2>Maven = gestor de proyectos</h2>
+  <p>Maven es una herramienta que <strong>automatiza</strong> la organización de un proyecto Java. Hace tres cosas fundamentales:</p>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-menta">
+      <strong>1. Estructura</strong>
+      <p>Define dónde va cada archivo: tu código Java, tus recursos (CSS, imágenes), lo compilado.</p>
+    </div>
+    <div class="card card-celeste">
+      <strong>2. Dependencias</strong>
+      <p>Descarga automáticamente las librerías externas que necesitas (como JavaFX). Tú solo escribes el nombre.</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong>3. Compilación</strong>
+      <p>Compila y ejecuta tu proyecto con un solo comando. Sin configurar rutas ni classpaths.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:16px;">
+    <p style="margin:0;"><strong>Analogía IKEA:</strong> Maven es como comprar un mueble en IKEA. Te viene con las piezas correctas, las instrucciones paso a paso, y las herramientas necesarias. Tú solo armas.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 3: ESTRUCTURA DE CARPETAS -->
+<!-- ============================================== -->
+<section v-else-if="current===3" data-slide class="slide">
+  <div class="kicker">Estructura</div>
+  <h2>Estructura de carpetas Maven</h2>
+  <p>Todo proyecto Maven tiene la misma estructura. Esto significa que <strong>cualquier desarrollador</strong> que abra tu proyecto sabe exactamente dónde buscar cada cosa.</p>
+
+  <div class="tree" style="margin-top:16px;">
+    <span class="folder">spotify-mini/</span><br>
+    ├── <span class="hl">pom.xml</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← El "plano" del proyecto<br>
+    ├── <span class="folder">src/</span><br>
+    │&nbsp;&nbsp; └── <span class="folder">main/</span><br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="folder">java/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← Tu código Java va aquí<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp; └── <span class="folder">com/spotify/mini/</span><br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ├── <span class="file">SpotifyMiniApp.java</span><br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── <span class="file">Cancion.java</span><br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── <span class="folder">resources/</span> &nbsp;&nbsp;&nbsp;&nbsp; ← Archivos extra (CSS, imágenes)<br>
+    │&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── <span class="file">styles.css</span><br>
+    └── <span class="folder">target/</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ← Lo que Maven compila (no tocar)
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:16px;">
+    <p style="margin:0;"><strong>Regla de oro:</strong> Tu código va en <code>src/main/java/</code>. Tus archivos extra (CSS, imágenes) van en <code>src/main/resources/</code>. La carpeta <code>target/</code> la genera Maven — nunca la edites.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 4: EL POM.XML — IDENTIDAD -->
+<!-- ============================================== -->
+<section v-else-if="current===4" data-slide class="slide">
+  <div class="kicker">El archivo central</div>
+  <h2>El pom.xml — Identidad del proyecto</h2>
+  <p>El <code>pom.xml</code> (Project Object Model) es el archivo más importante de un proyecto Maven. Contiene toda la información que Maven necesita para construir tu proyecto.</p>
+  <p>Tiene <strong>3 partes esenciales</strong>:</p>
+
+  <pre class="code-block"><code class="language-xml">&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;!-- PARTE 1: Identidad del proyecto --&gt;
+    &lt;groupId&gt;com.spotify.mini&lt;/groupId&gt;     &lt;!-- "Apellido" del proyecto --&gt;
+    &lt;artifactId&gt;spotify-mini&lt;/artifactId&gt;   &lt;!-- "Nombre" del proyecto --&gt;
+    &lt;version&gt;1.0&lt;/version&gt;                  &lt;!-- Versión actual --&gt;
+
+    &lt;!-- PARTE 2: Dependencias (lo que necesitas) --&gt;
+    &lt;dependencies&gt;
+        &lt;!-- Aquí se agregan las librerías externas --&gt;
+    &lt;/dependencies&gt;
+
+    &lt;!-- PARTE 3: Plugins (cómo compilar y ejecutar) --&gt;
+    &lt;build&gt;
+        &lt;plugins&gt;...&lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+
+  <div class="callout callout-durazno" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Analogía:</strong> El <code>pom.xml</code> es como la lista de compras del supermercado. Le dices a Maven qué necesitas, y Maven lo descarga por ti.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 5: DEPENDENCIAS -->
+<!-- ============================================== -->
+<section v-else-if="current===5" data-slide class="slide">
+  <div class="kicker">Dependencias</div>
+  <h2>¿Qué es una dependencia?</h2>
+  <p>Una <strong>dependencia</strong> es una librería externa que tu proyecto necesita para funcionar. En vez de descargar archivos JAR manualmente, le dices a Maven <em>qué</em> necesitas y <em>qué versión</em>.</p>
+
+  <pre class="code-block"><code class="language-xml">&lt;dependencies&gt;
+    &lt;!-- JavaFX: para crear interfaces gráficas --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+        &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+        &lt;version&gt;21.0.2&lt;/version&gt;
+    &lt;/dependency&gt;
+&lt;/dependencies&gt;</code></pre>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-menta">
+      <strong>¿De dónde las descarga Maven?</strong>
+      <p>De un repositorio público en internet llamado <strong>Maven Central</strong>. Es como una tienda de apps, pero para librerías Java.</p>
+    </div>
+    <div class="card card-celeste">
+      <strong>¿Qué pasa cuando agregas una?</strong>
+      <p>Maven la descarga automáticamente, la guarda en tu computador, y la hace disponible para tu código. No necesitas hacer nada más.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Cada dependencia tiene 3 datos:</strong> <code>groupId</code> (quién la hizo), <code>artifactId</code> (nombre de la librería), <code>version</code> (qué versión usar).</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 6: CICLO DE VIDA BÁSICO -->
+<!-- ============================================== -->
+<section v-else-if="current===6" data-slide class="slide">
+  <div class="kicker">Ejecución</div>
+  <h2>Ciclo de vida básico de Maven</h2>
+  <p>Maven tiene un <strong>ciclo de vida</strong>: una secuencia de fases que se ejecutan en orden. Para este curso, solo necesitas conocer tres:</p>
+
+  <div class="lifecycle-flow">
+    <div class="lifecycle-step active">mvn compile</div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step">mvn exec:java</div>
+    <span class="lifecycle-arrow">→</span>
+    <div class="lifecycle-step">mvn package</div>
+  </div>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-menta">
+      <strong><code>mvn compile</code></strong>
+      <p>Compila tu código Java. Convierte tus archivos <code>.java</code> en archivos <code>.class</code> que la máquina entiende.</p>
+    </div>
+    <div class="card card-celeste">
+      <strong><code>mvn exec:java</code></strong>
+      <p>Ejecuta tu aplicación directamente. Es el equivalente a darle "Play" en tu IDE.</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong><code>mvn package</code></strong>
+      <p>Empaqueta todo en un archivo <code>.jar</code> que puedes compartir. Como "exportar" tu proyecto.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-durazno" style="margin-top:12px;">
+    <p style="margin:0;"><strong>En VS Code</strong> no necesitas escribir estos comandos a mano. El Java Extension Pack te permite ejecutar con un clic o con <code>F5</code>. Pero es bueno saber qué pasa por detrás.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 7: MAVEN EN VS CODE -->
+<!-- ============================================== -->
+<section v-else-if="current===7" data-slide class="slide">
+  <div class="kicker">En tu IDE</div>
+  <h2>Maven en VS Code</h2>
+  <p>Con el <strong>Java Extension Pack</strong> instalado, VS Code detecta automáticamente los proyectos Maven.</p>
+
+  <div class="grid" style="margin-top:16px;">
+    <div class="card card-celeste">
+      <strong>Lo que VS Code hace por ti:</strong>
+      <p>Detecta el <code>pom.xml</code> y descarga las dependencias automáticamente.</p>
+      <p>Muestra el proyecto con su estructura de carpetas Maven.</p>
+      <p>Ofrece un panel "Maven" en la barra lateral con las fases del ciclo de vida.</p>
+      <p>Te permite ejecutar con <code>F5</code> o clic derecho → "Run".</p>
+    </div>
+    <div class="card card-menta">
+      <strong>Cómo crear un proyecto Maven:</strong>
+      <p>1. <code>Ctrl+Shift+P</code> → "Java: Create Java Project"</p>
+      <p>2. Seleccionar "Maven"</p>
+      <p>3. Elegir el archetype "maven-archetype-quickstart"</p>
+      <p>4. Definir groupId y artifactId</p>
+      <p>5. VS Code crea la estructura completa</p>
+    </div>
+  </div>
+
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;"><strong>No te preocupes</strong> si esto suena a mucho. En la guía de actividad vas a seguir los pasos uno por uno. Aquí solo importa que entiendas el concepto.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 8: RESUMEN VISUAL -->
+<!-- ============================================== -->
+<section v-else-if="current===8" data-slide class="slide">
+  <div class="kicker">Resumen</div>
+  <h2>Maven en una imagen</h2>
+
+  <div style="text-align:center; margin-top:16px;">
+    <div class="diagram-box parent" style="min-width:200px;">TU CÓDIGO<br><small>src/main/java/</small></div>
+    <span class="diagram-arrow">↓ se describe en</span>
+    <div class="diagram-box warn" style="min-width:200px;">pom.xml<br><small>identidad + dependencias + plugins</small></div>
+    <span class="diagram-arrow">↓ Maven descarga</span>
+    <div class="diagram-box child" style="min-width:200px;">DEPENDENCIAS<br><small>JavaFX, etc. desde Maven Central</small></div>
+    <span class="diagram-arrow">↓ Maven compila todo junto</span>
+    <div class="diagram-box alt" style="min-width:200px;">APLICACIÓN LISTA<br><small>target/ → ejecutar o empaquetar</small></div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 9: VERIFICACIÓN -->
+<!-- ============================================== -->
+<section v-else-if="current===9" data-slide class="slide">
+  <div class="kicker">Verificación</div>
+  <h2>¿Entendiste Maven?</h2>
+
+  <quiz-question v-bind="quiz1"></quiz-question>
+  <quiz-question v-bind="quiz2"></quiz-question>
+  <quiz-question v-bind="quiz3"></quiz-question>
+</section>
+
+</main>
+
+<footer class="controls-bar">
+  <button class="btn" @click="prev">← Anterior</button>
+  <div class="dots">
+    <span v-for="i in total" :key="i" class="dot" :class="{active: current===i-1}" @click="goTo(i-1)"></span>
+  </div>
+  <button class="btn" @click="next">Siguiente →</button>
+</footer>
+
+</div>
+
+<script src="../../shared/activity-engine.js"></script>
+<script>
+const { createApp } = Vue;
+const app = createApp({
+  data() {
+    return {
+      current: 0,
+      total: 10,
+      quiz1: {
+        question: '¿Qué archivo contiene la identidad, dependencias y configuración de un proyecto Maven?',
+        options: [
+          { text: '<code>Main.java</code>', correct: false },
+          { text: '<code>pom.xml</code>', correct: true },
+          { text: '<code>settings.json</code>', correct: false },
+          { text: '<code>build.gradle</code>', correct: false }
+        ],
+        explanation: 'El pom.xml (Project Object Model) es el archivo central de Maven. Contiene la identidad del proyecto, las dependencias y la configuración de compilación.',
+        hint: 'El nombre del archivo tiene 3 letras antes del punto.',
+        level: 'base'
+      },
+      quiz2: {
+        question: '¿En qué carpeta de un proyecto Maven va tu código Java?',
+        options: [
+          { text: '<code>target/</code>', correct: false },
+          { text: '<code>src/main/resources/</code>', correct: false },
+          { text: '<code>src/main/java/</code>', correct: true },
+          { text: '<code>lib/</code>', correct: false }
+        ],
+        explanation: 'El código Java siempre va en src/main/java/. Los recursos (CSS, imágenes) van en src/main/resources/. La carpeta target/ la genera Maven al compilar.',
+        hint: 'La ruta incluye "java" en el nombre.',
+        level: 'base'
+      },
+      quiz3: {
+        question: '¿Qué hace Maven cuando agregas una dependencia al <code>pom.xml</code>?',
+        options: [
+          { text: 'Copia el código fuente de la librería a tu proyecto', correct: false },
+          { text: 'Descarga automáticamente la librería desde Maven Central y la hace disponible', correct: true },
+          { text: 'Genera un archivo JAR vacío para que tú lo llenes', correct: false },
+          { text: 'Envía tu código al servidor de Maven para compilarlo en la nube', correct: false }
+        ],
+        explanation: 'Maven descarga las librerías desde Maven Central (un repositorio público en internet) y las guarda en tu computador. Tu código puede usarlas inmediatamente.',
+        hint: 'Maven Central es como una "tienda de apps" para librerías Java.',
+        level: 'inter'
+      }
+    };
+  },
+  computed: {
+    progressWidth() { return ((this.current + 1) / this.total * 100) + '%'; }
+  },
+  methods: {
+    next() { if (this.current < this.total - 1) this.current++; },
+    prev() { if (this.current > 0) this.current--; },
+    goTo(i) { if (i >= 0 && i < this.total) this.current = i; },
+    highlightCode() {
+      this.$nextTick(() => {
+        if (typeof hljs !== 'undefined') {
+          document.querySelectorAll('pre code:not(.hljs)').forEach(block => hljs.highlightElement(block));
+        }
+      });
+    }
+  },
+  watch: {
+    current() { this.highlightCode(); }
+  },
+  mounted() {
+    this.highlightCode();
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); this.next(); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); this.prev(); }
+      if (e.key === 'Home') { e.preventDefault(); this.current = 0; }
+      if (e.key === 'End') { e.preventDefault(); this.current = this.total - 1; }
+    });
+  }
+});
+ActivityEngine.register(app);
+app.mount('#app');
+</script>
+</body>
+</html>

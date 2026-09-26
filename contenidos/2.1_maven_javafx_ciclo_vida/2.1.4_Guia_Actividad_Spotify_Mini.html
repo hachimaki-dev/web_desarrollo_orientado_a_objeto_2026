@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía de Actividad — Spotify Mini · Profe Carlitos</title>
+  <meta name="description"
+    content="Guía paso a paso para construir Spotify Mini con JavaFX, Maven y persistencia en archivo">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .guide-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .guide-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .section-divider {
+      margin: 48px 0 32px;
+      padding: 16px 0;
+      border-top: 2px solid var(--line);
+    }
+
+    .phase-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 48px 0 24px;
+      padding: 12px 16px;
+      background: var(--pastel-lavanda);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--ink);
+    }
+
+    .checkpoint {
+      background: var(--pastel-menta);
+      border: 2px solid #40a02b;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 24px 0;
+    }
+
+    .checkpoint strong {
+      color: #40a02b;
+    }
+
+    .checkpoint p {
+      margin: 4px 0 0;
+    }
+
+    .reflection-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 800px;
+    }
+
+    .reflection-box p {
+      margin: 0;
+      color: var(--accent-amarillo);
+      font-size: 15px;
+    }
+
+    .reflection-box strong {
+      color: var(--accent-amarillo);
+    }
+
+    .tree {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.8;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      max-width: 600px;
+    }
+
+    .tree .folder {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .tree .file {
+      color: var(--ink-soft);
+    }
+
+    .tree .hl {
+      color: #e64553;
+      font-weight: 700;
+    }
+
+    .ui-preview {
+      background: #191414;
+      border: 2px solid #333;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      color: #fff;
+      font-family: var(--font-main);
+      max-width: 550px;
+      margin: 16px auto;
+    }
+
+    .ui-preview h3 {
+      color: #1db954;
+      margin: 0 0 16px;
+      font-size: 20px;
+    }
+
+    .ui-preview .ui-label {
+      color: #b3b3b3;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .ui-preview .ui-input {
+      background: #333;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: #fff;
+      width: 100%;
+      font-size: 14px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+
+    .ui-preview .ui-btn {
+      background: #1db954;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 24px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .ui-preview .ui-btn.secondary {
+      background: #333;
+    }
+
+    .ui-preview .ui-textarea {
+      background: #282828;
+      border: 1px solid #333;
+      border-radius: 8px;
+      color: #b3b3b3;
+      padding: 12px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      width: 100%;
+      min-height: 100px;
+      box-sizing: border-box;
+      margin-top: 12px;
+    }
+
+    .ui-preview .ui-form-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .ui-preview .ui-status {
+      color: #1db954;
+      font-size: 13px;
+      margin-top: 12px;
+      font-style: italic;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="guide-container">
+
+      <header class="guide-header">
+        <div style="font-size:40px; margin-bottom:12px;">👽</div>
+        <div class="kicker">Guía de actividad · 2.1.4</div>
+        <h1 style="font-size:clamp(32px,4vw,48px);">Spotify Mini 🎧</h1>
+        <p class="lead">Guía paso a paso para construir tu primera aplicación JavaFX con Maven: formulario, colecciones,
+          CSS y persistencia en archivo.</p>
+      </header>
+
+      <!-- ============================================== -->
+      <!-- REQUISITOS PREVIOS -->
+      <!-- ============================================== -->
+      <div class="callout callout-lavanda" style="margin-bottom:32px;">
+        <h4 style="margin:0 0 8px;">Requisitos previos</h4>
+        <p style="margin:0;">Antes de comenzar, asegúrate de tener:</p>
+        <ul style="margin:8px 0 0; padding-left:20px;">
+          <li><strong>VS Code</strong> instalado con el <strong>Java Extension Pack</strong></li>
+          <li><strong>JDK 21</strong> (o superior) instalado y configurado</li>
+          <li><strong>Maven</strong> instalado (el Java Extension Pack lo incluye)</li>
+        </ul>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 1: CREAR EL PROYECTO -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 1 — Crear el proyecto Maven</div>
+
+      <!-- PASO 1 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-title">Crea el proyecto Maven en VS Code</div>
+        </div>
+
+        <p>Abre VS Code y sigue estos pasos:</p>
+        <ol>
+          <li>Presiona <code>Ctrl+Shift+P</code> para abrir la paleta de comandos</li>
+          <li>Escribe <strong>"Java: Create Java Project"</strong> y selecciónalo</li>
+          <li>Elige <strong>"Maven"</strong> como tipo de proyecto</li>
+          <li>Selecciona <strong>maven-archetype-quickstart</strong></li>
+          <li>Escribe <code>com.spotify.mini</code> como <strong>groupId</strong></li>
+          <li>Escribe <code>spotify-mini</code> como <strong>artifactId</strong></li>
+          <li>Confirma la versión <code>1.0-SNAPSHOT</code></li>
+          <li>Elige una carpeta donde guardar el proyecto</li>
+        </ol>
+
+        <p>VS Code creará una estructura de carpetas como esta:</p>
+
+        <div class="tree">
+          <span class="folder">spotify-mini/</span><br>
+          ├── <span class="hl">pom.xml</span><br>
+          └── <span class="folder">src/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;└── <span class="folder">main/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="folder">java/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp; └── <span
+            class="folder">com/spotify/mini/</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; └── <span
+            class="file">App.java</span> (lo reemplazaremos)<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="folder">resources/</span> (si no existe,
+          créala)
+        </div>
+
+        <div class="callout callout-menta" style="margin-top:12px;">
+          <p style="margin:0;"><strong>Si la carpeta <code>resources</code> no existe</strong>, créala manualmente: clic
+            derecho en <code>src/main/</code> → "New Folder" → escribe <code>resources</code>.</p>
+        </div>
+      </div>
+
+      <!-- PASO 2 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-title">Configura el pom.xml con JavaFX</div>
+        </div>
+
+        <p>Abre el archivo <code>pom.xml</code> y <strong>reemplaza todo su contenido</strong> con el siguiente código.
+          No necesitas memorizar esto — solo cópialo:</p>
+
+        <pre class="code-block"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.spotify.mini&lt;/groupId&gt;
+    &lt;artifactId&gt;spotify-mini&lt;/artifactId&gt;
+    &lt;version&gt;1.0&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+        &lt;javafx.version&gt;21.0.2&lt;/javafx.version&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+            &lt;version&gt;${javafx.version}&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+    &lt;build&gt;
+        &lt;plugins&gt;
+            &lt;plugin&gt;
+                &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+                &lt;artifactId&gt;javafx-maven-plugin&lt;/artifactId&gt;
+                &lt;version&gt;0.0.8&lt;/version&gt;
+                &lt;configuration&gt;
+                    &lt;mainClass&gt;com.spotify.mini.SpotifyMiniApp&lt;/mainClass&gt;
+                &lt;/configuration&gt;
+            &lt;/plugin&gt;
+        &lt;/plugins&gt;
+    &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+
+        <div class="callout callout-celeste">
+          <p style="margin:0;"><strong>¿Qué hace este archivo?</strong> Le dice a Maven: "mi proyecto se llama
+            spotify-mini, necesita JavaFX versión 21.0.2, y la clase principal es SpotifyMiniApp". Maven se encarga del
+            resto.</p>
+        </div>
+
+        <div class="reflection-box">
+          <p><strong>Después de guardar</strong>, VS Code puede mostrar una notificación pidiendo recargar. Acepta.
+            Maven descargará las dependencias automáticamente (puede tomar unos segundos la primera vez).</p>
+        </div>
+      </div>
+
+      <!-- PASO 3 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-title">Crea la clase principal SpotifyMiniApp</div>
+        </div>
+
+        <p>Si existe un archivo <code>App.java</code>, renómbralo o elimínalo. Crea un nuevo archivo en
+          <code>src/main/java/com/spotify/mini/</code> llamado <code>SpotifyMiniApp.java</code>:</p>
+
+        <pre class="code-block"><code class="language-java">package com.spotify.mini;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class SpotifyMiniApp extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        Label titulo = new Label("Spotify Mini 🎧");
+        VBox root = new VBox(titulo);
+        Scene scene = new Scene(root, 600, 450);
+
+        stage.setTitle("Spotify Mini");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}</code></pre>
+
+        <p>A continuación, crea también un archivo <code>Main.java</code> en la misma carpeta
+          (<code>src/main/java/com/spotify/mini/</code>). Esta es una <strong>clase lanzadora</strong> que permite
+          ejecutar la aplicación directamente en VS Code con el botón Play o F5 sin errores:</p>
+
+        <pre class="code-block"><code class="language-java">package com.spotify.mini;
+
+public class Main {
+    public static void main(String[] args) {
+        SpotifyMiniApp.main(args);
+    }
+}</code></pre>
+
+        <div class="checkpoint">
+          <strong>Checkpoint — Cómo ejecutar la aplicación</strong>
+          <p>Tienes <strong>dos formas</strong> de ejecutar tu proyecto:</p>
+          <ol style="margin:8px 0; padding-left:20px;">
+            <li><strong>Forma directa (VS Code):</strong> Abre <code>Main.java</code> y haz clic derecho → <strong>"Run
+                Java"</strong> (o presiona <code>F5</code>).</li>
+            <li><strong>Forma Maven (Terminal):</strong> Abre la terminal integrada de VS Code (<code>Ctrl + ñ</code>) y
+              ejecuta:
+              <pre
+                style="margin:6px 0; padding:6px 12px; background:#ffffff; border-radius:4px; font-size:13px;">mvn javafx:run</pre>
+            </li>
+          </ol>
+          <p>Debería abrirse una ventana con el texto <em>"Spotify Mini 🎧"</em>.</p>
+
+          <div class="callout callout-lavanda" style="margin-top:12px;">
+            <strong style="display:block; margin-bottom:4px;">⚠️ ¿Te aparece el error "faltan los componentes de JavaFX
+              runtime"?</strong>
+            <p style="margin:0; font-size:13px;">Si ejecutas directamente <code>SpotifyMiniApp.java</code> con "Run
+              Java", Java 21 bloquea la ejecución porque JavaFX no está en el JDK base. <strong>Solución:</strong>
+              Ejecuta siempre desde <code>Main.java</code> con clic derecho → "Run Java", o ejecuta
+              <code>mvn javafx:run</code> en la terminal.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 2: LA INTERFAZ -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 2 — Construir la interfaz</div>
+
+      <!-- PASO 4 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">4</div>
+          <div class="step-title">Crea la clase Cancion</div>
+        </div>
+
+        <p>Antes de armar la interfaz, necesitas la clase que representa los datos. Crea <code>Cancion.java</code> en el
+          mismo paquete:</p>
+
+        <pre class="code-block"><code class="language-java">package com.spotify.mini;
+
+public class Cancion {
+    private String titulo;
+    private String artista;
+    private String duracion;
+
+    public Cancion(String titulo, String artista, String duracion) {
+        this.titulo = titulo;
+        this.artista = artista;
+        this.duracion = duracion;
+    }
+
+    // Getters
+    public String getTitulo() { return titulo; }
+    public String getArtista() { return artista; }
+    public String getDuracion() { return duracion; }
+
+    @Override
+    public String toString() {
+        return titulo + " — " + artista + " (" + duracion + ")";
+    }
+}</code></pre>
+
+        <div class="callout callout-menta">
+          <p style="margin:0;"><strong>Esto ya lo sabes hacer.</strong> Es la misma estructura de clases con atributos,
+            constructor, getters y toString() que usaste en las unidades anteriores.</p>
+        </div>
+      </div>
+
+      <!-- PASO 5 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">5</div>
+          <div class="step-title">Agrega los controles del formulario</div>
+        </div>
+
+        <p>Vuelve a <code>SpotifyMiniApp.java</code>. Reemplaza el contenido del método <code>start()</code> con los
+          controles del formulario:</p>
+
+        <pre class="code-block"><code class="language-java">@Override
+public void start(Stage stage) {
+    // --- Título de la app ---
+    Label lblTitulo = new Label("Spotify Mini 🎧");
+    lblTitulo.setId("titulo-app");
+
+    // --- Formulario con GridPane ---
+    Label lblCancion = new Label("Título:");
+    TextField txtTitulo = new TextField();
+    txtTitulo.setPromptText("Nombre de la canción");
+
+    Label lblArtista = new Label("Artista:");
+    TextField txtArtista = new TextField();
+    txtArtista.setPromptText("Nombre del artista");
+
+    Label lblDuracion = new Label("Duración:");
+    TextField txtDuracion = new TextField();
+    txtDuracion.setPromptText("Ej: 3:45");
+
+    GridPane formulario = new GridPane();
+    formulario.setHgap(10);
+    formulario.setVgap(10);
+    formulario.add(lblCancion,  0, 0);
+    formulario.add(txtTitulo,   1, 0);
+    formulario.add(lblArtista,  0, 1);
+    formulario.add(txtArtista,  1, 1);
+    formulario.add(lblDuracion, 0, 2);
+    formulario.add(txtDuracion, 1, 2);
+
+    // --- Botones ---
+    Button btnAgregar = new Button("Agregar Canción");
+    btnAgregar.setId("btn-agregar");
+    Button btnLimpiar = new Button("Limpiar");
+
+    HBox botones = new HBox(10, btnAgregar, btnLimpiar);
+
+    // --- Área de lista ---
+    TextArea areaLista = new TextArea();
+    areaLista.setEditable(false);
+    areaLista.setPromptText("Las canciones aparecerán aquí...");
+    areaLista.setPrefRowCount(8);
+
+    // --- Label de estado ---
+    Label lblEstado = new Label("");
+    lblEstado.setId("lbl-estado");
+
+    // --- Layout principal ---
+    VBox root = new VBox(15, lblTitulo, formulario, botones, areaLista, lblEstado);
+    root.setPadding(new Insets(20));
+
+    // --- Escena ---
+    Scene scene = new Scene(root, 600, 500);
+    stage.setTitle("Spotify Mini");
+    stage.setScene(scene);
+    stage.show();
+}</code></pre>
+
+        <p>Agrega estos imports al inicio del archivo:</p>
+
+        <pre class="code-block"><code class="language-java">import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;</code></pre>
+
+        <div class="checkpoint">
+          <strong>Checkpoint — Verifica antes de continuar</strong>
+          <p>Ejecuta la app. Deberías ver: un título, tres campos con etiquetas, dos botones, y un área de texto vacía.
+            Los botones no hacen nada todavía — eso viene en el paso siguiente.</p>
+        </div>
+
+        <div class="ui-preview">
+          <h3>Spotify Mini 🎧</h3>
+          <div class="ui-form-row">
+            <span class="ui-label">Título:</span>
+            <input class="ui-input" placeholder="Nombre de la canción" disabled style="margin:0;">
+          </div>
+          <div class="ui-form-row">
+            <span class="ui-label">Artista:</span>
+            <input class="ui-input" placeholder="Nombre del artista" disabled style="margin:0;">
+          </div>
+          <div class="ui-form-row">
+            <span class="ui-label">Duración:</span>
+            <input class="ui-input" placeholder="Ej: 3:45" disabled style="margin:0;">
+          </div>
+          <div style="margin-top:12px;">
+            <button class="ui-btn">Agregar Canción</button>
+            <button class="ui-btn secondary">Limpiar</button>
+          </div>
+          <div class="ui-textarea">Las canciones aparecerán aquí...</div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 3: LA LÓGICA -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 3 — Conectar la lógica</div>
+
+      <!-- PASO 6 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">6</div>
+          <div class="step-title">Declara la colección como atributo de la clase</div>
+        </div>
+
+        <p>La lista de canciones debe existir a nivel de la clase (no dentro del método <code>start</code>), porque la
+          necesitarás en <code>init()</code> y <code>stop()</code> también:</p>
+
+        <pre class="code-block"><code class="language-java">import java.util.ArrayList;
+
+public class SpotifyMiniApp extends Application {
+
+    // Atributo de la clase — disponible en init(), start() y stop()
+    private ArrayList&lt;Cancion&gt; canciones = new ArrayList&lt;&gt;();
+
+    @Override
+    public void start(Stage stage) {
+        // ... todo lo del paso anterior
+    }
+}</code></pre>
+
+        <div class="callout callout-celeste">
+          <p style="margin:0;"><strong>¿Por qué atributo y no variable local?</strong> Porque necesitas acceder a la
+            lista desde varios métodos: <code>start()</code> (para la interfaz), <code>init()</code> (para cargar) y
+            <code>stop()</code> (para guardar).</p>
+        </div>
+      </div>
+
+      <!-- PASO 7 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">7</div>
+          <div class="step-title">Programa el botón "Agregar Canción"</div>
+        </div>
+
+        <p>Dentro del método <code>start()</code>, <strong>después de crear los botones</strong> y <strong>antes del
+            layout principal</strong>, agrega la lógica del botón:</p>
+
+        <pre class="code-block"><code class="language-java">// Evento: Agregar canción
+btnAgregar.setOnAction(e -> {
+    String titulo = txtTitulo.getText().trim();
+    String artista = txtArtista.getText().trim();
+    String duracion = txtDuracion.getText().trim();
+
+    // Validar que no estén vacíos
+    if (titulo.isEmpty() || artista.isEmpty()) {
+        lblEstado.setText("Completa al menos el título y artista.");
+        return;
+    }
+
+    // Crear canción y agregar a la lista
+    Cancion nueva = new Cancion(titulo, artista, duracion);
+    canciones.add(nueva);
+
+    // Actualizar la vista
+    actualizarLista(areaLista);
+
+    // Limpiar campos
+    txtTitulo.clear();
+    txtArtista.clear();
+    txtDuracion.clear();
+    lblEstado.setText("Canción agregada: " + titulo);
+});
+
+// Evento: Limpiar campos
+btnLimpiar.setOnAction(e -> {
+    txtTitulo.clear();
+    txtArtista.clear();
+    txtDuracion.clear();
+    lblEstado.setText("");
+});</code></pre>
+      </div>
+
+      <!-- PASO 8 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">8</div>
+          <div class="step-title">Crea el método actualizarLista()</div>
+        </div>
+
+        <p>Este método recorre la colección y muestra todas las canciones en el TextArea. Agrégalo <strong>en la
+            clase</strong> (fuera de <code>start</code>):</p>
+
+        <pre class="code-block"><code class="language-java">private void actualizarLista(TextArea areaLista) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i &lt; canciones.size(); i++) {
+        sb.append((i + 1) + ". " + canciones.get(i).toString() + "\n");
+    }
+    if (canciones.isEmpty()) {
+        areaLista.setText("");
+        areaLista.setPromptText("Las canciones aparecerán aquí...");
+    } else {
+        areaLista.setText(sb.toString());
+    }
+}</code></pre>
+
+        <div class="checkpoint">
+          <strong>Checkpoint — Verifica antes de continuar</strong>
+          <p>Ejecuta la app. Escribe un título, artista y duración. Haz clic en "Agregar Canción". La canción debería
+            aparecer en el área de texto inferior. Agrega 2-3 canciones más para confirmar.</p>
+          <p>El botón "Limpiar" debería vaciar los campos del formulario.</p>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 4: CSS -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 4 — Estilo CSS tipo Spotify</div>
+
+      <!-- PASO 9 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">9</div>
+          <div class="step-title">Crea el archivo CSS</div>
+        </div>
+
+        <p>Crea un archivo llamado <code>styles.css</code> dentro de <code>src/main/resources/</code> con el siguiente
+          contenido:</p>
+
+        <pre class="code-block"><code class="language-css">/* ===== FONDO GENERAL ===== */
+.root {
+    -fx-background-color: #191414;
+    -fx-font-family: "Segoe UI", "Arial", sans-serif;
+}
+
+/* ===== TÍTULO PRINCIPAL ===== */
+#titulo-app {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1db954;
+}
+
+/* ===== LABELS DEL FORMULARIO ===== */
+.label {
+    -fx-text-fill: #b3b3b3;
+    -fx-font-size: 14px;
+}
+
+/* ===== CAMPOS DE TEXTO ===== */
+.text-field {
+    -fx-background-color: #282828;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #666666;
+    -fx-border-color: #333333;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8 12;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused {
+    -fx-border-color: #1db954;
+    -fx-border-width: 2;
+}
+
+/* ===== BOTÓN PRINCIPAL ===== */
+#btn-agregar {
+    -fx-background-color: #1db954;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+#btn-agregar:hover {
+    -fx-background-color: #1ed760;
+}
+
+#btn-agregar:pressed {
+    -fx-background-color: #169c46;
+}
+
+/* ===== BOTÓN SECUNDARIO ===== */
+.button {
+    -fx-background-color: #333333;
+    -fx-text-fill: #b3b3b3;
+    -fx-font-size: 13px;
+    -fx-padding: 8 18;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #444444;
+    -fx-text-fill: #ffffff;
+}
+
+/* ===== ÁREA DE LISTA ===== */
+.text-area {
+    -fx-control-inner-background: #282828;
+    -fx-text-fill: #b3b3b3;
+    -fx-font-family: "Consolas", "Courier New", monospace;
+    -fx-font-size: 13px;
+    -fx-border-color: #333333;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+}
+
+.text-area .content {
+    -fx-background-color: #282828;
+}
+
+/* ===== LABEL DE ESTADO ===== */
+#lbl-estado {
+    -fx-text-fill: #1db954;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}</code></pre>
+      </div>
+
+      <!-- PASO 10 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">10</div>
+          <div class="step-title">Vincula el CSS a la escena</div>
+        </div>
+
+        <p>En el método <code>start()</code>, <strong>después de crear la Scene</strong> y <strong>antes de
+            <code>stage.show()</code></strong>, agrega esta línea:</p>
+
+        <pre class="code-block"><code class="language-java">Scene scene = new Scene(root, 600, 500);
+
+// Vincular el CSS externo
+scene.getStylesheets().add(
+    getClass().getResource("/styles.css").toExternalForm()
+);
+
+stage.setTitle("Spotify Mini");
+stage.setScene(scene);
+stage.show();</code></pre>
+
+        <div class="checkpoint">
+          <strong>Checkpoint — Verifica antes de continuar</strong>
+          <p>Ejecuta la app. Ahora debería verse con fondo oscuro, texto claro, y el botón verde estilo Spotify. Pasa el
+            mouse sobre el botón "Agregar Canción" — debería cambiar de color (hover).</p>
+        </div>
+
+        <div class="ui-preview">
+          <h3>Spotify Mini 🎧</h3>
+          <div class="ui-form-row">
+            <span class="ui-label">Título:</span>
+            <input class="ui-input" value="Bohemian Rhapsody" disabled style="margin:0;">
+          </div>
+          <div class="ui-form-row">
+            <span class="ui-label">Artista:</span>
+            <input class="ui-input" value="Queen" disabled style="margin:0;">
+          </div>
+          <div class="ui-form-row">
+            <span class="ui-label">Duración:</span>
+            <input class="ui-input" value="5:55" disabled style="margin:0;">
+          </div>
+          <div style="margin-top:12px;">
+            <button class="ui-btn">Agregar Canción</button>
+            <button class="ui-btn secondary">Limpiar</button>
+          </div>
+          <div class="ui-textarea">1. Blinding Lights — The Weeknd (3:20)
+            2. Bohemian Rhapsody — Queen (5:55)
+            3. Bad Guy — Billie Eilish (3:14)</div>
+          <div class="ui-status">Canción agregada: Bohemian Rhapsody</div>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 5: PERSISTENCIA -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 5 — Persistencia en archivo .txt</div>
+
+      <!-- PASO 11 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">11</div>
+          <div class="step-title">Crea el método guardarCanciones()</div>
+        </div>
+
+        <p>Agrega este método a la clase <code>SpotifyMiniApp</code>. Guarda cada canción en una línea del archivo, con
+          los campos separados por <code>|</code>:</p>
+
+        <pre class="code-block"><code class="language-java">import java.io.*;
+
+private void guardarCanciones() {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter("canciones.txt"))) {
+        for (Cancion c : canciones) {
+            writer.write(c.getTitulo() + "|" + c.getArtista() + "|" + c.getDuracion());
+            writer.newLine();
+        }
+        System.out.println("Canciones guardadas: " + canciones.size());
+    } catch (IOException e) {
+        System.out.println("Error al guardar: " + e.getMessage());
+    }
+}</code></pre>
+
+        <div class="callout callout-celeste">
+          <h4 style="margin:0 0 6px;">¿Por qué separar con <code>|</code>?</h4>
+          <p style="margin:0;">Porque un título o artista puede contener comas o espacios. El carácter <code>|</code> es
+            poco común en nombres de canciones, así que es un buen separador. El archivo se verá así:</p>
+        </div>
+
+        <pre class="code-block"><code>Blinding Lights|The Weeknd|3:20
+Bohemian Rhapsody|Queen|5:55
+Bad Guy|Billie Eilish|3:14</code></pre>
+      </div>
+
+      <!-- PASO 12 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">12</div>
+          <div class="step-title">Crea el método cargarCanciones()</div>
+        </div>
+
+        <p>Este método lee el archivo línea por línea, separa los campos por <code>|</code>, y reconstruye los objetos
+          <code>Cancion</code>:</p>
+
+        <pre class="code-block"><code class="language-java">private void cargarCanciones() {
+    File archivo = new File("canciones.txt");
+    if (!archivo.exists()) {
+        System.out.println("No hay archivo previo. Se inicia vacío.");
+        return;
+    }
+
+    try (BufferedReader reader = new BufferedReader(new FileReader(archivo))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] partes = linea.split("\\|");
+            if (partes.length == 3) {
+                canciones.add(new Cancion(partes[0], partes[1], partes[2]));
+            }
+        }
+        System.out.println("Canciones cargadas: " + canciones.size());
+    } catch (IOException e) {
+        System.out.println("Error al cargar: " + e.getMessage());
+    }
+}</code></pre>
+
+        <div class="callout callout-durazno">
+          <h4 style="margin:0 0 6px;">¿Por qué <code>\\|</code> y no solo <code>|</code>?</h4>
+          <p style="margin:0;">El método <code>split()</code> usa expresiones regulares. En regex, <code>|</code>
+            significa "o". Para que lo interprete como el carácter literal <code>|</code>, necesitas escaparlo con
+            <code>\\</code>.</p>
+        </div>
+      </div>
+
+      <!-- PASO 13 -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">13</div>
+          <div class="step-title">Conecta la persistencia al ciclo de vida</div>
+        </div>
+
+        <p>Ahora sobreescribe los métodos <code>init()</code> y <code>stop()</code> para cargar y guardar
+          automáticamente:</p>
+
+        <pre class="code-block"><code class="language-java">@Override
+public void init() {
+    canciones = new ArrayList&lt;&gt;();
+    cargarCanciones();   // Cargar desde archivo al iniciar
+}
+
+@Override
+public void stop() {
+    guardarCanciones();  // Guardar en archivo al cerrar
+}</code></pre>
+
+        <p>Y en el método <code>start()</code>, después de vincular el CSS, agrega una línea para mostrar las canciones
+          que ya venían del archivo:</p>
+
+        <pre class="code-block"><code class="language-java">// Mostrar canciones cargadas del archivo (si hay)
+actualizarLista(areaLista);</code></pre>
+
+        <div class="checkpoint">
+          <strong>Checkpoint final — Verifica el proyecto completo</strong>
+          <p>1. Ejecuta la app y agrega 2-3 canciones</p>
+          <p>2. Cierra la ventana</p>
+          <p>3. Vuelve a ejecutar la app</p>
+          <p>4. Las canciones que agregaste antes deberían aparecer automáticamente</p>
+          <p>Si las canciones persisten entre ejecuciones, el proyecto está completo.</p>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- CIERRE -->
+      <!-- ============================================== -->
+      <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+        <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+        <h3>Spotify Mini completado</h3>
+        <p class="lead" style="margin:0 auto; max-width:600px;">Construiste una aplicación JavaFX con Maven desde cero:
+          formulario con controles, colecciones, CSS externo tipo Spotify, y persistencia en archivo de texto.</p>
+        <div style="margin-top:16px;">
+          <div class="callout callout-lavanda" style="display:inline-block; text-align:left; max-width:500px;">
+            <h4 style="margin:0 0 8px;">Lo que aprendiste:</h4>
+            <p style="margin:0;">
+              • Crear y configurar un proyecto Maven con JavaFX<br>
+              • Usar controles: Label, TextField, Button, TextArea<br>
+              • Organizar la interfaz con VBox, HBox y GridPane<br>
+              • Conectar eventos con <code>setOnAction()</code><br>
+              • Aplicar CSS externo con selectores y pseudoclases<br>
+              • Persistir datos con BufferedWriter / BufferedReader<br>
+              • Usar el ciclo de vida: init(), start(), stop()
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+    createApp({}).mount('#app');
+    // Highlight code blocks on load
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+      }
+    });
+  </script>
+</body>
+
+</html>

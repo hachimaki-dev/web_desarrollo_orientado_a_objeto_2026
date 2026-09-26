@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EP1 FORMA C — Taller Mecanico</title>
+  <meta name="description" content="Evaluacion Parcial 1 FORMA C: Sistema de Gestion de Taller Mecanico">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <style>
+    body { overflow-y: auto; background: var(--bg); }
+    .eval-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+    .eval-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .eval-header .logo {
+      display: block;
+      max-width: 380px;
+      margin-bottom: 24px;
+    }
+    .eval-badge {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 20px;
+      border-radius: 999px;
+      margin: 16px 0;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 16px;
+    }
+    .info-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 8px 14px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+    }
+    .info-table td {
+      padding: 8px 14px;
+      border: 1px solid var(--line);
+    }
+    .section-divider {
+      margin: 40px 0 28px;
+      padding: 12px 0;
+      border-top: 2px solid var(--line);
+    }
+    .il-tag {
+      display: inline-block;
+      background: var(--pastel-celeste);
+      color: var(--accent-celeste);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 999px;
+      margin: 2px 2px 2px 0;
+      letter-spacing: 0.03em;
+    }
+    .req-block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: var(--sp-lg);
+      margin-bottom: var(--sp-md);
+    }
+    .req-block h4 {
+      margin: 0 0 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .req-block p, .req-block ul { font-size: 15px; color: var(--ink-soft); }
+    .req-block ul { padding-left: 20px; }
+    .req-block ul li { margin-bottom: 6px; }
+
+    .uml-box {
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 16px 0;
+      max-width: 860px;
+    }
+    .uml-class {
+      background: var(--bg);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-sm);
+      display: inline-block;
+      min-width: 300px;
+      margin: 8px;
+      vertical-align: top;
+      font-size: 14px;
+    }
+    .uml-class-name {
+      background: var(--ink);
+      color: var(--bg);
+      padding: 8px 16px;
+      font-weight: 700;
+      font-size: 15px;
+      text-align: center;
+    }
+    .uml-class-name.abstract { font-style: italic; }
+    .uml-section {
+      padding: 8px 16px;
+      border-top: 1px solid var(--line);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .uml-arrow {
+      display: block;
+      text-align: center;
+      font-size: 20px;
+      color: var(--ink-muted);
+      margin: 4px 0;
+      font-weight: 700;
+    }
+    .uml-row {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin: 16px 0;
+    }
+    .rubric-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 10px 14px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--line);
+    }
+    .rubric-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .rubric-table tr:last-child td { border-bottom: none; }
+
+    .warning-box {
+      background: var(--incorrect);
+      color: var(--incorrect-ink);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+    .warning-box p { margin: 0; color: var(--incorrect-ink); }
+    .warning-box strong { color: var(--incorrect-ink); }
+
+    .git-step {
+      margin-bottom: 16px;
+    }
+    .git-step strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 12px 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+    .action-bar-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+    .btn-back:hover {
+      color: var(--ink);
+      border-color: var(--ink-muted);
+      background: var(--bg-muted);
+    }
+    .action-bar-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      letter-spacing: 0.03em;
+    }
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--ink);
+      color: var(--bg);
+      border: none;
+      padding: 9px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.15s ease;
+    }
+    .btn-print:hover {
+      background: #2e2e4a;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(26, 26, 46, 0.2);
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+      }
+      body {
+        background: #ffffff !important;
+        color: #1a1a2e !important;
+        overflow: visible !important;
+        margin: 0 !important;
+        padding: 16mm 20mm !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .eval-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .eval-header {
+        margin-bottom: 24px !important;
+        padding-bottom: 16px !important;
+      }
+      .eval-badge {
+        border: 1px solid var(--ink) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .req-block, .uml-box, .uml-class, .info-table, .rubric-table, .warning-box, .checklist-item, .git-step, pre {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      h1, h2, h3, h4 {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+      .section-divider {
+        margin: 24px 0 16px !important;
+      }
+      .info-table th, .rubric-table th {
+        background: #f1f3f5 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .il-tag {
+        background: #d6eaf8 !important;
+        color: #2471a3 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .warning-box {
+        background: #f8d7da !important;
+        color: #721c24 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .uml-box {
+        background: #f1f3f5 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      .uml-class-name {
+        background: #1a1a2e !important;
+        color: #ffffff !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="top-action-bar no-print">
+  <div class="action-bar-inner">
+    <a href="../../index.html" class="btn-back">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Volver al Portal
+    </a>
+    <div class="action-bar-info">
+      <span class="action-bar-title">Evaluación Oficial EP1 — FORMA C (Taller Mecánico)</span>
+    </div>
+    <div class="action-bar-btns">
+      <a href="EP1_FORMA_C_Taller_Mecanico.pdf" download="EP1_FORMA_C_Taller_Mecanico.pdf" class="btn-print" title="Descargar archivo PDF oficial">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        Descargar PDF
+      </a>
+    </div>
+  </div>
+</div>
+<div class="eval-container">
+
+  <!-- ========== HEADER ========== -->
+  <header class="eval-header">
+    <img src="logo_escuela.png" alt="Duoc UC - Escuela de Informatica y Telecomunicaciones" class="logo">
+    <h1 style="font-size: clamp(28px, 3.5vw, 40px);">Enunciado Evaluacion Parcial 1</h1>
+    <p class="lead" style="margin-bottom: 0;">Programacion Orientada a Objetos</p>
+    <span class="eval-badge">FORMA C</span>
+
+    <table class="info-table">
+      <tr>
+        <th>Sigla</th>
+        <th>Asignatura</th>
+        <th>Experiencia de Aprendizaje</th>
+      </tr>
+      <tr>
+        <td>DSY1102</td>
+        <td>Programacion Orientada a Objetos</td>
+        <td>EA1: Fundamentos de Programacion Orientada a Objetos</td>
+      </tr>
+      <tr>
+        <th>Tiempo</th>
+        <th>Modalidad de Trabajo</th>
+        <th>Indicadores de logro</th>
+      </tr>
+      <tr>
+        <td>3 bloques</td>
+        <td>Individual</td>
+        <td>IL 1.1 al IL 1.6</td>
+      </tr>
+    </table>
+  </header>
+
+  <!-- ========== CONDICIONES ========== -->
+  <h2>Condiciones de la evaluacion</h2>
+
+  <h3>Del entorno y la entrega</h3>
+  <ul>
+    <li>La evaluacion es de caracter <strong>individual</strong>. No esta permitida ninguna forma de colaboracion entre estudiantes.</li>
+    <li>No se permite el acceso a internet ni el uso de telefonos, relojes inteligentes ni ningun otro dispositivo externo.</li>
+    <li>El programa debe compilar y ejecutarse correctamente. Una solucion que no compile no permite evidenciar ningun indicador de logro.</li>
+    <li>El proyecto debe entregarse comprimido en formato ZIP, con tu nombre completo como nombre del archivo, en la actividad habilitada en AVA antes de que finalice la sesion.</li>
+    <li>No se aceptan entregas por ningun otro medio ni fuera del horario establecido. La ausencia de entrega en AVA genera automaticamente la nota minima.</li>
+  </ul>
+
+  <h3>De tu solucion</h3>
+  <ul>
+    <li>El codigo debe organizarse en clases separadas, respetando las convenciones de nomenclatura de Java: <code>PascalCase</code> para nombres de clase, <code>camelCase</code> para metodos y atributos.</li>
+    <li>Puedes crear metodos o clases auxiliares siempre que no contradigan los requerimientos del caso.</li>
+    <li>No se admite el uso de herramientas de inteligencia artificial ni de recursos digitales externos.</li>
+    <li>Cualquier indicio de colaboracion no autorizada, uso de IA o plagio implica la anulacion inmediata de la evaluacion con nota minima de 1.0.</li>
+  </ul>
+
+  <!-- ========== GIT ========== -->
+  <div class="section-divider"></div>
+  <h2>Instrucciones de entrega con Git</h2>
+
+  <p>Antes de comenzar a codificar, debes configurar Git y preparar tu repositorio. Sigue estos pasos en orden:</p>
+
+  <div class="git-step">
+    <strong>Paso 1 — Configurar tu identidad en Git (si no lo has hecho previamente)</strong>
+    <pre class="code-block"><code>git config --global user.name "Tu Nombre Completo"
+git config --global user.email "tu.correo@duocuc.cl"</code></pre>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 2 — Clonar el repositorio de tu seccion</strong>
+    <p>Seccion 004D:</p>
+    <pre class="code-block"><code>git clone https://github.com/hachimaki-dev/004D_Desarrollo_orientado_a_Objeto_2026.git</code></pre>
+    <p>Seccion 002D:</p>
+    <pre class="code-block"><code>git clone https://github.com/hachimaki-dev/002D_desarrollo_orientado_a_objeto_2026.git</code></pre>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 3 — Ingresar al directorio del repositorio clonado</strong>
+    <pre class="code-block"><code>cd 004D_Desarrollo_orientado_a_Objeto_2026</code></pre>
+    <p style="font-size:13px; color: var(--ink-muted);">Ajusta el nombre del directorio segun tu seccion.</p>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 4 — Crear una rama nueva para tu entrega</strong>
+    <pre class="code-block"><code>git checkout -b evaluacion1/Nombre_Apellido</code></pre>
+    <p style="font-size:13px; color: var(--ink-muted);">Ejemplo: <code>git checkout -b evaluacion1/Carlos_Orellana</code></p>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 5 — Desarrollar tu solucion dentro de esta rama</strong>
+    <p>Crea tus archivos <code>.java</code> y trabaja tu solucion normalmente.</p>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 6 — Guardar tus cambios en un commit</strong>
+    <pre class="code-block"><code>git add .
+git commit -m "Entrega EP1 - Nombre Apellido - Confirmo que esta es mi entrega final"</code></pre>
+  </div>
+
+  <div class="git-step">
+    <strong>Paso 7 — Publicar tu rama en el repositorio remoto</strong>
+    <pre class="code-block"><code>git push origin evaluacion1/Nombre_Apellido</code></pre>
+  </div>
+
+  <div class="callout callout-celeste">
+    <p style="margin:0;"><strong>Importante:</strong> Ademas de publicar tu rama en Git, debes comprimir tu proyecto en formato ZIP (con tu nombre completo como nombre del archivo) y subirlo al AVA antes de que finalice la sesion. Ambas entregas son obligatorias.</p>
+  </div>
+
+  <!-- ========== CASO ========== -->
+  <div class="section-divider"></div>
+  <h2>Caso de negocio</h2>
+
+  <p>Un taller mecanico necesita un sistema de consola en Java para gestionar las revisiones tecnicas de vehiculos. El taller atiende dos tipos de vehiculos: <strong>vehiculos particulares</strong> (automoviles de pasajeros) y <strong>vehiculos de carga</strong> (camiones, furgones). Ambos comparten datos generales como patente, marca y numero de revisiones pendientes, pero se diferencian en sus atributos especificos y en la forma de calcular el costo de cada revision.</p>
+
+  <p>El sistema debe permitir registrar vehiculos, listar los vehiculos registrados, buscar vehiculos por patente, realizar revisiones y ver un resumen general. Todas las entradas del usuario deben estar protegidas contra errores de ingreso.</p>
+
+  <!-- ========== UML ========== -->
+  <div class="section-divider"></div>
+  <h2>Estructura de clases</h2>
+
+  <p>El siguiente diagrama muestra la jerarquia de clases a implementar. La clase <code>Vehiculo</code> es <strong>abstracta</strong> y define la estructura base. Las clases <code>VehiculoParticular</code> y <code>VehiculoCarga</code> heredan de ella y sobrescriben el calculo del costo de revision.</p>
+
+  <div class="uml-box">
+    <div style="text-align:center;">
+      <div class="uml-class">
+        <div class="uml-class-name abstract">Vehiculo (abstracta)</div>
+        <div class="uml-section">
+          - patente: String<br>
+          - marca: String<br>
+          - revisionesPendientes: int
+        </div>
+        <div class="uml-section">
+          + Vehiculo(patente, marca, revisionesPendientes)<br>
+          + getPatente(): String<br>
+          + getMarca(): String<br>
+          + getRevisionesPendientes(): int<br>
+          + setRevisionesPendientes(int): void<br>
+          + <em>calcularCostoRevision(): int</em><br>
+          + mostrarInfo(): String
+        </div>
+      </div>
+    </div>
+
+    <div class="uml-arrow">&#9650; extends</div>
+
+    <div class="uml-row">
+      <div class="uml-class">
+        <div class="uml-class-name">VehiculoParticular</div>
+        <div class="uml-section">
+          - numPasajeros: int
+        </div>
+        <div class="uml-section">
+          + VehiculoParticular(patente, marca,<br>
+          &nbsp;&nbsp;revisionesPendientes, numPasajeros)<br>
+          + getNumPasajeros(): int<br>
+          + calcularCostoRevision(): int<br>
+          + mostrarInfo(): String
+        </div>
+      </div>
+      <div class="uml-class">
+        <div class="uml-class-name">VehiculoCarga</div>
+        <div class="uml-section">
+          - pesoMaxCarga: int
+        </div>
+        <div class="uml-section">
+          + VehiculoCarga(patente, marca,<br>
+          &nbsp;&nbsp;revisionesPendientes, pesoMaxCarga)<br>
+          + getPesoMaxCarga(): int<br>
+          + calcularCostoRevision(): int<br>
+          + mostrarInfo(): String
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:16px;">
+    <p style="margin:0;"><strong>Nota:</strong> Los costos se manejan como <code>int</code> (pesos chilenos enteros, sin decimales). El peso maximo de carga se expresa en kilogramos enteros. Las revisiones pendientes representan el numero de revisiones que el vehiculo tiene agendadas en el taller.</p>
+  </div>
+
+  <!-- ========== REQUERIMIENTOS ========== -->
+  <div class="section-divider"></div>
+  <h2>Requerimientos funcionales</h2>
+
+  <p>A continuacion se detalla cada requerimiento. Las etiquetas <span class="il-tag">IL</span> indican que indicador de logro se evalua en cada parte.</p>
+
+  <!-- R1 -->
+  <div class="req-block">
+    <h4>
+      R1 — Comentarios de paradigma
+      <span class="il-tag">IL 1.1</span>
+    </h4>
+    <p>Al inicio de la clase <code>Main.java</code>, incluye un bloque de comentarios que explique:</p>
+    <ul>
+      <li>Que paradigma de programacion se esta usando y sus caracteristicas principales.</li>
+      <li>Al menos <strong>2 diferencias concretas</strong> entre el paradigma orientado a objetos (Java) y el paradigma que usabas antes (Python funcional). Por ejemplo: tipado, estructura del programa, compilacion vs. interpretacion, o forma de organizar el codigo.</li>
+    </ul>
+  </div>
+
+  <!-- R2 -->
+  <div class="req-block">
+    <h4>
+      R2 — Clase abstracta Vehiculo
+      <span class="il-tag">IL 1.3</span>
+      <span class="il-tag">IL 1.4</span>
+    </h4>
+    <p>Implementa la clase abstracta <code>Vehiculo</code> segun el diagrama UML:</p>
+    <ul>
+      <li>Atributos <strong>privados</strong>: <code>patente</code> (String), <code>marca</code> (String), <code>revisionesPendientes</code> (int).</li>
+      <li>Constructor que reciba los 3 atributos.</li>
+      <li>Getters para los tres atributos y setter para <code>revisionesPendientes</code>.</li>
+      <li>Metodo abstracto <code>calcularCostoRevision()</code> que retorna <code>int</code>.</li>
+      <li>Metodo <code>mostrarInfo()</code> que retorna un <code>String</code> con la patente, marca, costo de revision y revisiones pendientes. Este metodo puede ser sobrescrito por las clases hijas para agregar informacion adicional.</li>
+    </ul>
+  </div>
+
+  <!-- R3 -->
+  <div class="req-block">
+    <h4>
+      R3 — Clase VehiculoParticular
+      <span class="il-tag">IL 1.3</span>
+      <span class="il-tag">IL 1.4</span>
+    </h4>
+    <p>Hereda de <code>Vehiculo</code>. Representa un automovil de pasajeros.</p>
+    <ul>
+      <li>Atributo privado adicional: <code>numPasajeros</code> (int).</li>
+      <li>Constructor que reciba los 4 parametros (3 del padre + numPasajeros). Usa <code>super()</code>.</li>
+      <li>Getter para <code>numPasajeros</code>.</li>
+      <li><code>calcularCostoRevision()</code>: retorna <code>30000 + (numPasajeros * 2000)</code>.</li>
+      <li><code>mostrarInfo()</code>: sobrescribe (<code>@Override</code>) el metodo del padre. Agrega el tipo (<code>"Particular"</code>) y el numero de pasajeros al texto retornado.</li>
+    </ul>
+  </div>
+
+  <!-- R4 -->
+  <div class="req-block">
+    <h4>
+      R4 — Clase VehiculoCarga
+      <span class="il-tag">IL 1.3</span>
+      <span class="il-tag">IL 1.4</span>
+    </h4>
+    <p>Hereda de <code>Vehiculo</code>. Representa un vehiculo de carga (camion, furgon).</p>
+    <ul>
+      <li>Atributo privado adicional: <code>pesoMaxCarga</code> (int, en kilogramos).</li>
+      <li>Constructor que reciba los 4 parametros (3 del padre + pesoMaxCarga). Usa <code>super()</code>.</li>
+      <li>Getter para <code>pesoMaxCarga</code>.</li>
+      <li><code>calcularCostoRevision()</code>: retorna <code>30000 + (pesoMaxCarga * 5)</code>.</li>
+      <li><code>mostrarInfo()</code>: sobrescribe (<code>@Override</code>) el metodo del padre. Agrega el tipo (<code>"Carga"</code>) y el peso maximo de carga al texto retornado.</li>
+    </ul>
+  </div>
+
+  <!-- R5 -->
+  <div class="req-block">
+    <h4>
+      R5 — Menu de consola con estructuras de control
+      <span class="il-tag">IL 1.2</span>
+    </h4>
+    <p>La clase <code>Main</code> debe presentar un menu de consola que se repita hasta que el usuario elija salir. Usa un bucle <code>while</code> y <code>switch</code> para controlar las opciones:</p>
+    <pre class="code-block"><code>=== TALLER MECANICO ===
+1. Registrar vehiculo
+2. Listar vehiculos
+3. Buscar vehiculo por patente
+4. Realizar revision
+5. Resumen de vehiculos
+6. Salir
+Seleccione una opcion: _</code></pre>
+    <p>Las opciones invalidas deben mostrar un mensaje y volver al menu sin que el programa se detenga.</p>
+  </div>
+
+  <!-- R6 -->
+  <div class="req-block">
+    <h4>
+      R6 — Registrar vehiculo (con submenu)
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>Al seleccionar "Registrar vehiculo", el sistema muestra un submenu para elegir entre Particular y Carga. Luego solicita los datos correspondientes y agrega el vehiculo a una coleccion <code>ArrayList&lt;Vehiculo&gt;</code>.</p>
+    <ul>
+      <li>Para vehiculos particulares, se solicita el numero de pasajeros como un valor entero positivo.</li>
+      <li>Para vehiculos de carga, se solicita el peso maximo de carga en kilogramos como un valor entero positivo.</li>
+      <li>Las revisiones pendientes deben ser un numero entero mayor o igual a 0.</li>
+    </ul>
+  </div>
+
+  <!-- R7 -->
+  <div class="req-block">
+    <h4>
+      R7 — Listar vehiculos (polimorfismo en accion)
+      <span class="il-tag">IL 1.5</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>Recorre la coleccion <code>ArrayList&lt;Vehiculo&gt;</code> e imprime la informacion de cada vehiculo usando <code>mostrarInfo()</code>.</p>
+    <p>Cada vehiculo se muestra con su formato propio (particular o carga) sin necesidad de hacer <code>instanceof</code>. Esto es polimorfismo: el mismo metodo produce resultados distintos segun el tipo real del objeto.</p>
+    <p>Si la lista esta vacia, mostrar un mensaje indicando que no hay vehiculos registrados.</p>
+  </div>
+
+  <!-- R8 -->
+  <div class="req-block">
+    <h4>
+      R8 — Buscar vehiculo por patente
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>El usuario ingresa un texto y el sistema busca vehiculos cuya patente contenga ese texto (busqueda parcial, sin distinguir mayusculas/minusculas). Muestra todos los resultados encontrados o un mensaje si no hay coincidencias.</p>
+  </div>
+
+  <!-- R9 -->
+  <div class="req-block">
+    <h4>
+      R9 — Realizar revision (descontar pendientes)
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.5</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>El sistema lista los vehiculos con su indice. El usuario selecciona un vehiculo para realizar su revision. El sistema valida:</p>
+    <ul>
+      <li>Que el numero de vehiculo sea valido (exista en la lista).</li>
+      <li>Que el vehiculo tenga al menos 1 revision pendiente.</li>
+    </ul>
+    <p>Si la revision es valida, descuenta 1 unidad de <code>revisionesPendientes</code> y muestra un comprobante con la patente, la marca, el costo de la revision (calculado con <code>calcularCostoRevision()</code>) y las revisiones pendientes restantes.</p>
+  </div>
+
+  <!-- R10 -->
+  <div class="req-block">
+    <h4>
+      R10 — Resumen de vehiculos
+      <span class="il-tag">IL 1.2</span>
+      <span class="il-tag">IL 1.5</span>
+      <span class="il-tag">IL 1.6</span>
+    </h4>
+    <p>Muestra un resumen que incluya:</p>
+    <ul>
+      <li>Total de vehiculos registrados.</li>
+      <li>Cantidad de vehiculos particulares y cantidad de vehiculos de carga (usa <code>instanceof</code>).</li>
+      <li>Ingresos proyectados: la suma de <code>calcularCostoRevision() * revisionesPendientes</code> de cada vehiculo (lo que se facturaria si se completaran todas las revisiones pendientes).</li>
+    </ul>
+  </div>
+
+  <!-- R11 -->
+  <div class="req-block">
+    <h4>
+      R11 — Manejo de excepciones
+      <span class="il-tag">IL 1.5</span>
+    </h4>
+    <p>Toda entrada numerica del usuario debe estar protegida con <code>try-catch</code>. El programa <strong>nunca debe detenerse</strong> por un error de ingreso. Situaciones que deben manejarse:</p>
+    <ul>
+      <li>El usuario escribe texto cuando se espera un numero (revisiones pendientes, numero de pasajeros, peso de carga, indice de vehiculo).</li>
+      <li>El usuario ingresa un indice fuera de rango al realizar una revision.</li>
+      <li>El usuario intenta realizar una revision en un vehiculo con 0 revisiones pendientes.</li>
+      <li>El usuario ingresa una opcion de menu que no existe.</li>
+    </ul>
+    <p>En cada caso, muestra un mensaje claro al usuario y vuelve al menu sin interrumpir la ejecucion.</p>
+  </div>
+
+  <!-- ========== EJEMPLO ========== -->
+  <div class="section-divider"></div>
+  <h2>Ejemplo de ejecucion esperada</h2>
+
+  <p>Este ejemplo muestra como deberia verse la interaccion con el programa. Tu implementacion debe producir una salida similar (no necesariamente identica en formato).</p>
+
+  <pre class="code-block"><code>=== TALLER MECANICO ===
+1. Registrar vehiculo
+2. Listar vehiculos
+3. Buscar vehiculo por patente
+4. Realizar revision
+5. Resumen de vehiculos
+6. Salir
+Seleccione una opcion: 1
+
+--- Tipo de vehiculo ---
+1. Particular
+2. Carga
+Seleccione: 1
+Patente: ABCD12
+Marca: Toyota
+Revisiones pendientes: 2
+Numero de pasajeros: 5
+[OK] Vehiculo particular registrado.
+
+Seleccione una opcion: 1
+
+--- Tipo de vehiculo ---
+1. Particular
+2. Carga
+Seleccione: 2
+Patente: WXYZ99
+Marca: Volvo
+Revisiones pendientes: 1
+Peso maximo de carga (kg): 3500
+[OK] Vehiculo de carga registrado.
+
+Seleccione una opcion: 2
+
+--- VEHICULOS REGISTRADOS ---
+[1] Particular | ABCD12 | Marca: Toyota | Pasajeros: 5 | Costo revision: $40000 | Pendientes: 2
+[2] Carga | WXYZ99 | Marca: Volvo | Carga max: 3500 kg | Costo revision: $47500 | Pendientes: 1
+
+Seleccione una opcion: 4
+
+--- REALIZAR REVISION ---
+[1] ABCD12 - Toyota (Pendientes: 2)
+[2] WXYZ99 - Volvo (Pendientes: 1)
+Ingrese numero de vehiculo: 1
+Revision realizada.
+Vehiculo: ABCD12 - Toyota
+Costo de la revision: $40000
+Revisiones pendientes: 1
+
+Seleccione una opcion: 5
+
+--- RESUMEN DE VEHICULOS ---
+Total de vehiculos: 2
+Vehiculos particulares: 1
+Vehiculos de carga: 1
+Ingresos proyectados: $87500
+
+Seleccione una opcion: 3
+
+--- BUSCAR VEHICULO ---
+Ingrese texto a buscar: AB
+Resultados:
+  Particular | ABCD12 | Marca: Toyota | Pasajeros: 5 | Costo revision: $40000 | Pendientes: 1
+
+Seleccione una opcion: 4
+Ingrese numero de vehiculo: abc
+Error: Debe ingresar un numero valido.
+
+Seleccione una opcion: 6
+Programa finalizado.</code></pre>
+
+  <!-- ========== IL MAP ========== -->
+  <div class="section-divider"></div>
+  <h2>Mapa de indicadores de logro</h2>
+
+  <p>Esta tabla resume donde se evalua cada indicador. Usala como checklist antes de entregar.</p>
+
+  <table class="rubric-table">
+    <thead>
+      <tr>
+        <th>IL</th>
+        <th>Indicador</th>
+        <th>Donde se evidencia</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="il-tag">IL 1.1</span></td>
+        <td>Identificar el paradigma OO y diferenciarlo de otros</td>
+        <td>Comentarios en <code>Main.java</code> (R1)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.2</span></td>
+        <td>Estructuras de control y metodos con parametros y retorno</td>
+        <td>Menu while/switch (R5), submenu (R6), busqueda (R8), revision (R9)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.3</span></td>
+        <td>Clases con encapsulamiento y colaboracion</td>
+        <td>Atributos privados, getters/setters, constructores en <code>Vehiculo</code>, <code>VehiculoParticular</code>, <code>VehiculoCarga</code> (R2, R3, R4)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.4</span></td>
+        <td>Herencia, clases abstractas, jerarquias de tipos</td>
+        <td>Clase abstracta <code>Vehiculo</code>, herencia con <code>extends</code>, <code>super()</code>, metodo abstracto (R2, R3, R4)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.5</span></td>
+        <td>Polimorfismo y manejo de excepciones</td>
+        <td>Recorrido polimorfico del ArrayList (R7), <code>@Override</code> de metodos (R3, R4), try-catch (R11), instanceof en resumen (R10)</td>
+      </tr>
+      <tr>
+        <td><span class="il-tag">IL 1.6</span></td>
+        <td>Colecciones para almacenar y gestionar datos</td>
+        <td><code>ArrayList&lt;Vehiculo&gt;</code> como registro, agregar, iterar, buscar, modificar revisiones (R6, R7, R8, R9, R10)</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- ========== CHECKLIST ========== -->
+  <div class="section-divider"></div>
+  <h2>Antes de entregar</h2>
+
+  <div class="grid" style="max-width:860px;">
+    <div class="card card-menta">
+      <strong>Debe funcionar</strong>
+      <p>El programa compila con <code>javac *.java</code> y se ejecuta con <code>java Main</code> sin errores.</p>
+      <p>Cada opcion del menu hace lo que se pide.</p>
+      <p>Los metodos sobrescritos (<code>@Override</code>) funcionan correctamente en cada subclase.</p>
+    </div>
+    <div class="card card-rosa">
+      <strong>No debe romperse</strong>
+      <p>Escribir "abc" cuando se pide un numero.</p>
+      <p>Intentar revisar un vehiculo con 0 revisiones pendientes.</p>
+      <p>Buscar un vehiculo cuando la lista esta vacia.</p>
+      <p>Seleccionar una opcion de menu inexistente.</p>
+    </div>
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:24px;">
+    <h4 style="margin:0 0 8px;">Archivos a entregar</h4>
+    <p style="margin:0;">Comprime en formato <strong>ZIP</strong> todos los archivos <code>.java</code> de tu proyecto. Como minimo debes tener:</p>
+    <ul style="margin:8px 0 0;">
+      <li><code>Main.java</code></li>
+      <li><code>Vehiculo.java</code></li>
+      <li><code>VehiculoParticular.java</code></li>
+      <li><code>VehiculoCarga.java</code></li>
+    </ul>
+  </div>
+
+  <div class="warning-box" style="margin-top:24px;">
+    <p><strong>Importante:</strong> No se permite el uso de herramientas de IA, acceso a internet, ni dispositivos externos durante la evaluacion. Cualquier indicio de colaboracion no autorizada o uso de IA implica la anulacion de la evaluacion con nota minima 1.0.</p>
+  </div>
+
+  <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+    <p class="lead" style="margin:0 auto;">Lee bien cada requerimiento, planifica antes de codificar y prueba tu programa antes de entregar.</p>
+  </div>
+
+</div>
+<script>
+  (function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('action') === 'pdf' || params.get('print') === '1') {
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          window.print();
+        }, 500);
+      });
+    }
+  })();
+</script>
+</body>
+</html>
