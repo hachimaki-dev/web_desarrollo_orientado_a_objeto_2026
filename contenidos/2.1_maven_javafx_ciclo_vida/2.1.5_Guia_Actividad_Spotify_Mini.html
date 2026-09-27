@@ -196,7 +196,7 @@
 
       <header class="guide-header">
         <div style="font-size:40px; margin-bottom:12px;">👽</div>
-        <div class="kicker">Guía de actividad · 2.1.4</div>
+        <div class="kicker">Guía de actividad · 2.1.5</div>
         <h1 style="font-size:clamp(32px,4vw,48px);">Spotify Mini 🎧</h1>
         <p class="lead">Guía paso a paso para construir tu primera aplicación JavaFX con Maven: formulario, colecciones,
           CSS y persistencia en archivo.</p>
@@ -394,6 +394,11 @@ public class Main {
               Java", Java 21 bloquea la ejecución porque JavaFX no está en el JDK base. <strong>Solución:</strong>
               Ejecuta siempre desde <code>Main.java</code> con clic derecho → "Run Java", o ejecuta
               <code>mvn javafx:run</code> en la terminal.</p>
+          </div>
+
+          <div class="callout callout-celeste" style="margin-top:12px;">
+            <strong style="display:block; margin-bottom:4px;">ℹ️ ¿Te sale: "ADVERTENCIA: Unsupported JavaFX configuration: classes were loaded from 'unnamed module'"?</strong>
+            <p style="margin:0; font-size:13px;"><strong>No te preocupes, no es un error.</strong> Es solo una advertencia informativa de JavaFX porque en VS Code se ejecuta desde el classpath común sin el sistema de módulos JPMS. Tu aplicación funciona con total normalidad. Si ejecutas con <code>mvn javafx:run</code>, este mensaje no aparece.</p>
           </div>
         </div>
       </div>

@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Layouts y Componentes — Java OOP · Profe Carlitos</title>
+  <meta name="description"
+    content="Guía práctica: Layouts, componentes funcionales y CSS en JavaFX — Desarrollo Orientado a Objetos">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .guide-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .guide-header {
+      margin-bottom: 48px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .section-divider {
+      margin: 48px 0 32px;
+      padding: 16px 0;
+      border-top: 2px solid var(--line);
+    }
+
+    .phase-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 48px 0 24px;
+      padding: 12px 16px;
+      background: var(--pastel-lavanda);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--ink);
+    }
+
+    .checkpoint {
+      background: var(--pastel-menta);
+      border: 2px solid #40a02b;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 24px 0;
+    }
+
+    .checkpoint strong {
+      color: #40a02b;
+    }
+
+    .checkpoint p {
+      margin: 4px 0 0;
+    }
+
+    .reflection-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+      max-width: 800px;
+    }
+
+    .reflection-box p {
+      margin: 0;
+      color: var(--accent-amarillo);
+      font-size: 15px;
+    }
+
+    .reflection-box strong {
+      color: var(--accent-amarillo);
+    }
+
+    .ui-preview {
+      background: #191414;
+      border: 2px solid #333;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      color: #fff;
+      font-family: var(--font-main);
+      max-width: 550px;
+      margin: 16px auto;
+    }
+
+    .ui-preview h3 {
+      color: #1db954;
+      margin: 0 0 16px;
+      font-size: 20px;
+    }
+
+    .ui-preview .ui-label {
+      color: #b3b3b3;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .ui-preview .ui-input {
+      background: #333;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      color: #fff;
+      width: 100%;
+      font-size: 14px;
+      margin-bottom: 12px;
+      box-sizing: border-box;
+    }
+
+    .ui-preview .ui-input:focus {
+      outline: 2px solid #1db954;
+    }
+
+    .ui-preview .ui-btn {
+      background: #1db954;
+      color: #fff;
+      border: none;
+      border-radius: 20px;
+      padding: 10px 24px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      margin-right: 8px;
+    }
+
+    .ui-preview .ui-btn.secondary {
+      background: #333;
+    }
+
+    .ui-preview .ui-form-row {
+      display: grid;
+      grid-template-columns: 100px 1fr;
+      gap: 8px;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .ui-preview .ui-btn-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .ui-preview .ui-status {
+      color: #1db954;
+      font-size: 13px;
+      margin-top: 12px;
+      font-style: italic;
+    }
+
+    /* Layout demo boxes */
+    .layout-demo {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      background: var(--bg-muted);
+      max-width: 550px;
+      margin: 16px auto;
+    }
+
+    .layout-demo .demo-item {
+      background: var(--pastel-celeste);
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      padding: 8px 16px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .layout-demo .demo-label {
+      background: var(--pastel-lavanda);
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .layout-vbox {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .layout-hbox {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+    }
+
+    .layout-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    /* Component tree diagram */
+    .component-tree {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 2;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      max-width: 600px;
+      margin: 16px auto;
+      border: 2px solid var(--line);
+    }
+
+    .component-tree .method-name {
+      color: #e64553;
+      font-weight: 700;
+    }
+
+    .component-tree .returns {
+      color: var(--ink-muted);
+      font-size: 12px;
+    }
+
+    .component-tree .node-type {
+      color: #1e66f5;
+      font-weight: 600;
+    }
+
+    /* Comparison layout */
+    .compare-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 16px 0;
+    }
+
+    .compare-grid .compare-box {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      background: var(--bg-soft);
+    }
+
+    .compare-grid .compare-box h4 {
+      margin: 0 0 12px;
+      font-size: 15px;
+    }
+
+    .compare-grid .compare-box.bad {
+      border-color: #e64553;
+      background: #fef1f1;
+    }
+
+    .compare-grid .compare-box.good {
+      border-color: #40a02b;
+      background: #f0faf0;
+    }
+
+    .method-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .method-table th,
+    .method-table td {
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .method-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+    }
+
+    .method-table tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+
+    @media (max-width: 760px) {
+      .compare-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .layout-demo {
+        max-width: 100%;
+      }
+
+      .ui-preview {
+        max-width: 100%;
+      }
+    }
+
+    /* ========================================================
+       LEGO & MENTAL MODEL DIAGRAMS
+       ======================================================== */
+    .scenario-card {
+      background: #181818;
+      color: #ffffff;
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin: 24px 0;
+      border: 2px solid #1db954;
+      box-shadow: 0 8px 24px rgba(29, 185, 84, 0.12);
+    }
+
+    .scenario-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #1db954;
+      color: #000000;
+      font-weight: 800;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 12px;
+    }
+
+    .objectives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+      gap: 16px;
+      margin: 20px 0;
+    }
+
+    .objective-card {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: transform 0.2s ease;
+    }
+
+    .objective-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .objective-card .obj-icon {
+      font-size: 28px;
+    }
+
+    .objective-card .obj-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+    }
+
+    .objective-card .obj-desc {
+      font-size: 13px;
+      color: var(--ink-muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    /* Mental Model Roadmap */
+    .roadmap-flow {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 820px) {
+      .roadmap-flow {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .roadmap-step {
+      background: var(--bg-soft);
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      position: relative;
+    }
+
+    .roadmap-num {
+      width: 28px;
+      height: 28px;
+      background: var(--ink);
+      color: #ffffff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .roadmap-title {
+      font-weight: 700;
+      font-size: 14px;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .roadmap-desc {
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* LEGO Blocks Visualization */
+    .lego-blueprint {
+      border: 2px dashed #1db954;
+      background: #121212;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 24px 0;
+      color: #fff;
+    }
+
+    .lego-baseplate {
+      border: 2px solid #333333;
+      background: #1e1e1e;
+      border-radius: 10px;
+      padding: 22px 18px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      position: relative;
+    }
+
+    .lego-tag {
+      position: absolute;
+      top: -12px;
+      left: 16px;
+      background: #1db954;
+      color: #000;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 10px;
+      border-radius: 10px;
+      font-family: var(--font-mono);
+      letter-spacing: 0.5px;
+    }
+
+    .lego-brick {
+      border-radius: 8px;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border: 2px solid rgba(0,0,0,0.25);
+      font-weight: 700;
+      font-size: 13px;
+      position: relative;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    }
+
+    .lego-studs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .lego-stud {
+      width: 14px;
+      height: 6px;
+      border-radius: 3px 3px 0 0;
+      background: rgba(255,255,255,0.45);
+    }
+
+    .lego-brick.green {
+      background: #1db954;
+      color: #000;
+    }
+
+    .lego-brick.yellow {
+      background: #f1c40f;
+      color: #000;
+    }
+
+    .lego-brick.purple {
+      background: #9b59b6;
+      color: #fff;
+    }
+
+    .lego-brick.cyan {
+      background: #00bcd4;
+      color: #000;
+    }
+
+    /* Matrix Coordinate visual */
+    .matrix-visual {
+      display: grid;
+      grid-template-columns: 100px 1fr 1fr;
+      gap: 8px;
+      margin: 16px 0;
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .matrix-header {
+      background: var(--ink);
+      color: #fff;
+      padding: 8px;
+      border-radius: 6px;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .matrix-cell {
+      border: 2px solid var(--ink);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background: var(--bg-soft);
+    }
+
+    .matrix-coord {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      width: fit-content;
+      font-family: var(--font-mono);
+    }
+
+    .matrix-node {
+      font-size: 13px;
+      font-weight: 600;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="guide-container">
+
+      <header class="guide-header">
+        <div style="font-size:40px; margin-bottom:12px;">👽</div>
+        <div class="kicker">Guía práctica · 2.1.3</div>
+        <h1 style="font-size:clamp(32px,4vw,48px);">Layouts y Componentes 🧩</h1>
+        <p class="lead">Aprende a estructurar interfaces bonitas y ordenadas en JavaFX: layouts, componentes funcionales
+          reutilizables y CSS estilo Spotify.</p>
+      </header>
+
+      <!-- ============================================== -->
+      <!-- REQUISITOS PREVIOS -->
+      <!-- ============================================== -->
+      <div class="callout callout-lavanda" style="margin-bottom:28px;">
+        <h4 style="margin:0 0 8px;">Antes de empezar</h4>
+        <p style="margin:0;">Esta guía asume que ya:</p>
+        <ul style="margin:8px 0 0; padding-left:20px;">
+          <li>Tienes un proyecto Maven con JavaFX configurado (lo viste en la guía 2.1.2)</li>
+          <li>Sabes crear una ventana básica con <code>Application</code>, <code>Stage</code> y <code>Scene</code></li>
+          <li>Conoces <code>Label</code>, <code>Button</code> y <code>TextField</code> a nivel conceptual</li>
+        </ul>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- PROPÓSITO Y OBJETIVOS DE APRENDIZAJE -->
+      <!-- ============================================== -->
+      <section style="margin-bottom:32px;">
+        <!-- Tarjeta de Propósito -->
+        <div class="callout callout-menta" style="border-width:2px; margin-bottom:20px;">
+          <h3 style="margin:0 0 8px; font-size:18px; display:flex; align-items:center; gap:8px;">
+            <span>🎯</span> Propósito de esta guía
+          </h3>
+          <p style="margin:0; font-size:15px; line-height:1.6;">
+            Aprender a <strong>pensar, estructurar y diseñar</strong> interfaces gráficas como un desarrollador profesional de software orientado a objetos. 
+            Dejarás atrás el mal hábito de picar código espagueti en un solo método y dominarás la <strong>metodología de bloques LEGO</strong>: descomponer una pantalla en componentes visuales modulares, organizarlos con layouts matemáticamente ordenados y darles vida con hojas de estilo CSS.
+          </p>
+        </div>
+
+        <!-- Objetivos de Aprendizaje (Grid de 4 cartas) -->
+        <h3 style="font-size:16px; margin:24px 0 12px; display:flex; align-items:center; gap:8px;">
+          <span>🚀</span> ¿Qué serás capaz de hacer al finalizar?
+        </h3>
+        <div class="objectives-grid">
+          <div class="objective-card" style="background:var(--pastel-menta);">
+            <div class="obj-icon">🧱</div>
+            <div class="obj-title">1. Pensamiento Visual LEGO</div>
+            <p class="obj-desc">Descomponer cualquier boceto de interfaz en una jerarquía de cajas contenedoras anidadas antes de tocar el teclado.</p>
+          </div>
+          <div class="objective-card" style="background:var(--pastel-celeste);">
+            <div class="obj-icon">📐</div>
+            <div class="obj-title">2. Dominio de los 3 Layouts</div>
+            <p class="obj-desc">Dominar <code>VBox</code> (vertical), <code>HBox</code> (horizontal) y <code>GridPane</code> (matriz 2D) con márgenes y alineación.</p>
+          </div>
+          <div class="objective-card" style="background:var(--pastel-lavanda);">
+            <div class="obj-icon">🧩</div>
+            <div class="obj-title">3. Componentes Modulares</div>
+            <p class="obj-desc">Aplicar responsabilidad única: cada sección visual se construye en su propio método privado reutilizable.</p>
+          </div>
+          <div class="objective-card" style="background:var(--pastel-durazno);">
+            <div class="obj-icon">🎨</div>
+            <div class="obj-title">4. Estilizado Profesional</div>
+            <p class="obj-desc">Separar estructura de diseño usando hojas de estilo <code>styles.css</code>, clases e IDs, desterrando <code>setStyle()</code>.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- EL ESCENARIO: BRIEFING PROFESIONAL -->
+      <!-- ============================================== -->
+      <section class="scenario-card">
+        <div class="scenario-badge">💼 El Escenario Real · Caso Práctico</div>
+        <h2 style="margin:0 0 10px; font-size:22px; color:#fff;">El Encargo: Prototipo "Spotify Mini Desktop" 🎧</h2>
+        <p style="margin:0 0 16px; color:#b3b3b3; font-size:14px; line-height:1.6;">
+          La compañía <strong>Spotify</strong> te ha seleccionado para construir el prototipo de escritorio de su aplicación rápida para registrar canciones en playlists. El equipo de diseño te entregó las siguientes especificaciones:
+        </p>
+
+        <div style="background:#222222; border-radius:8px; padding:16px; border:1px solid #333333; margin-bottom:16px;">
+          <h4 style="margin:0 0 10px; color:#1db954; font-size:14px; text-transform:uppercase; letter-spacing:0.5px;">📋 Requerimientos del Producto:</h4>
+          <ul style="margin:0; padding-left:20px; color:#dddddd; font-size:13px; line-height:1.8;">
+            <li><strong>Encabezado:</strong> Título llamativo con el branding oficial verde de Spotify.</li>
+            <li><strong>Formulario ordenado:</strong> Campos para <em>Canción</em>, <em>Artista</em> y <em>Duración</em>, con sus etiquetas perfectamente alineadas en columnas.</li>
+            <li><strong>Barra de Acciones:</strong> Botón principal verde ("Agregar Canción") y botón secundario gris ("Limpiar").</li>
+            <li><strong>Área de Notificación:</strong> Un indicador de estado que confirme al usuario cuando una canción fue agregada.</li>
+            <li><strong>Arquitectura del Código:</strong> Código 100% modular. Spotify exige que cada pieza sea un método independiente para poder asignarle pruebas unitarias y mantenimiento sin romper el resto de la app.</li>
+          </ul>
+        </div>
+
+        <div style="color:#1db954; font-weight:700; font-size:13px; display:flex; align-items:center; gap:6px;">
+          <span>💡</span> <span>La meta: No programar a lo loco, sino diseñar una solución sólida y limpia.</span>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- LA FORMA DE PENSAR: MODELO MENTAL LEGO -->
+      <!-- ============================================== -->
+      <section style="margin:36px 0 40px;">
+        <div class="kicker">Modelo Mental de Arquitectura</div>
+        <h2 style="margin:4px 0 12px; font-size:24px;">La Forma de Pensar: La Metodología LEGO 🧱</h2>
+        <p style="margin:0 0 16px; font-size:15px; line-height:1.6;">
+          ¿Cómo piensa un desarrollador senior antes de abrir el editor de código? <strong>Nunca empieza escribiendo botones ni campos en <code>start()</code></strong>.
+          Primero descompone el problema en una hoja de papel siguiendo 4 fases mentales:
+        </p>
+
+        <!-- Roadmap de 4 pasos -->
+        <div class="roadmap-flow">
+          <div class="roadmap-step">
+            <div class="roadmap-num">1</div>
+            <div class="roadmap-title">👁️ Ver en Cajas</div>
+            <p class="roadmap-desc">Mirar el boceto y dibujar rectángulos para agrupar elementos relacionados.</p>
+          </div>
+          <div class="roadmap-step">
+            <div class="roadmap-num">2</div>
+            <div class="roadmap-title">📐 Asignar Layouts</div>
+            <p class="roadmap-desc">Decidir qué contenedor se adapta mejor: ¿VBox (apilado)? ¿HBox (fila)? ¿GridPane (tabla)?</p>
+          </div>
+          <div class="roadmap-step">
+            <div class="roadmap-num">3</div>
+            <div class="roadmap-title">🧩 Fabricar Piezas</div>
+            <p class="roadmap-desc">Crear un método Java independiente para fabricar cada bloque de Lego.</p>
+          </div>
+          <div class="roadmap-step">
+            <div class="roadmap-num">4</div>
+            <div class="roadmap-title">🔌 Ensamblar & Pintar</div>
+            <p class="roadmap-desc">Unir las piezas en <code>start()</code>, colocarlas en la <code>Scene</code> y pintar con CSS.</p>
+          </div>
+        </div>
+
+        <!-- Diagrama Visual LEGO Blueprint -->
+        <div class="lego-blueprint">
+          <div style="text-align:center; margin-bottom:16px;">
+            <span style="background:#333333; color:#1db954; font-size:12px; font-weight:800; padding:4px 12px; border-radius:12px; text-transform:uppercase;">
+              Blueprint Visual · Descomposición en Bloques LEGO
+            </span>
+          </div>
+
+          <div class="lego-baseplate">
+            <div class="lego-tag">PLACA BASE: VBox (Contenedor Raíz Vertical)</div>
+
+            <!-- Bloque 1: Título -->
+            <div class="lego-brick green">
+              <div class="lego-studs">
+                <div class="lego-stud"></div>
+                <div class="lego-stud"></div>
+                <div class="lego-stud"></div>
+              </div>
+              <span>🟢 Bloque 1: Título ➔ Label ("Spotify Mini 🎧")</span>
+              <span style="font-family:var(--font-mono); font-size:11px; background:rgba(0,0,0,0.15); padding:2px 8px; border-radius:4px;">crearTitulo()</span>
+            </div>
+
+            <!-- Bloque 2: Formulario -->
+            <div class="lego-brick yellow">
+              <div class="lego-studs">
+                <div class="lego-stud"></div>
+                <div class="lego-stud"></div>
+                <div class="lego-stud"></div>
+                <div class="lego-stud"></div>
+              </div>
+              <span>🟡 Bloque 2: Formulario ➔ GridPane (Grilla 2x3 con Labels y TextFields)</span>
+              <span style="font-family:var(--font-mono); font-size:11px; background:rgba(0,0,0,0.15); padding:2px 8px; border-radius:4px;">crearFormulario()</span>
+            </div>
+
+            <!-- Bloque 3: Botones -->
+            <div class="lego-brick purple">
+              <div class="lego-studs">
+                <div class="lego-stud"></div>
+                <div class="lego-stud"></div>
+              </div>
+              <span>🟣 Bloque 3: Acciones ➔ HBox (Fila horizontal con [Agregar] [Limpiar])</span>
+              <span style="font-family:var(--font-mono); font-size:11px; background:rgba(0,0,0,0.15); padding:2px 8px; border-radius:4px;">crearBotones()</span>
+            </div>
+
+            <!-- Bloque 4: Estado -->
+            <div class="lego-brick cyan">
+              <div class="lego-studs">
+                <div class="lego-stud"></div>
+                <div class="lego-stud"></div>
+              </div>
+              <span>🟠 Bloque 4: Feedback ➔ Label ("✓ Listo para registrar canciones")</span>
+              <span style="font-family:var(--font-mono); font-size:11px; background:rgba(0,0,0,0.15); padding:2px 8px; border-radius:4px;">crearEstado()</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout callout-celeste">
+          <p style="margin:0;">
+            <strong>Fíjate en la potencia de este diseño:</strong> Cada bloque es autónomo. Si en el futuro necesitas cambiar el formulario a 5 campos, solo modificas el método <code>crearFormulario()</code>. El resto de la app, el título, los botones y el método <code>start()</code> siguen intactos. ¡Esa es la verdadera magia de la POO!
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- FASE 1: EL PROBLEMA -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 1 — El problema: todo achoclonado 🍝</div>
+
+      <!-- PASO 1 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-title">Mira este código — ¿qué tiene de malo?</div>
+        </div>
+
+        <p>Este es un ejemplo típico de alguien que recién empieza con JavaFX. Todo está dentro de <code>start()</code>,
+          sin orden ni estructura:</p>
+
+        <pre class="code-block"><code class="language-java">@Override
+public void start(Stage stage) {
+    Label titulo = new Label("Spotify Mini");
+    titulo.setStyle("-fx-font-size: 20px; -fx-text-fill: #1db954; -fx-font-weight: bold;");
+
+    Label lblCancion = new Label("Canción:");
+    TextField txtCancion = new TextField();
+    txtCancion.setPromptText("Nombre de la canción");
+    Label lblArtista = new Label("Artista:");
+    TextField txtArtista = new TextField();
+    txtArtista.setPromptText("Nombre del artista");
+
+    GridPane formulario = new GridPane();
+    formulario.setHgap(10);
+    formulario.setVgap(10);
+    formulario.add(lblCancion, 0, 0);
+    formulario.add(txtCancion, 1, 0);
+    formulario.add(lblArtista, 0, 1);
+    formulario.add(txtArtista, 3, 7);   // Columna 3, fila 7... ¿por qué?
+
+    Button btnAgregar = new Button("Agregar");
+    btnAgregar.setStyle("-fx-background-color: #1db954; -fx-text-fill: white;");
+    btnAgregar.setOnAction(e -> {
+        String cancion = txtCancion.getText();
+        String artista = txtArtista.getText();
+        if (!cancion.isEmpty() && !artista.isEmpty()) {
+            System.out.println("Agregado: " + cancion + " - " + artista);
+            txtCancion.clear();
+            txtArtista.clear();
+        }
+    });
+
+    HBox root = new HBox(10);
+    root.getChildren().add(titulo);
+    root.getChildren().add(formulario);
+    root.getChildren().add(btnAgregar);
+
+    Scene scene = new Scene(root, 600, 400);
+    scene.getStylesheets().add(
+        getClass().getResource("/styles.css").toExternalForm()
+    );
+    stage.setTitle("Spotify Mini");
+    stage.setScene(scene);
+    stage.show();
+}</code></pre>
+
+        <div class="callout callout-durazno">
+          <h4 style="margin:0 0 8px;">🔍 Problemas de este código:</h4>
+          <ul style="margin:0; padding-left:20px;">
+            <li><strong>Todo en un solo método</strong> — 40+ líneas de controles, estilos, eventos y configuración mezclados. Si necesitas cambiar algo, tienes que buscar entre toda la maraña</li>
+            <li><strong>Layout incorrecto</strong> — un <code>HBox</code> pone todo en una fila horizontal (título, formulario y botón, todo al lado). La interfaz se ve aplastada</li>
+            <li><strong>GridPane mal usado</strong> — <code>(3, 7)</code> es columna 3, fila 7 — el campo del artista queda lejos del label, en otra dimensión</li>
+            <li><strong>Estilos inline</strong> — <code>setStyle()</code> mezcla el diseño con la lógica. Si quieres cambiar un color, tienes que buscar en el Java</li>
+            <li><strong>Sin padding ni alignment</strong> — los elementos quedan pegados al borde de la ventana</li>
+            <li><strong>Sin estructura visual</strong> — no hay jerarquía clara entre secciones de la interfaz</li>
+          </ul>
+        </div>
+
+        <div class="reflection-box">
+          <p><strong>🤔 Reflexiona:</strong> Si alguien más tuviera que modificar este código (o tú mismo en 2 semanas), ¿sabrías rápidamente qué hace cada parte? La respuesta honesta es que cuesta. Y eso se soluciona.</p>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 2: LAYOUTS EN PROFUNDIDAD -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 2 — Los 3 layouts esenciales</div>
+
+      <!-- PASO 2: VBOX -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-title">VBox — Apilar elementos verticalmente</div>
+        </div>
+
+        <p><code>VBox</code> organiza sus hijos <strong>uno debajo del otro</strong>. Es el layout más natural para una
+          interfaz: título arriba, formulario al medio, botones abajo.</p>
+
+        <pre class="code-block"><code class="language-java">import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+
+// 1. Crear VBox con 15px de espacio entre elementos
+VBox root = new VBox(15);
+
+// 2. Padding: espacio interior (arriba, derecha, abajo, izquierda)
+root.setPadding(new Insets(20));
+
+// 3. Alineación: centrar todo horizontalmente
+root.setAlignment(Pos.TOP_CENTER);
+
+// 4. Agregar hijos
+root.getChildren().addAll(titulo, formulario, btnAgregar);
+
+// 5. ¡Paso indispensable para ver la ventana!
+Scene scene = new Scene(root, 500, 400);
+stage.setTitle("Spotify Mini");
+stage.setScene(scene);
+stage.show(); // <-- ¡Sin esto, la ventana NUNCA se abrirá!</code></pre>
+
+        <div class="layout-demo">
+          <div
+            style="text-align:center; margin-bottom:8px; font-weight:700; font-size:13px; color:var(--ink-muted);">
+            VBox(15) + padding 20 + alignment TOP_CENTER</div>
+          <div class="layout-vbox" style="align-items:center; padding:16px; border:2px dashed var(--ink-soft); border-radius:8px;">
+            <div class="demo-item" style="background:var(--pastel-menta); width:200px;">🎧 Título</div>
+            <div class="demo-item" style="width:300px;">Formulario</div>
+            <div class="demo-item" style="background:var(--pastel-lavanda); width:250px;">Botones</div>
+          </div>
+        </div>
+
+        <table class="method-table">
+          <thead>
+            <tr>
+              <th>Método</th>
+              <th>Qué hace</th>
+              <th>Ejemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>new VBox(spacing)</code></td>
+              <td>Crea el VBox con espacio entre hijos</td>
+              <td><code>new VBox(15)</code></td>
+            </tr>
+            <tr>
+              <td><code>setPadding(Insets)</code></td>
+              <td>Margen interior (espacio entre el borde y el contenido)</td>
+              <td><code>new Insets(20)</code> o <code>new Insets(10, 20, 10, 20)</code></td>
+            </tr>
+            <tr>
+              <td><code>setAlignment(Pos)</code></td>
+              <td>Dónde se ubican los hijos dentro del VBox</td>
+              <td><code>Pos.TOP_CENTER</code>, <code>Pos.CENTER</code></td>
+            </tr>
+            <tr>
+              <td><code>setSpacing(double)</code></td>
+              <td>Cambia el espacio entre hijos después de crear</td>
+              <td><code>root.setSpacing(20)</code></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-durazno" style="margin-top:14px;">
+          <h4 style="margin:0 0 6px;">🚨 ¿Ejecutaste y no se abre ninguna ventana?</h4>
+          <p style="margin:0 0 8px;">Un tropiezo muy habitual al empezar es armar el <code>VBox</code> con sus nodos pero olvidar incluir <code>Scene scene = new Scene(root, 500, 400);</code>, <code>stage.setScene(scene);</code> y <strong><code>stage.show();</code></strong> al final del método <code>start()</code>. Sin <code>stage.show()</code>, JavaFX arranca en segundo plano pero jamás muestra nada en pantalla.</p>
+          <hr style="border:0; border-top:1px dashed var(--ink-soft); margin:10px 0;">
+          <h4 style="margin:0 0 6px;">⚠️ ¿Te sale en la terminal: <em>"ADVERTENCIA: Unsupported JavaFX configuration: classes were loaded from 'unnamed module'"</em>?</h4>
+          <p style="margin:0;"><strong>¡Tranquilidad total, NO es un error fatal!</strong> Es solo un aviso informativo de JavaFX indicando que las librerías se cargaron desde el classpath clásico (sin <code>module-info.java</code>) al ejecutar desde <code>Main.java</code> en VS Code. <strong>Tu aplicación funciona sin ningún problema.</strong> Si ejecutas con <code>mvn javafx:run</code> en la terminal, ese aviso ni siquiera aparece.</p>
+        </div>
+      </div>
+
+      <!-- PASO 3: HBOX -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-title">HBox — Organizar en fila horizontal</div>
+        </div>
+
+        <p><code>HBox</code> organiza sus hijos <strong>uno al lado del otro</strong>. Ideal para barras de botones,
+          filas de controles o secciones horizontales.</p>
+
+        <pre class="code-block"><code class="language-java">import javafx.scene.layout.HBox;
+
+// Barra de botones con 10px de espacio
+HBox botones = new HBox(10);
+botones.setAlignment(Pos.CENTER);
+botones.getChildren().addAll(btnAgregar, btnLimpiar);</code></pre>
+
+        <div class="layout-demo">
+          <div
+            style="text-align:center; margin-bottom:8px; font-weight:700; font-size:13px; color:var(--ink-muted);">
+            HBox(10) + alignment CENTER</div>
+          <div class="layout-hbox" style="justify-content:center;">
+            <div class="demo-item" style="background:var(--pastel-menta);">🎵 Agregar</div>
+            <div class="demo-item" style="background:var(--pastel-durazno);">🧹 Limpiar</div>
+          </div>
+        </div>
+
+        <div class="callout callout-celeste">
+          <p style="margin:0;"><strong>Tip:</strong> <code>HBox</code> y <code>VBox</code> comparten los mismos métodos
+            (<code>setPadding</code>, <code>setAlignment</code>, <code>setSpacing</code>). La única diferencia es la
+            dirección: horizontal vs vertical.</p>
+        </div>
+      </div>
+
+      <!-- PASO 4: GRIDPANE -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">4</div>
+          <div class="step-title">GridPane — Formularios organizados</div>
+        </div>
+
+        <p><code>GridPane</code> organiza elementos en una <strong>grilla de filas y columnas</strong>. Es perfecto para
+          formularios donde tienes etiquetas a la izquierda y campos a la derecha.</p>
+
+        <pre class="code-block"><code class="language-java">import javafx.scene.layout.GridPane;
+
+GridPane formulario = new GridPane();
+formulario.setHgap(10);    // Espacio horizontal entre columnas
+formulario.setVgap(10);    // Espacio vertical entre filas
+
+// .add(nodo, columna, fila)  ← ¡CUIDADO! Es columna primero, fila después
+formulario.add(lblTitulo,    0, 0);    // Columna 0, Fila 0
+formulario.add(txtTitulo,    1, 0);    // Columna 1, Fila 0
+formulario.add(lblArtista,   0, 1);    // Columna 0, Fila 1
+formulario.add(txtArtista,   1, 1);    // Columna 1, Fila 1
+formulario.add(lblDuracion,  0, 2);    // Columna 0, Fila 2
+formulario.add(txtDuracion,  1, 2);    // Columna 1, Fila 2</code></pre>
+
+        <div class="layout-demo">
+          <div
+            style="text-align:center; margin-bottom:8px; font-weight:700; font-size:13px; color:var(--ink-muted);">
+            GridPane — hgap:10, vgap:10</div>
+          <div class="layout-grid">
+            <div class="demo-label">Título:</div>
+            <div class="demo-item">TextField</div>
+            <div class="demo-label">Artista:</div>
+            <div class="demo-item">TextField</div>
+            <div class="demo-label">Duración:</div>
+            <div class="demo-item">TextField</div>
+          </div>
+        </div>
+
+        <!-- Matriz visual de coordenadas -->
+        <div style="background:var(--bg-muted); border:2px solid var(--ink); border-radius:8px; padding:16px; margin:16px 0;">
+          <h4 style="margin:0 0 10px; font-size:14px; text-align:center;">🗺️ Matriz visual de coordenadas en GridPane (columna, fila)</h4>
+          <div class="matrix-visual">
+            <div class="matrix-header" style="background:transparent; color:var(--ink);"></div>
+            <div class="matrix-header" style="background:#1e66f5;">Columna 0 (Izquierda)</div>
+            <div class="matrix-header" style="background:#179299;">Columna 1 (Derecha)</div>
+
+            <!-- Fila 0 -->
+            <div class="matrix-header" style="background:#40a02b; display:flex; align-items:center; justify-content:center;">Fila 0</div>
+            <div class="matrix-cell">
+              <span class="matrix-coord" style="background:var(--pastel-menta);">col: 0, fila: 0</span>
+              <span class="matrix-node">lblTitulo ("Título:")</span>
+            </div>
+            <div class="matrix-cell">
+              <span class="matrix-coord" style="background:var(--pastel-celeste);">col: 1, fila: 0</span>
+              <span class="matrix-node">txtTitulo (TextField)</span>
+            </div>
+
+            <!-- Fila 1 -->
+            <div class="matrix-header" style="background:#40a02b; display:flex; align-items:center; justify-content:center;">Fila 1</div>
+            <div class="matrix-cell">
+              <span class="matrix-coord" style="background:var(--pastel-menta);">col: 0, fila: 1</span>
+              <span class="matrix-node">lblArtista ("Artista:")</span>
+            </div>
+            <div class="matrix-cell">
+              <span class="matrix-coord" style="background:var(--pastel-celeste);">col: 1, fila: 1</span>
+              <span class="matrix-node">txtArtista (TextField)</span>
+            </div>
+
+            <!-- Fila 2 -->
+            <div class="matrix-header" style="background:#40a02b; display:flex; align-items:center; justify-content:center;">Fila 2</div>
+            <div class="matrix-cell">
+              <span class="matrix-coord" style="background:var(--pastel-menta);">col: 0, fila: 2</span>
+              <span class="matrix-node">lblDuracion ("Duración:")</span>
+            </div>
+            <div class="matrix-cell">
+              <span class="matrix-coord" style="background:var(--pastel-celeste);">col: 1, fila: 2</span>
+              <span class="matrix-node">txtDuracion (TextField)</span>
+            </div>
+          </div>
+          <div style="font-size:12px; color:var(--ink-muted); text-align:center; margin-top:8px;">
+            💡 <strong>Regla de oro:</strong> Piensa siempre en coordenadas cartesianas <code>(X, Y)</code>. La columna es el eje <strong>X</strong> (horizontal) y la fila es el eje <strong>Y</strong> (vertical).
+          </div>
+        </div>
+
+        <div class="callout callout-durazno">
+          <h4 style="margin:0 0 6px;">⚠️ Error común en GridPane</h4>
+          <p style="margin:0;">El orden de los parámetros es <code>(nodo, columna, fila)</code> — <strong>columna primero</strong>. Muchos escriben <code>(nodo, fila, columna)</code> por costumbre y todo queda desordenado. El ejemplo malo del paso 1 tenía <code>(3, 7)</code> que es columna 3, fila 7 — ¡totalmente fuera de lugar!</p>
+        </div>
+      </div>
+
+      <!-- PASO 5: NESTING -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">5</div>
+          <div class="step-title">Combinar layouts (nesting) — La clave de las interfaces reales</div>
+        </div>
+
+        <p>Las interfaces reales <strong>nunca usan un solo layout</strong>. La magia está en <strong>anidar</strong>
+          (combinar) layouts: un <code>VBox</code> principal que contiene un <code>GridPane</code> para el formulario y
+          un <code>HBox</code> para los botones.</p>
+
+        <div class="component-tree">
+          <span class="node-type">VBox</span> (root — contenedor principal)<br>
+          ├── <span class="node-type">Label</span> — título "Spotify Mini 🎧"<br>
+          ├── <span class="node-type">GridPane</span> — formulario<br>
+          │&nbsp;&nbsp; ├── Label + TextField (título canción)<br>
+          │&nbsp;&nbsp; ├── Label + TextField (artista)<br>
+          │&nbsp;&nbsp; └── Label + TextField (duración)<br>
+          ├── <span class="node-type">HBox</span> — barra de botones<br>
+          │&nbsp;&nbsp; ├── Button "Agregar"<br>
+          │&nbsp;&nbsp; └── Button "Limpiar"<br>
+          └── <span class="node-type">Label</span> — estado
+        </div>
+
+        <pre class="code-block"><code class="language-java">// El VBox contiene TODO, apilado verticalmente
+VBox root = new VBox(15);
+root.setPadding(new Insets(20));
+root.setAlignment(Pos.TOP_CENTER);
+
+// Agregar los "bloques" al VBox
+root.getChildren().addAll(
+    titulo,       // Label
+    formulario,   // GridPane (contiene labels + textfields)
+    botones,      // HBox (contiene los botones)
+    lblEstado     // Label de estado
+);
+
+Scene scene = new Scene(root, 500, 400);
+stage.setTitle("Spotify Mini");
+stage.setScene(scene);
+stage.show();</code></pre>
+
+        <div class="ui-preview">
+          <h3>Spotify Mini 🎧</h3>
+          <div class="ui-form-row">
+            <div class="ui-label">Título:</div>
+            <input class="ui-input" style="margin-bottom:0;" placeholder="Nombre de la canción" disabled>
+          </div>
+          <div class="ui-form-row">
+            <div class="ui-label">Artista:</div>
+            <input class="ui-input" style="margin-bottom:0;" placeholder="Nombre del artista" disabled>
+          </div>
+          <div class="ui-form-row">
+            <div class="ui-label">Duración:</div>
+            <input class="ui-input" style="margin-bottom:0;" placeholder="Ej: 3:45" disabled>
+          </div>
+          <div class="ui-btn-row">
+            <button class="ui-btn">Agregar Canción</button>
+            <button class="ui-btn secondary">Limpiar</button>
+          </div>
+          <div class="ui-status">✓ Listo para agregar canciones</div>
+        </div>
+
+        <div class="callout callout-menta">
+          <p style="margin:0;"><strong>Resultado:</strong> Con layouts anidados, cada sección queda en su lugar. El
+            formulario tiene su propia grilla, los botones su propia fila, y todo se apila limpiamente. Así se construyen las interfaces reales.</p>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 3: COMPONENTES FUNCIONALES -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 3 — Componentes funcionales: divide y conquista 🧩</div>
+
+      <!-- PASO 6 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">6</div>
+          <div class="step-title">La filosofía: cada pieza es un "componente"</div>
+        </div>
+
+        <p>En vez de meter todo en <code>start()</code> como una olla de espagueti 🍝, vamos a crear <strong>métodos que construyen y retornan</strong> cada pieza visual de la interfaz.</p>
+
+        <p>La idea es simple: <strong>cada método es un componente</strong>. Recibe lo que necesita, construye el nodo visual, y lo retorna listo para usar.</p>
+
+        <div class="compare-grid">
+          <div class="compare-box bad">
+            <h4>❌ Todo achoclonado</h4>
+            <pre class="code-block" style="font-size:12px;"><code class="language-java">public void start(Stage stage) {
+    // 80 líneas de código...
+    // Labels por aquí...
+    // TextFields por allá...
+    // GridPane...
+    // Botones...
+    // Eventos...
+    // CSS...
+    // Scene...
+    // Todo mezclado 🍝
+}</code></pre>
+          </div>
+          <div class="compare-box good">
+            <h4>✅ Componentes funcionales</h4>
+            <pre class="code-block" style="font-size:12px;"><code class="language-java">public void start(Stage stage) {
+    Label titulo = crearTitulo();
+    GridPane form = crearFormulario();
+    HBox botones = crearBotones();
+    Label estado = crearEstado();
+
+    VBox root = new VBox(15,
+        titulo, form, botones, estado
+    );
+    // Limpio, legible, mantenible ✨
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="callout callout-celeste">
+          <h4 style="margin:0 0 8px;">🧩 ¿Qué es un "componente funcional"?</h4>
+          <p style="margin:0;">Es un <strong>método que construye y retorna un nodo visual</strong>. Así como en una fábrica cada estación hace una pieza del producto, en tu código cada método construye una pieza de la interfaz. El método <code>start()</code> solo <strong>ensambla</strong> las piezas.</p>
+        </div>
+
+        <!-- Diagrama: Fábrica de piezas Lego -->
+        <div style="background:#181818; border:2px solid #333333; border-radius:10px; padding:18px; margin:16px 0; color:#ffffff;">
+          <h4 style="margin:0 0 12px; color:#1db954; font-size:14px; text-align:center;">🏭 La Fábrica de Componentes: cada método entrega una pieza</h4>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#242424; padding:10px 14px; border-radius:6px; border-left:4px solid #1db954;">
+              <div><strong>🟢 crearTitulo()</strong> <span style="color:#aaaaaa; font-size:12px;">→ Retorna Label</span></div>
+              <span style="font-family:var(--font-mono); font-size:11px; background:#111111; padding:2px 8px; border-radius:4px; color:#1db954;">Pieza 1: Título</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#242424; padding:10px 14px; border-radius:6px; border-left:4px solid #f1c40f;">
+              <div><strong>🟡 crearFormulario()</strong> <span style="color:#aaaaaa; font-size:12px;">→ Retorna GridPane</span></div>
+              <span style="font-family:var(--font-mono); font-size:11px; background:#111111; padding:2px 8px; border-radius:4px; color:#f1c40f;">Pieza 2: Formulario</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#242424; padding:10px 14px; border-radius:6px; border-left:4px solid #9b59b6;">
+              <div><strong>🟣 crearBotones()</strong> <span style="color:#aaaaaa; font-size:12px;">→ Retorna HBox</span></div>
+              <span style="font-family:var(--font-mono); font-size:11px; background:#111111; padding:2px 8px; border-radius:4px; color:#c792ea;">Pieza 3: Botones</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; background:#242424; padding:10px 14px; border-radius:6px; border-left:4px solid #00bcd4;">
+              <div><strong>🟠 crearEstado()</strong> <span style="color:#aaaaaa; font-size:12px;">→ Retorna Label</span></div>
+              <span style="font-family:var(--font-mono); font-size:11px; background:#111111; padding:2px 8px; border-radius:4px; color:#00bcd4;">Pieza 4: Estado</span>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:center; background:#111111; padding:10px 14px; border-radius:6px; border:1px dashed #1db954; color:#1db954; font-weight:700; font-size:13px;">
+              ⬇️ El método start() solo hace esto: root = new VBox(15, titulo, form, botones, estado);
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PASO 7: CREAR EL TÍTULO -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">7</div>
+          <div class="step-title">Componente: crearTitulo()</div>
+        </div>
+
+        <p>El componente más simple: un método que crea un <code>Label</code>, le asigna un ID para CSS, y lo retorna.</p>
+
+        <pre class="code-block"><code class="language-java">/**
+ * Crea el título principal de la aplicación.
+ * @return Label con el título estilizado
+ */
+private Label crearTitulo() {
+    Label titulo = new Label("Spotify Mini 🎧");
+    titulo.setId("titulo-app");
+    return titulo;
+}</code></pre>
+
+        <div class="callout callout-menta">
+          <p style="margin:0;"><strong>Fíjate en el patrón:</strong> El método es <code>private</code> (solo lo usa esta clase), retorna un tipo de nodo JavaFX (<code>Label</code>), y su nombre describe exactamente qué construye.</p>
+        </div>
+      </div>
+
+      <!-- PASO 8: CREAR EL FORMULARIO -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">8</div>
+          <div class="step-title">Componente: crearFormulario()</div>
+        </div>
+
+        <p>El formulario necesita que los <code>TextField</code> sean accesibles desde otros métodos (para leer lo que el usuario escribió). Por eso los declaramos como <strong>atributos de la clase</strong>:</p>
+
+        <pre class="code-block"><code class="language-java">// Atributos de la clase — accesibles desde cualquier método
+private TextField txtTitulo;
+private TextField txtArtista;
+private TextField txtDuracion;
+
+/**
+ * Crea el formulario con labels y campos de texto organizados en grilla.
+ * @return GridPane con el formulario listo
+ */
+private GridPane crearFormulario() {
+    // Crear los labels
+    Label lblTitulo   = new Label("Título:");
+    Label lblArtista  = new Label("Artista:");
+    Label lblDuracion = new Label("Duración:");
+
+    // Crear los campos de texto
+    txtTitulo = new TextField();
+    txtTitulo.setPromptText("Nombre de la canción");
+
+    txtArtista = new TextField();
+    txtArtista.setPromptText("Nombre del artista");
+
+    txtDuracion = new TextField();
+    txtDuracion.setPromptText("Ej: 3:45");
+
+    // Armar la grilla
+    GridPane form = new GridPane();
+    form.setHgap(10);
+    form.setVgap(10);
+
+    //               columna, fila
+    form.add(lblTitulo,    0, 0);
+    form.add(txtTitulo,    1, 0);
+    form.add(lblArtista,   0, 1);
+    form.add(txtArtista,   1, 1);
+    form.add(lblDuracion,  0, 2);
+    form.add(txtDuracion,  1, 2);
+
+    return form;
+}</code></pre>
+
+        <div class="callout callout-lavanda">
+          <h4 style="margin:0 0 8px;">📌 ¿Por qué atributos de clase?</h4>
+          <p style="margin:0;">Los <code>Label</code> solo se muestran — no necesitas acceder a ellos después. Pero los <code>TextField</code> necesitas leerlos cuando el usuario hace clic en "Agregar". Si fueran variables locales del método, no podrías acceder a ellos desde el evento del botón.</p>
+        </div>
+      </div>
+
+      <!-- PASO 9: CREAR LOS BOTONES -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">9</div>
+          <div class="step-title">Componente: crearBotones()</div>
+        </div>
+
+        <p>La barra de botones usa un <code>HBox</code>. Los eventos (<code>setOnAction</code>) también los definimos aquí, porque están directamente ligados al botón:</p>
+
+        <pre class="code-block"><code class="language-java">// Atributo de clase — el label de estado se actualiza desde los botones
+private Label lblEstado;
+
+/**
+ * Crea la barra de botones con sus eventos.
+ * @return HBox con los botones listos
+ */
+private HBox crearBotones() {
+    Button btnAgregar = new Button("Agregar Canción");
+    btnAgregar.setId("btn-agregar");
+
+    // Evento: cuando hacen clic en "Agregar"
+    btnAgregar.setOnAction(e -> {
+        String titulo = txtTitulo.getText();
+        String artista = txtArtista.getText();
+
+        if (titulo.isEmpty() || artista.isEmpty()) {
+            lblEstado.setText("⚠ Completa al menos título y artista");
+            return;
+        }
+
+        // Aquí iría la lógica de agregar a la colección
+        lblEstado.setText("✓ Canción agregada: " + titulo);
+        limpiarCampos();
+    });
+
+    Button btnLimpiar = new Button("Limpiar");
+    btnLimpiar.getStyleClass().add("btn-secundario");
+
+    // Evento: cuando hacen clic en "Limpiar"
+    btnLimpiar.setOnAction(e -> {
+        limpiarCampos();
+        lblEstado.setText("");
+    });
+
+    // Armar la fila de botones
+    HBox barra = new HBox(10, btnAgregar, btnLimpiar);
+    barra.setAlignment(Pos.CENTER);
+    return barra;
+}
+
+/**
+ * Limpia todos los campos del formulario.
+ */
+private void limpiarCampos() {
+    txtTitulo.clear();
+    txtArtista.clear();
+    txtDuracion.clear();
+}</code></pre>
+
+        <div class="callout callout-menta">
+          <p style="margin:0;"><strong>Fíjate:</strong> <code>limpiarCampos()</code> también es un "componente funcional" — un método con una sola responsabilidad. Si mañana agregas más campos, solo modificas este método.</p>
+        </div>
+      </div>
+
+      <!-- PASO 10: CREAR ESTADO -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">10</div>
+          <div class="step-title">Componente: crearEstado()</div>
+        </div>
+
+        <p>Un label simple que muestra mensajes al usuario (confirmaciones, errores, etc.):</p>
+
+        <pre class="code-block"><code class="language-java">/**
+ * Crea el label de estado para mensajes al usuario.
+ * @return Label de estado
+ */
+private Label crearEstado() {
+    lblEstado = new Label("");
+    lblEstado.setId("lbl-estado");
+    return lblEstado;
+}</code></pre>
+      </div>
+
+      <!-- PASO 11: ENSAMBLAR -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">11</div>
+          <div class="step-title">El ensamblaje final: start() limpio y claro</div>
+        </div>
+
+        <p>Ahora <code>start()</code> solo <strong>ensambla</strong> los componentes. Fíjate qué fácil se lee:</p>
+
+        <pre class="code-block"><code class="language-java">@Override
+public void start(Stage stage) {
+    // 1. Crear cada componente
+    Label titulo       = crearTitulo();
+    GridPane formulario = crearFormulario();
+    HBox botones       = crearBotones();
+    Label estado       = crearEstado();
+
+    // 2. Ensamblar en el layout principal
+    VBox root = new VBox(15, titulo, formulario, botones, estado);
+    root.setPadding(new Insets(20));
+    root.setAlignment(Pos.TOP_CENTER);
+
+    // 3. Crear la escena y aplicar estilos
+    Scene scene = new Scene(root, 500, 400);
+    scene.getStylesheets().add(
+        getClass().getResource("/styles.css").toExternalForm()
+    );
+
+    // 4. Configurar y mostrar la ventana
+    stage.setTitle("Spotify Mini");
+    stage.setScene(scene);
+    stage.show();
+}</code></pre>
+
+        <div class="component-tree">
+          <strong>Mapa de componentes:</strong><br><br>
+          <span class="method-name">start()</span> <span class="returns">→ ensambla todo</span><br>
+          ├── <span class="method-name">crearTitulo()</span> <span class="returns">→ retorna Label</span><br>
+          ├── <span class="method-name">crearFormulario()</span> <span class="returns">→ retorna GridPane</span><br>
+          ├── <span class="method-name">crearBotones()</span> <span class="returns">→ retorna HBox</span><br>
+          │&nbsp;&nbsp; └── <span class="method-name">limpiarCampos()</span> <span class="returns">→ helper</span><br>
+          └── <span class="method-name">crearEstado()</span> <span class="returns">→ retorna Label</span>
+        </div>
+
+        <div class="checkpoint">
+          <strong>Checkpoint ✅</strong>
+          <p>Si ejecutas la app ahora (sin CSS), deberías ver una ventana con el formulario organizado, los botones centrados, y el label de estado. Todo funcional pero sin estilo visual todavía.</p>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 4: CSS PRÁCTICO -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 4 — Estilizar con CSS 🎨</div>
+
+      <!-- PASO 12 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">12</div>
+          <div class="step-title">Crea el archivo styles.css</div>
+        </div>
+
+        <p>Crea el archivo <code>src/main/resources/styles.css</code>. Este CSS le dará a tu app un aspecto oscuro estilo Spotify:</p>
+
+        <pre class="code-block"><code class="language-css">/* ===========================
+   RAÍZ — Fondo oscuro tipo Spotify
+   =========================== */
+.root {
+    -fx-background-color: #191414;
+    -fx-font-family: "Segoe UI", "Helvetica", sans-serif;
+}
+
+/* ===========================
+   TÍTULO PRINCIPAL
+   =========================== */
+#titulo-app {
+    -fx-text-fill: #1db954;
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+/* ===========================
+   TODOS LOS LABELS
+   =========================== */
+.label {
+    -fx-text-fill: #b3b3b3;
+    -fx-font-size: 14px;
+}
+
+/* ===========================
+   CAMPOS DE TEXTO
+   =========================== */
+.text-field {
+    -fx-background-color: #282828;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #666666;
+    -fx-border-color: #333333;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8 12;
+    -fx-font-size: 14px;
+}
+
+/* Cuando el campo tiene el foco (clic o tab) */
+.text-field:focused {
+    -fx-border-color: #1db954;
+    -fx-border-width: 2;
+}
+
+/* ===========================
+   BOTÓN PRINCIPAL (por ID)
+   =========================== */
+#btn-agregar {
+    -fx-background-color: #1db954;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-padding: 10 24;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+/* Efecto hover — cuando el mouse está encima */
+#btn-agregar:hover {
+    -fx-background-color: #1ed760;
+}
+
+/* ===========================
+   BOTÓN SECUNDARIO (por clase CSS)
+   =========================== */
+.btn-secundario {
+    -fx-background-color: #333333;
+    -fx-text-fill: #b3b3b3;
+    -fx-font-size: 14px;
+    -fx-padding: 10 24;
+    -fx-background-radius: 20;
+    -fx-cursor: hand;
+}
+
+.btn-secundario:hover {
+    -fx-background-color: #404040;
+    -fx-text-fill: #ffffff;
+}
+
+/* ===========================
+   LABEL DE ESTADO
+   =========================== */
+#lbl-estado {
+    -fx-text-fill: #1db954;
+    -fx-font-size: 13px;
+    -fx-font-style: italic;
+}</code></pre>
+
+        <div class="callout callout-celeste">
+          <h4 style="margin:0 0 8px;">📌 Selectores CSS en JavaFX — resumen rápido</h4>
+          <table class="method-table" style="margin-top:8px;">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Sintaxis CSS</th>
+                <th>Cómo se asigna en Java</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Por tipo</td>
+                <td><code>.label</code>, <code>.button</code>, <code>.text-field</code></td>
+                <td>Automático — aplica a todos los nodos de ese tipo</td>
+              </tr>
+              <tr>
+                <td>Por ID</td>
+                <td><code>#titulo-app</code></td>
+                <td><code>nodo.setId("titulo-app")</code></td>
+              </tr>
+              <tr>
+                <td>Por clase CSS</td>
+                <td><code>.btn-secundario</code></td>
+                <td><code>nodo.getStyleClass().add("btn-secundario")</code></td>
+              </tr>
+              <tr>
+                <td>Pseudoclase</td>
+                <td><code>:hover</code>, <code>:focused</code>, <code>:pressed</code></td>
+                <td>Automático — JavaFX las activa según el estado</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="reflection-box">
+          <p><strong>💡 ID vs Clase CSS:</strong> Usa <code>setId()</code> cuando el nodo es <strong>único</strong> (hay un solo título, un solo botón principal). Usa <code>getStyleClass().add()</code> cuando hay <strong>varios</strong> nodos con el mismo estilo (varios botones secundarios).</p>
+        </div>
+      </div>
+
+      <!-- PASO 13: VINCULAR CSS -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">13</div>
+          <div class="step-title">Vincular el CSS a la escena</div>
+        </div>
+
+        <p>En tu método <code>start()</code>, agrega esta línea <strong>después de crear la Scene</strong>:</p>
+
+        <pre class="code-block"><code class="language-java">// Cargar el archivo CSS desde resources/
+scene.getStylesheets().add(
+    getClass().getResource("/styles.css").toExternalForm()
+);</code></pre>
+
+        <div class="callout callout-durazno">
+          <h4 style="margin:0 0 6px;">⚠️ Error muy común</h4>
+          <p style="margin:0;">Si te sale <code>NullPointerException</code> en esta línea, significa que JavaFX no encuentra el archivo. Verifica que:
+          </p>
+          <ul style="margin:4px 0 0; padding-left:20px;">
+            <li>El archivo se llame exactamente <code>styles.css</code> (con la "s" al final)</li>
+            <li>Esté en <code>src/main/resources/</code> (NO dentro de la carpeta Java)</li>
+            <li>La ruta empiece con <code>/</code> (barra diagonal)</li>
+          </ul>
+        </div>
+
+        <div class="checkpoint">
+          <strong>Checkpoint ✅</strong>
+          <p>Ejecuta la app. Ahora deberías ver el fondo oscuro, el título verde, los campos con borde gris, y los botones con estilo Spotify. El campo activo debería tener borde verde.</p>
+        </div>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 5: CÓDIGO COMPLETO -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 5 — El código completo 📋</div>
+
+      <!-- PASO 14 -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">14</div>
+          <div class="step-title">SpotifyMiniApp.java completo con componentes</div>
+        </div>
+
+        <p>Este es el archivo completo con todos los componentes funcionales integrados. Cópialo y
+          compáralo con el código "achoclonado" del paso 1:</p>
+
+        <pre class="code-block"><code class="language-java">package com.spotify.mini;
+
+import javafx.application.Application;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class SpotifyMiniApp extends Application {
+
+    // --- Atributos de clase: nodos que se usan en varios métodos ---
+    private TextField txtTitulo;
+    private TextField txtArtista;
+    private TextField txtDuracion;
+    private Label lblEstado;
+
+    @Override
+    public void start(Stage stage) {
+        // 1. Crear cada componente
+        Label titulo        = crearTitulo();
+        GridPane formulario = crearFormulario();
+        HBox botones        = crearBotones();
+        Label estado        = crearEstado();
+
+        // 2. Ensamblar en el layout principal
+        VBox root = new VBox(15, titulo, formulario, botones, estado);
+        root.setPadding(new Insets(20));
+        root.setAlignment(Pos.TOP_CENTER);
+
+        // 3. Crear la escena y aplicar estilos
+        Scene scene = new Scene(root, 500, 400);
+        scene.getStylesheets().add(
+            getClass().getResource("/styles.css").toExternalForm()
+        );
+
+        // 4. Configurar y mostrar la ventana
+        stage.setTitle("Spotify Mini");
+        stage.setScene(scene);
+        stage.show();
+    }
+
+    // =============================================
+    // COMPONENTES — cada método construye una pieza
+    // =============================================
+
+    private Label crearTitulo() {
+        Label titulo = new Label("Spotify Mini 🎧");
+        titulo.setId("titulo-app");
+        return titulo;
+    }
+
+    private GridPane crearFormulario() {
+        Label lblTitulo   = new Label("Título:");
+        Label lblArtista  = new Label("Artista:");
+        Label lblDuracion = new Label("Duración:");
+
+        txtTitulo = new TextField();
+        txtTitulo.setPromptText("Nombre de la canción");
+
+        txtArtista = new TextField();
+        txtArtista.setPromptText("Nombre del artista");
+
+        txtDuracion = new TextField();
+        txtDuracion.setPromptText("Ej: 3:45");
+
+        GridPane form = new GridPane();
+        form.setHgap(10);
+        form.setVgap(10);
+
+        form.add(lblTitulo,    0, 0);
+        form.add(txtTitulo,    1, 0);
+        form.add(lblArtista,   0, 1);
+        form.add(txtArtista,   1, 1);
+        form.add(lblDuracion,  0, 2);
+        form.add(txtDuracion,  1, 2);
+
+        return form;
+    }
+
+    private HBox crearBotones() {
+        Button btnAgregar = new Button("Agregar Canción");
+        btnAgregar.setId("btn-agregar");
+
+        btnAgregar.setOnAction(e -> {
+            String titulo = txtTitulo.getText();
+            String artista = txtArtista.getText();
+
+            if (titulo.isEmpty() || artista.isEmpty()) {
+                lblEstado.setText("⚠ Completa al menos título y artista");
+                return;
+            }
+
+            lblEstado.setText("✓ Canción agregada: " + titulo);
+            limpiarCampos();
+        });
+
+        Button btnLimpiar = new Button("Limpiar");
+        btnLimpiar.getStyleClass().add("btn-secundario");
+
+        btnLimpiar.setOnAction(e -> {
+            limpiarCampos();
+            lblEstado.setText("");
+        });
+
+        HBox barra = new HBox(10, btnAgregar, btnLimpiar);
+        barra.setAlignment(Pos.CENTER);
+        return barra;
+    }
+
+    private Label crearEstado() {
+        lblEstado = new Label("");
+        lblEstado.setId("lbl-estado");
+        return lblEstado;
+    }
+
+    // =============================================
+    // HELPERS — métodos de apoyo
+    // =============================================
+
+    private void limpiarCampos() {
+        txtTitulo.clear();
+        txtArtista.clear();
+        txtDuracion.clear();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}</code></pre>
+      </div>
+
+      <!-- ============================================== -->
+      <!-- FASE 6: RESUMEN VISUAL -->
+      <!-- ============================================== -->
+      <div class="phase-title">Fase 6 — Resumen y reglas de oro 📐</div>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">15</div>
+          <div class="step-title">Las 5 reglas para layouts bonitos y mantenibles</div>
+        </div>
+
+        <div class="grid" style="margin-top:16px;">
+          <div class="card card-menta">
+            <strong>1. Elige el layout raíz correcto</strong>
+            <p>El 90% de las veces tu raíz es un <code>VBox</code>. Apila secciones verticalmente y agrega los
+              demás layouts como hijos.</p>
+          </div>
+          <div class="card card-celeste">
+            <strong>2. Siempre agrega padding</strong>
+            <p><code>root.setPadding(new Insets(20))</code> — sin esto, todo queda pegado al borde de la ventana.
+              Es lo primero que mejora cualquier interfaz.</p>
+          </div>
+          <div class="card card-lavanda">
+            <strong>3. Siempre agrega spacing</strong>
+            <p><code>new VBox(15)</code> o <code>setSpacing(15)</code> — sin espacio entre elementos, todo se ve
+              apretado y confuso.</p>
+          </div>
+          <div class="card card-durazno">
+            <strong>4. Usa alineación</strong>
+            <p><code>setAlignment(Pos.CENTER)</code> — centra los elementos para que no queden todos pegados
+              a la izquierda. Hace una diferencia enorme.</p>
+          </div>
+          <div class="card card-rosa">
+            <strong>5. Un método, una responsabilidad</strong>
+            <p>Cada componente visual en su propio método. <code>start()</code> solo ensambla. Así tu código se lee
+              como un índice.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLA RESUMEN DE LAYOUTS -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">16</div>
+          <div class="step-title">Cheatsheet: ¿Cuándo usar cada layout?</div>
+        </div>
+
+        <table class="method-table">
+          <thead>
+            <tr>
+              <th>Layout</th>
+              <th>Dirección</th>
+              <th>Úsalo para...</th>
+              <th>Ejemplo típico</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>VBox</code></td>
+              <td>↓ Vertical</td>
+              <td>Contenedor principal, secciones apiladas</td>
+              <td>Título + formulario + botones + lista</td>
+            </tr>
+            <tr>
+              <td><code>HBox</code></td>
+              <td>→ Horizontal</td>
+              <td>Filas de botones, controles lado a lado</td>
+              <td>Barra de botones, campo con botón al lado</td>
+            </tr>
+            <tr>
+              <td><code>GridPane</code></td>
+              <td>⊞ Grilla</td>
+              <td>Formularios con labels y campos alineados</td>
+              <td>Label: [campo] en varias filas</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="callout callout-menta" style="margin-top:16px;">
+          <h4 style="margin:0 0 6px;">🧩 Patrón más común:</h4>
+          <p style="margin:0;"><code>VBox</code> como raíz → contiene un <code>GridPane</code> para el formulario + un <code>HBox</code> para los botones. Este combo resuelve el 80% de las interfaces de formulario.</p>
+        </div>
+      </div>
+
+      <!-- VERIFICACIÓN -->
+      <div class="section-divider"></div>
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">17</div>
+          <div class="step-title">Verifica tu comprensión</div>
+        </div>
+
+        <quiz-question v-bind="quiz1"></quiz-question>
+        <quiz-question v-bind="quiz2"></quiz-question>
+        <quiz-question v-bind="quiz3"></quiz-question>
+        <quiz-question v-bind="quiz4"></quiz-question>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../../shared/activity-engine.js"></script>
+  <script>
+    const { createApp } = Vue;
+    const app = createApp({
+      data() {
+        return {
+          quiz1: {
+            question: 'Si quieres organizar un título arriba, un formulario en el medio y botones abajo, ¿qué layout usas como raíz?',
+            options: [
+              { text: '<code>HBox</code> — pone todo en una fila horizontal', correct: false },
+              { text: '<code>VBox</code> — apila todo verticalmente', correct: true },
+              { text: '<code>GridPane</code> — organiza en grilla', correct: false },
+              { text: '<code>StackPane</code> — apila todo encima', correct: false }
+            ],
+            explanation: 'VBox apila elementos uno debajo del otro, que es exactamente lo que necesitas: título → formulario → botones. Es el layout raíz más común.',
+            hint: 'Piensa en la dirección: ¿necesitas que las cosas vayan de arriba a abajo o de izquierda a derecha?',
+            level: 'base'
+          },
+          quiz2: {
+            question: '¿Cuál es la ventaja principal de usar "componentes funcionales" (métodos que retornan nodos)?',
+            options: [
+              { text: 'La app corre más rápido', correct: false },
+              { text: 'El código se lee más fácil, cada método tiene una sola responsabilidad y es más fácil de mantener', correct: true },
+              { text: 'Es obligatorio en JavaFX — sin métodos separados no compila', correct: false },
+              { text: 'Permite usar más layouts simultáneamente', correct: false }
+            ],
+            explanation: 'Los componentes funcionales no cambian el rendimiento ni son obligatorios. Su ventaja es la organización: cada método construye una pieza visual, y start() solo ensambla. Si algo falla, sabes exactamente dónde mirar.',
+            hint: 'Piensa en qué pasa si necesitas cambiar el formulario en 2 semanas. ¿Dónde buscas?',
+            level: 'inter'
+          },
+          quiz3: {
+            question: 'En <code>GridPane.add(nodo, 1, 0)</code>, ¿qué significa el <code>1</code> y el <code>0</code>?',
+            options: [
+              { text: 'Fila 1, Columna 0', correct: false },
+              { text: 'Columna 1, Fila 0', correct: true },
+              { text: 'Ancho 1, Alto 0', correct: false },
+              { text: 'Posición X=1, Posición Y=0', correct: false }
+            ],
+            explanation: 'El orden es (nodo, columna, fila). Es contra-intuitivo porque normalmente pensamos "fila primero", pero GridPane usa columna primero. Es uno de los errores más comunes.',
+            hint: 'El orden de GridPane.add() NO es el que esperarías intuitivamente...',
+            level: 'base'
+          },
+          quiz4: {
+            question: '¿Por qué los <code>TextField</code> se declaran como atributos de la clase en vez de variables locales del método?',
+            options: [
+              { text: 'Porque JavaFX no permite variables locales', correct: false },
+              { text: 'Para que el recolector de basura no los elimine', correct: false },
+              { text: 'Porque necesitas acceder a ellos desde otros métodos (como el evento del botón)', correct: true },
+              { text: 'Porque los atributos de clase son más rápidos', correct: false }
+            ],
+            explanation: 'Si los TextFields fueran variables locales de crearFormulario(), no podrías leerlos desde crearBotones() cuando el usuario hace clic en "Agregar". Al ser atributos de clase, cualquier método puede acceder a ellos.',
+            hint: 'Piensa: ¿desde dónde necesitas llamar a txtTitulo.getText()?',
+            level: 'inter'
+          }
+        };
+      },
+      methods: {
+        highlightCode() {
+          this.$nextTick(() => {
+            if (typeof hljs !== 'undefined') {
+              document.querySelectorAll('pre code:not(.hljs)').forEach(block => hljs.highlightElement(block));
+            }
+          });
+        }
+      },
+      mounted() {
+        this.highlightCode();
+      }
+    });
+    ActivityEngine.register(app);
+    app.mount('#app');
+  </script>
+</body>
+
+</html>
