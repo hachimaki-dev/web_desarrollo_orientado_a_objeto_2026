@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tabla Comparativa: CSS Tradicional vs JavaFX CSS — Profe Carlitos</title>
+  <meta name="description" content="Guía exhaustiva y tabla comparativa completa de propiedades CSS: cómo se hace en la web tradicional, para qué sirve cada propiedad y su sintaxis exacta en JavaFX CSS.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+    .doc-container {
+      max-width: 1060px;
+      margin: 0 auto;
+      padding: 48px 24px 100px;
+    }
+    .doc-header {
+      margin-bottom: 32px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .search-bar-wrap {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .search-input {
+      flex: 1;
+      min-width: 260px;
+      padding: 12px 16px;
+      border: 2px solid var(--line);
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-family: var(--font-body);
+      background: var(--bg-soft);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-input:focus {
+      border-color: var(--ink);
+      background: #FFFFFF;
+    }
+    .cs-nav {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 0 0 28px;
+      position: sticky;
+      top: 12px;
+      z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .cs-tab-btn {
+      padding: 7px 13px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      transition: all 0.15s;
+    }
+    .cs-tab-btn:hover { background: var(--bg-muted); }
+    .cs-tab-btn.active {
+      background: var(--ink);
+      color: #FFF;
+      border-color: var(--ink);
+    }
+    .section-header {
+      margin: 40px 0 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid var(--line);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: var(--radius-md);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .concept-card {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      margin-bottom: 28px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+    }
+    .concept-card h3 {
+      font-size: 19px;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .table-spec {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 13.5px;
+    }
+    .table-spec th, .table-spec td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    .table-spec th {
+      background: var(--bg-muted);
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+    }
+    .table-spec tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+    .badge-prop {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 12.5px;
+      padding: 2px 6px;
+      border-radius: 4px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+    .badge-web {
+      background: #EBF5FB;
+      color: #21618C;
+      border: 1px solid #AED6F1;
+    }
+    .badge-fx {
+      background: #EAFAF1;
+      color: #196F3D;
+      border: 1px solid #A9DFBF;
+    }
+    .badge-diff {
+      background: #FDEDEC;
+      color: #922B21;
+      border: 1px solid #FADBD8;
+    }
+    .badge-note {
+      font-size: 11px;
+      padding: 1px 5px;
+      border-radius: 3px;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      margin-left: 4px;
+    }
+    .badge-note.alert {
+      background: #F8D7DA;
+      color: #721C24;
+    }
+    .rule-box {
+      border-left: 4px solid var(--ink);
+      padding: 14px 18px;
+      background: var(--bg-soft);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 16px 0;
+    }
+    .rule-box strong {
+      color: var(--ink);
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 768px) {
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+      .table-spec {
+        display: block;
+        overflow-x: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="doc-container">
+
+    <header class="doc-header">
+      <div style="font-size:42px; margin-bottom:12px;">🛸</div>
+      <div class="kicker">Unidad 2.1 · Maven y JavaFX · 2.1.7</div>
+      <h1 style="font-size:clamp(28px,3.6vw,44px);">Guía Completa: CSS Tradicional vs JavaFX CSS</h1>
+      <p class="lead">
+        Tabla comparativa técnica, directa y exhaustiva de todas las propiedades de estilo. Conoce cómo se escribe cada propiedad en CSS web tradicional, para qué sirve exactamente y cómo se implementa en JavaFX con el motor CSS de OpenJFX.
+      </p>
+    </header>
+
+    <!-- INTRODUCCIÓN TÉCNICA CLAVE -->
+    <div class="concept-card" style="background:var(--pastel-lavanda); border-color:var(--accent-lavanda);">
+      <h3 style="color:var(--accent-lavanda); margin-bottom:10px;">📌 3 Reglas de Oro de JavaFX CSS</h3>
+      <div class="grid-2">
+        <div>
+          <p><strong>1. El prefijo obligatorio <code>-fx-</code>:</strong> JavaFX utiliza su propia implementación de CSS basada en la especificación W3C CSS 2.1 con agregados de CSS 3. Todas las propiedades nativas de nodos JavaFX deben comenzar con <code>-fx-</code>.</p>
+          <p><strong>2. <code>color</code> no existe:</strong> En HTML/CSS tradicional el color del texto es <code>color</code>. En JavaFX es <strong><code>-fx-text-fill</code></strong> para textos y etiquetas, y <strong><code>-fx-fill</code></strong> para figuras geométricas.</p>
+        </div>
+        <div>
+          <p><strong>3. Separación de Fondo y Borde:</strong> En CSS web, <code>border-radius</code> redondea tanto el borde como el fondo. En JavaFX están separados: debes definir <strong><code>-fx-background-radius</code></strong> para el relleno y <strong><code>-fx-border-radius</code></strong> para la línea.</p>
+          <p><strong>4. Selectores y clases raíz:</strong> En vez de <code>body</code> o <code>:root</code>, el contenedor principal de la escena en JavaFX responde al selector de clase <strong><code>.root</code></strong>.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- CÓMO APLICAR CSS EN JAVAFX -->
+    <div class="concept-card">
+      <h3>🚀 Cómo aplicar estilos en un proyecto JavaFX</h3>
+      <div class="grid-2">
+        <div>
+          <strong>Método 1: Archivo externo .css (Recomendado)</strong>
+          <p class="small">Se ubica en <code>src/main/resources/styles.css</code> y se vincula a la escena en Java:</p>
+          <pre class="code-block"><code class="language-java">// En el método start(Stage stage):
+Scene scene = new Scene(root, 800, 600);
+scene.getStylesheets().add(
+    getClass().getResource("/styles.css").toExternalForm()
+);
+stage.setScene(scene);</code></pre>
+        </div>
+        <div>
+          <strong>Método 2: Inline con setStyle()</strong>
+          <p class="small">Directo sobre el nodo (útil para pruebas puntuales o valores dinámicos):</p>
+          <pre class="code-block"><code class="language-java">Button btn = new Button("Confirmar");
+btn.setStyle(
+    "-fx-background-color: #1db954; " +
+    "-fx-text-fill: white; " +
+    "-fx-font-weight: bold; " +
+    "-fx-background-radius: 8;"
+);</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- BUSCADOR Y NAVEGACIÓN -->
+    <div class="search-bar-wrap">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        class="search-input" 
+        placeholder="🔍 Escribe una propiedad (ej: color, padding, background, border, font, shadow, cursor)..."
+      />
+      <button v-if="searchQuery" class="cs-tab-btn" @click="searchQuery = ''" style="align-self:center;">Limpiar búsqueda</button>
+    </div>
+
+    <div class="cs-nav">
+      <button class="cs-tab-btn" :class="{active: currentTab==='todos'}" @click="currentTab='todos'">📑 Todos ({{ allPropsCount }})</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='texto'}" @click="currentTab='texto'">✍️ Texto y Fuentes</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='fondos'}" @click="currentTab='fondos'">🎨 Fondos</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='bordes'}" @click="currentTab='bordes'">🔲 Bordes</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='caja'}" @click="currentTab='caja'">📐 Layout y Caja</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='inputs'}" @click="currentTab='inputs'">📝 Entradas y Formularios</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='efectos'}" @click="currentTab='efectos'">✨ Efectos y Cursor</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='estados'}" @click="currentTab='estados'">🎭 Pseudo-clases / Estados</button>
+      <button class="cs-tab-btn" :class="{active: currentTab==='funciones'}" @click="currentTab='funciones'">🌈 Funciones JavaFX</button>
+    </div>
+
+    <!-- RESULTADOS FILTRADOS POR BÚSQUEDA -->
+    <section v-if="searchQuery.trim().length > 0">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-amarillo);">🔍</div>
+        <h2 style="margin:0; font-size:22px;">Resultados de búsqueda: "{{ searchQuery }}" ({{ filteredList.length }})</h2>
+      </div>
+
+      <div v-if="filteredList.length === 0" class="rule-box" style="background:var(--incorrect);">
+        <strong>No se encontraron propiedades que coincidan con la búsqueda.</strong>
+        <p style="margin:4px 0 0;">Intenta buscando por término tradicional (ej. <code>padding</code>), propiedad JavaFX (ej. <code>-fx-text-fill</code>) o por su función (ej. <code>redondeado</code>).</p>
+      </div>
+
+      <table v-else class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Sintaxis y Valores</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(item, idx) in filteredList" :key="idx">
+            <td>
+              <span class="badge-prop badge-web">{{ item.web }}</span>
+              <span v-if="item.alert" class="badge-note alert">{{ item.alert }}</span>
+            </td>
+            <td>
+              <strong>{{ item.name }}</strong>
+              <div class="small" style="margin-top:2px;">{{ item.desc }}</div>
+            </td>
+            <td>
+              <span class="badge-prop badge-fx">{{ item.fx }}</span>
+            </td>
+            <td>
+              <code style="font-size:12px;">{{ item.example }}</code>
+              <div v-if="item.note" class="small" style="color:var(--ink-soft); margin-top:3px;"><em>{{ item.note }}</em></div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: TEXTO Y TIPOGRAFÍA -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='texto')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-celeste);">✍️</div>
+        <h2 style="margin:0; font-size:22px;">1. Texto, Tipografía y Etiquetas (Labeled / Text)</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">Aplica a <code>Label</code>, <code>Button</code>, <code>CheckBox</code>, <code>RadioButton</code>, <code>TextField</code> y cualquier control que renderice caracteres.</p>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Sintaxis y Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-prop badge-web">color: #ffffff;</span> <span class="badge-note alert">DIFERENCIA CRÍTICA</span></td>
+            <td><strong>Color del texto</strong><div class="small">Define el color de los glifos de la fuente. En JavaFX 'color' no existe.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-text-fill</span></td>
+            <td><code>-fx-text-fill: #1db954;</code><div class="small">Hex, rgb, rgba o nombres web.</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">font-family: Arial;</span></td>
+            <td><strong>Familia tipográfica</strong><div class="small">Nombre de la fuente instalada en el sistema operativo o cargada con Font.loadFont().</div></td>
+            <td><span class="badge-prop badge-fx">-fx-font-family</span></td>
+            <td><code>-fx-font-family: "Segoe UI", sans-serif;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">font-size: 16px;</span></td>
+            <td><strong>Tamaño de fuente</strong><div class="small">Altura de los caracteres. Admite unidades en px o pt.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-font-size</span></td>
+            <td><code>-fx-font-size: 14px;</code><div class="small">o <code>-fx-font-size: 12pt;</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">font-weight: bold;</span></td>
+            <td><strong>Grosor de la letra</strong><div class="small">Peso visual del trazo tipográfico.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-font-weight</span></td>
+            <td><code>-fx-font-weight: bold;</code><div class="small">Valores: normal, bold, bolder, 100..900</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">font-style: italic;</span></td>
+            <td><strong>Estilo cursiva</strong><div class="small">Declara si el texto se dibuja en itálica u oblicua.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-font-style</span></td>
+            <td><code>-fx-font-style: italic;</code><div class="small">Valores: normal, italic, oblique</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">text-align: center;</span></td>
+            <td><strong>Alineación del contenido</strong><div class="small">Posiciona el texto y sus gráficos respecto a los límites de la caja.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-alignment</span></td>
+            <td><code>-fx-alignment: center;</code><div class="small">center, center-left, top-right, etc.</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">text-decoration: underline;</span></td>
+            <td><strong>Subrayado</strong><div class="small">Línea continua debajo del texto. En JavaFX es un valor booleano.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-underline</span></td>
+            <td><code>-fx-underline: true;</code><div class="small">Booleano: <code>true</code> o <code>false</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">text-decoration: line-through;</span></td>
+            <td><strong>Texto tachado</strong><div class="small">Dibuja una línea horizontal por el medio del texto.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-strikethrough</span></td>
+            <td><code>-fx-strikethrough: true;</code><div class="small">Booleano: <code>true</code> o <code>false</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">white-space: normal;</span></td>
+            <td><strong>Ajuste automático de línea</strong><div class="small">Permite que el texto salte a la siguiente línea si no cabe en el ancho del Label.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-wrap-text</span></td>
+            <td><code>-fx-wrap-text: true;</code><div class="small">Por defecto los Labels cortan el texto.</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">text-overflow: ellipsis;</span></td>
+            <td><strong>Carácter de recorte</strong><div class="small">Cadena mostrada cuando el texto excede los límites disponibles.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-ellipsis-string</span></td>
+            <td><code>-fx-ellipsis-string: "...";</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">gap: 8px; (icono-texto)</span></td>
+            <td><strong>Separación texto e icono</strong><div class="small">Distancia en píxeles entre la imagen gráfica y la etiqueta de texto en un Botón/Label.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-graphic-text-gap</span></td>
+            <td><code>-fx-graphic-text-gap: 8;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">flex-direction / layout</span></td>
+            <td><strong>Posición del gráfico relativo al texto</strong><div class="small">Dónde se ubica la imagen adjunta con <code>setGraphic()</code> respecto al texto.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-content-display</span></td>
+            <td><code>-fx-content-display: left;</code><div class="small">top, right, bottom, left, graphic-only, text-only</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: FONDOS -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='fondos')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-menta);">🎨</div>
+        <h2 style="margin:0; font-size:22px;">2. Fondos y Rellenos (Region / Panes / Controls)</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">Aplica a <code>Region</code>, contenedores (<code>VBox</code>, <code>HBox</code>, <code>BorderPane</code>, <code>GridPane</code>) y componentes interactivos.</p>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Sintaxis y Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-prop badge-web">background-color: #282828;</span></td>
+            <td><strong>Color de fondo sólido</strong><div class="small">Pinta la capa base de relleno del componente. Permite múltiples capas separadas por coma.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-color</span></td>
+            <td><code>-fx-background-color: #282828;</code><div class="small">o <code>transparent</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">border-radius: 8px;</span> <span class="badge-note alert">IMPORTANTE</span></td>
+            <td><strong>Radio de esquinas del fondo</strong><div class="small">Curvatura de las cuatro esquinas del fondo. En web se usa border-radius; en JavaFX se llama background-radius.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-radius</span></td>
+            <td><code>-fx-background-radius: 8;</code><div class="small">o <code>8 8 0 0;</code> (top right bottom left)</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">linear-gradient(...)</span></td>
+            <td><strong>Fondo con gradiente lineal</strong><div class="small">Transición suave de colores en una dirección determinada.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-color: linear-gradient(...)</span></td>
+            <td><code>linear-gradient(to bottom, #1db954, #191414);</code><div class="small">O sintaxis JavaFX: <code>linear-gradient(from 0% 0% to 0% 100%, #333 0%, #111 100%)</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">radial-gradient(...)</span></td>
+            <td><strong>Fondo con gradiente radial</strong><div class="small">Transición circular expansiva de colores desde un punto focal.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-color: radial-gradient(...)</span></td>
+            <td><code>radial-gradient(center 50% 50%, radius 60%, #fff, #333);</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">box-sizing / padding-box</span></td>
+            <td><strong>Márgenes internos del fondo (Insets)</strong><div class="small">Determina qué tan retraído se dibuja el fondo respecto al borde exterior.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-insets</span></td>
+            <td><code>-fx-background-insets: 0;</code><div class="small">Permite capas: <code>0, 1 1 1 1, 2</code> para biseles.</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">background-image: url(...);</span></td>
+            <td><strong>Imagen de fondo</strong><div class="small">Carga un archivo gráfico para proyectarlo como fondo.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-image</span></td>
+            <td><code>-fx-background-image: url("bg.png");</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">background-repeat: no-repeat;</span></td>
+            <td><strong>Repetición de imagen de fondo</strong><div class="small">Define si la imagen se repite en mosaico X, Y o ambos.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-repeat</span></td>
+            <td><code>-fx-background-repeat: no-repeat;</code><div class="small">Valores: repeat, repeat-x, repeat-y, no-repeat, space, round, stretch</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">background-position: center;</span></td>
+            <td><strong>Posición de imagen de fondo</strong><div class="small">Alinea la imagen dentro de la región del nodo.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-position</span></td>
+            <td><code>-fx-background-position: center center;</code><div class="small">left, right, center, top, bottom, o %</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">background-size: cover;</span></td>
+            <td><strong>Tamaño de escala de la imagen</strong><div class="small">Ajuste de dimensiones: si escala proporcionalmente, estira o encaja.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-background-size</span></td>
+            <td><code>-fx-background-size: cover;</code><div class="small">Valores: auto, cover, contain, 100% 100%</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: BORDES -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='bordes')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-durazno);">🔲</div>
+        <h2 style="margin:0; font-size:22px;">3. Bordes y Contornos (Borders)</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">Permite dibujar trazos continuos, punteados o con esquinas redondeadas alrededor de cualquier nodo tipo <code>Region</code>.</p>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Sintaxis y Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-prop badge-web">border-color: #333333;</span></td>
+            <td><strong>Color del contorno</strong><div class="small">Color de las líneas perimetrales. Puede recibir de 1 a 4 colores independientes.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-border-color</span></td>
+            <td><code>-fx-border-color: #333333;</code><div class="small">o <code>#1db954 #333 #333 #333;</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">border-width: 2px;</span></td>
+            <td><strong>Grosor del borde</strong><div class="small">Ancho de la línea en píxeles.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-border-width</span></td>
+            <td><code>-fx-border-width: 2;</code><div class="small">o <code>2px;</code> (top right bottom left)</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">border-style: solid;</span></td>
+            <td><strong>Estilo de línea del borde</strong><div class="small">Determina si el trazo es sólido, punteado o discontinuo.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-border-style</span></td>
+            <td><code>-fx-border-style: solid;</code><div class="small">Valores: solid, dashed, dotted, none</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">border-radius: 8px;</span></td>
+            <td><strong>Radio de esquinas del borde</strong><div class="small">Curvatura de las líneas de borde. Debe coincidir con -fx-background-radius para un acabado armónico.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-border-radius</span></td>
+            <td><code>-fx-border-radius: 8;</code><div class="small">o <code>8 8 0 0;</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">outline-offset / insets</span></td>
+            <td><strong>Márgenes de desplazamiento del borde</strong><div class="small">Distancia entre el límite exterior del nodo y el trazo del borde.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-border-insets</span></td>
+            <td><code>-fx-border-insets: 0;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">border-image-source: url(...);</span></td>
+            <td><strong>Imagen como borde</strong><div class="small">Utiliza una imagen dividida en 9 secciones (9-slice) para marcos personalizados.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-border-image-source</span></td>
+            <td><code>-fx-border-image-source: url("frame.png");</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">border-image-slice: 10;</span></td>
+            <td><strong>Corte de imagen de borde</strong><div class="small">Puntos de división internos para esquinas y bordes del 9-slice.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-border-image-slice</span></td>
+            <td><code>-fx-border-image-slice: 10 fill;</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: CAJA Y LAYOUT -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='caja')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-rosa);">📐</div>
+        <h2 style="margin:0; font-size:22px;">4. Dimensiones, Espaciado y Layout (Caja)</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">Controla el flujo espacial en contenedores como <code>VBox</code>, <code>HBox</code>, <code>GridPane</code> y regiones base.</p>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Sintaxis y Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-prop badge-web">padding: 12px 16px;</span></td>
+            <td><strong>Relleno interior</strong><div class="small">Distancia entre el borde de la caja y sus elementos hijos internos.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-padding</span></td>
+            <td><code>-fx-padding: 12 16;</code><div class="small">o <code>-fx-padding: 10 15 10 15;</code></div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">gap: 12px;</span></td>
+            <td><strong>Espaciado entre nodos hijos</strong><div class="small">Distancia fija entre elementos contiguos dentro de un VBox o HBox.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-spacing</span></td>
+            <td><code>-fx-spacing: 12;</code><div class="small">Equivale a <code>vbox.setSpacing(12)</code> en Java.</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">column-gap: 10px;</span></td>
+            <td><strong>Separación horizontal de cuadrícula</strong><div class="small">Espacio entre columnas en contenedores matriciales (GridPane, FlowPane).</div></td>
+            <td><span class="badge-prop badge-fx">-fx-hgap</span></td>
+            <td><code>-fx-hgap: 10;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">row-gap: 10px;</span></td>
+            <td><strong>Separación vertical de cuadrícula</strong><div class="small">Espacio entre filas en contenedores matriciales (GridPane, FlowPane).</div></td>
+            <td><span class="badge-prop badge-fx">-fx-vgap</span></td>
+            <td><code>-fx-vgap: 10;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">width: 250px;</span></td>
+            <td><strong>Ancho preferido</strong><div class="small">Tamaño horizontal sugerido que el gestor de layout intentará otorgar al nodo.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-pref-width</span></td>
+            <td><code>-fx-pref-width: 250;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">height: 40px;</span></td>
+            <td><strong>Alto preferido</strong><div class="small">Tamaño vertical sugerido que el gestor de layout intentará otorgar al nodo.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-pref-height</span></td>
+            <td><code>-fx-pref-height: 40;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">min-width / min-height</span></td>
+            <td><strong>Dimensiones mínimas</strong><div class="small">Límites por debajo de los cuales el layout no comprimirá el elemento.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-min-width / -fx-min-height</span></td>
+            <td><code>-fx-min-width: 120; -fx-min-height: 35;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">max-width / max-height</span></td>
+            <td><strong>Dimensiones máximas</strong><div class="small">Límite superior de expansión. En JavaFX usar <code>Double.MAX_VALUE</code> equivale a <code>Infinity</code>.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-max-width / -fx-max-height</span></td>
+            <td><code>-fx-max-width: 500;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">justify-content / align-items</span></td>
+            <td><strong>Alineación del contenedor</strong><div class="small">Punto de anclaje de los hijos dentro del contenedor (arriba, centro, izquierda, etc.).</div></td>
+            <td><span class="badge-prop badge-fx">-fx-alignment</span></td>
+            <td><code>-fx-alignment: center;</code><div class="small">top-left, center-left, bottom-right, etc.</div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: ENTRADAS Y FORMULARIOS -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='inputs')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-amarillo);">📝</div>
+        <h2 style="margin:0; font-size:22px;">5. Campos de Entrada, Formularios y Listas</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">Propiedades exclusivas para <code>TextField</code>, <code>PasswordField</code>, <code>TextArea</code>, <code>ListView</code> y <code>TableView</code>.</p>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Sintaxis y Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-prop badge-web">input::placeholder</span></td>
+            <td><strong>Color del texto de sugerencia (Prompt)</strong><div class="small">Color del texto temporal cuando el campo está vacío.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-prompt-text-fill</span></td>
+            <td><code>-fx-prompt-text-fill: #777777;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">::selection { background: ... }</span></td>
+            <td><strong>Color de fondo de texto seleccionado</strong><div class="small">Tinte de resalte al marcar letras con el cursor del mouse.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-highlight-fill</span></td>
+            <td><code>-fx-highlight-fill: #1db954;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">::selection { color: ... }</span></td>
+            <td><strong>Color de letras seleccionadas</strong><div class="small">Color de los caracteres dentro del área marcada con el mouse.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-highlight-text-fill</span></td>
+            <td><code>-fx-highlight-text-fill: #ffffff;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">background en textarea / list</span> <span class="badge-note alert">CLAVE DARK MODE</span></td>
+            <td><strong>Fondo interno de controles editables</strong><div class="small">Afecta el interior blanco por defecto de TextArea, ListView, TableView y ComboBox.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-control-inner-background</span></td>
+            <td><code>-fx-control-inner-background: #282828;</code><div class="small">¡Vital para que el fondo de un TextArea sea oscuro!</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">caret-color: #1db954;</span></td>
+            <td><strong>Color del cursor de inserción</strong><div class="small">Color de la línea parpadeante en el campo de texto.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-caret-color</span></td>
+            <td><code>-fx-caret-color: #1db954;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">input[type="checkbox"]</span></td>
+            <td><strong>Color de la marca de verificación</strong><div class="small">Tinte del ticket dentro del recuadro del CheckBox.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-mark-color</span></td>
+            <td><code>-fx-mark-color: #ffffff;</code><div class="small">Aplica en <code>.check-box > .box > .mark</code></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: EFECTOS Y CURSOR -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='efectos')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-lavanda);">✨</div>
+        <h2 style="margin:0; font-size:22px;">6. Efectos Visuales, Sombras, Filtros y Cursor</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">Propiedades heredadas de la clase base <code>Node</code> aplicables a cualquier elemento visual de la interfaz.</p>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Sintaxis y Ejemplo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-prop badge-web">cursor: pointer;</span></td>
+            <td><strong>Puntero del mouse interactivo</strong><div class="small">Cambia la flecha por la mano de enlace al posarse sobre botones. En JavaFX es 'hand', no 'pointer'.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-cursor: hand;</span></td>
+            <td><code>-fx-cursor: hand;</code><div class="small">Valores: default, hand, text, crosshair, wait, move</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">opacity: 0.8;</span></td>
+            <td><strong>Transparencia del nodo completo</strong><div class="small">Nivel de opacidad entre 0.0 (totalmente transparente) y 1.0 (opaco).</div></td>
+            <td><span class="badge-prop badge-fx">-fx-opacity</span></td>
+            <td><code>-fx-opacity: 0.8;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">box-shadow: 0 4px 8px #000;</span></td>
+            <td><strong>Sombra proyectada exterior</strong><div class="small">Genera una sombra volumétrica detrás del nodo.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-effect: dropshadow(...)</span></td>
+            <td><code>dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 4);</code><div class="small">Algoritmo, color, radio, spread, offsetX, offsetY</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">box-shadow: inset 0 0 8px #000;</span></td>
+            <td><strong>Sombra interna hundida</strong><div class="small">Proyecta la sombra hacia el interior de la superficie del botón o caja.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-effect: innershadow(...)</span></td>
+            <td><code>innershadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 0);</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">filter: blur(4px);</span></td>
+            <td><strong>Desenfoque gaussiano</strong><div class="small">Aplica un filtro de desenfoque al elemento.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-effect: gaussian-blur(...)</span></td>
+            <td><code>-fx-effect: gaussian-blur(4);</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">transform: scale(1.1);</span></td>
+            <td><strong>Escalado de tamaño</strong><div class="small">Aumenta o reduce el tamaño visual del nodo sin recalcular el layout de sus vecinos.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-scale-x / -fx-scale-y</span></td>
+            <td><code>-fx-scale-x: 1.05; -fx-scale-y: 1.05;</code></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">transform: rotate(45deg);</span></td>
+            <td><strong>Rotación angular</strong><div class="small">Gira el elemento en grados sexagesimales alrededor de su centro.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-rotate</span></td>
+            <td><code>-fx-rotate: 45;</code><div class="small">En grados directos (sin 'deg').</div></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">transform: translate(10px, 5px);</span></td>
+            <td><strong>Desplazamiento posicional</strong><div class="small">Mueve el nodo en coordenadas X o Y respecto a su posición de layout.</div></td>
+            <td><span class="badge-prop badge-fx">-fx-translate-x / -fx-translate-y</span></td>
+            <td><code>-fx-translate-x: 10; -fx-translate-y: 5;</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: PSEUDO-CLASES Y ESTADOS -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='estados')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-celeste);">🎭</div>
+        <h2 style="margin:0; font-size:22px;">7. Pseudo-clases y Estados de Interacción</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">Define reglas dinámicas que se activan según el estado del cursor, teclado o selección del componente.</p>
+
+      <table class="table-spec">
+        <thead>
+          <tr>
+            <th style="width:23%;">CSS Tradicional (Web)</th>
+            <th style="width:27%;">¿Para qué sirve?</th>
+            <th style="width:26%;">JavaFX CSS</th>
+            <th style="width:24%;">Ejemplo Práctico en JavaFX</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="badge-prop badge-web">:hover</span></td>
+            <td><strong>Cursor encima</strong><div class="small">Se activa mientras el mouse sobrevuela el control. Es idéntico en ambos entornos.</div></td>
+            <td><span class="badge-prop badge-fx">:hover</span></td>
+            <td><pre class="code-block" style="margin:0;"><code class="language-css">.button:hover {
+    -fx-background-color: #1ed760;
+}</code></pre></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">:active</span></td>
+            <td><strong>Clic presionado</strong><div class="small">Se activa durante el instante en que el usuario mantiene apretado el botón del mouse.</div></td>
+            <td><span class="badge-prop badge-fx">:pressed</span> o <span class="badge-prop badge-fx">:armed</span></td>
+            <td><pre class="code-block" style="margin:0;"><code class="language-css">.button:pressed {
+    -fx-background-color: #169c46;
+}</code></pre></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">:focus</span> <span class="badge-note alert">OJO AL NOMBRE</span></td>
+            <td><strong>Foco activo</strong><div class="small">Cuando el elemento tiene el foco del teclado o cursor activo. En JavaFX lleva 'd' al final (:focused).</div></td>
+            <td><span class="badge-prop badge-fx">:focused</span></td>
+            <td><pre class="code-block" style="margin:0;"><code class="language-css">.text-field:focused {
+    -fx-border-color: #1db954;
+    -fx-border-width: 2;
+}</code></pre></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">:disabled</span></td>
+            <td><strong>Elemento inhabilitado</strong><div class="small">Aplica cuando <code>node.setDisable(true)</code> está activo en Java.</div></td>
+            <td><span class="badge-prop badge-fx">:disabled</span></td>
+            <td><pre class="code-block" style="margin:0;"><code class="language-css">.button:disabled {
+    -fx-opacity: 0.4;
+    -fx-cursor: default;
+}</code></pre></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">:checked</span></td>
+            <td><strong>Casilla o botón activado</strong><div class="small">Para CheckBox, RadioButton, ToggleButton o pestañas Tab seleccionadas.</div></td>
+            <td><span class="badge-prop badge-fx">:selected</span></td>
+            <td><pre class="code-block" style="margin:0;"><code class="language-css">.check-box:selected > .box {
+    -fx-background-color: #1db954;
+}</code></pre></td>
+          </tr>
+          <tr>
+            <td><span class="badge-prop badge-web">body / html</span></td>
+            <td><strong>Contenedor raíz de toda la ventana</strong><div class="small">La raíz de la escena donde se declaran variables o el fondo general de la aplicación.</div></td>
+            <td><span class="badge-prop badge-fx">.root</span></td>
+            <td><pre class="code-block" style="margin:0;"><code class="language-css">.root {
+    -fx-background-color: #121212;
+    -fx-font-family: "Segoe UI";
+}</code></pre></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- TAB: FUNCIONES ESPECIALES DE COLOR -->
+    <section v-show="!searchQuery && (currentTab==='todos' || currentTab==='funciones')">
+      <div class="section-header">
+        <div class="section-icon" style="background:var(--pastel-menta);">🌈</div>
+        <h2 style="margin:0; font-size:22px;">8. Funciones Exclusivas de JavaFX CSS</h2>
+      </div>
+      <p class="small" style="margin-bottom:12px;">JavaFX incluye funciones matemáticas de color avanzadas en su motor CSS para crear temas adaptativos automáticamente.</p>
+
+      <div class="grid-2">
+        <div class="concept-card">
+          <h3><code>derive(color, porcentaje)</code></h3>
+          <p class="small">Aclara u oscurece un color relativo a su tono base. Porcentajes positivos aclaran; negativos oscurecen.</p>
+          <pre class="code-block"><code class="language-css">/* Base: verde Spotify */
+.button {
+    -fx-background-color: #1db954;
+}
+/* Al pasar mouse: 20% más claro sin inventar otro hex */
+.button:hover {
+    -fx-background-color: derive(#1db954, 20%);
+}
+/* Al hacer clic: 15% más oscuro */
+.button:pressed {
+    -fx-background-color: derive(#1db954, -15%);
+}</code></pre>
+        </div>
+
+        <div class="concept-card">
+          <h3><code>ladder(color, stops...)</code></h3>
+          <p class="small">Selecciona automáticamente un color contrastante según la luminosidad del fondo. Es el truco que usa el tema oficial Modena para cambiar texto entre blanco y negro.</p>
+          <pre class="code-block"><code class="language-css">/* Si el fondo es oscuro usa blanco; si es claro usa negro */
+.smart-label {
+    -fx-background-color: #333333;
+    -fx-text-fill: ladder(
+        -fx-background-color,
+        white 49%,
+        black 50%
+    );
+}</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <!-- EJEMPLO COMPLETO ESTILO SPOTIFY / DARK MODE -->
+    <div class="concept-card" style="margin-top:36px;">
+      <h3>🎧 Ejemplo Práctico Integrado: Hoja de Estilo Completa (<code>styles.css</code>)</h3>
+      <p class="small">Revisa cómo conviven todas estas propiedades en una interfaz moderna real de JavaFX:</p>
+      <pre class="code-block"><code class="language-css">/* 1. Raíz de la aplicación: fondo oscuro y fuente global */
+.root {
+    -fx-background-color: #121212;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    -fx-font-size: 14px;
+}
+
+/* 2. Títulos y etiquetas */
+.title-label {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1db954;
+}
+
+.subtitle-label {
+    -fx-text-fill: #b3b3b3;
+}
+
+/* 3. Inputs de formulario con placeholder */
+.text-field {
+    -fx-background-color: #282828;
+    -fx-text-fill: #ffffff;
+    -fx-prompt-text-fill: #777777;
+    -fx-border-color: #3e3e3e;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 8 12;
+}
+
+.text-field:focused {
+    -fx-border-color: #1db954;
+    -fx-border-width: 2;
+}
+
+/* 4. Botón interactivo con hover y pressed */
+.btn-primary {
+    -fx-background-color: #1db954;
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-background-radius: 20;
+    -fx-padding: 10 24;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.3), 8, 0, 0, 2);
+}
+
+.btn-primary:hover {
+    -fx-background-color: derive(#1db954, 15%);
+}
+
+.btn-primary:pressed {
+    -fx-background-color: derive(#1db954, -15%);
+}
+
+/* 5. Área de texto y listas con fondo interior oscuro */
+.text-area {
+    -fx-control-inner-background: #1e1e1e;
+    -fx-text-fill: #e0e0e0;
+    -fx-border-color: #3e3e3e;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-font-family: "JetBrains Mono", Consolas, monospace;
+}</code></pre>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <div style="margin-top:60px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+      <div style="font-size:42px; margin-bottom:12px;">🛸</div>
+      <h3>Guía JavaFX CSS — Plataforma Docente 2026</h3>
+      <p class="lead" style="margin:0 auto;">Desarrollo Orientado a Objetos · Duoc UC · Profe Carlitos (HachiMaki-dev)</p>
+      <div style="margin-top:16px;">
+        <a href="../../index.html" class="cs-tab-btn" style="text-decoration:none; display:inline-block;">← Volver al Portal Principal</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const { createApp } = Vue;
+
+const ALL_PROPERTIES = [
+  // TEXTO Y FUENTES
+  { web: "color: #ffffff;", fx: "-fx-text-fill", name: "Color del texto", desc: "Color de los caracteres. En JavaFX 'color' NO existe.", example: "-fx-text-fill: #1db954;", alert: "DIFERENCIA CRÍTICA", category: "texto" },
+  { web: "font-family: Arial;", fx: "-fx-font-family", name: "Familia tipográfica", desc: "Nombre de la fuente tipográfica instalada o cargada.", example: "-fx-font-family: 'Segoe UI';", category: "texto" },
+  { web: "font-size: 16px;", fx: "-fx-font-size", name: "Tamaño de fuente", desc: "Altura de la letra en px o pt.", example: "-fx-font-size: 16px;", category: "texto" },
+  { web: "font-weight: bold;", fx: "-fx-font-weight", name: "Grosor tipográfico", desc: "Peso visual: normal, bold, bolder, 100..900.", example: "-fx-font-weight: bold;", category: "texto" },
+  { web: "font-style: italic;", fx: "-fx-font-style", name: "Estilo cursiva", desc: "Inclinación: normal, italic, oblique.", example: "-fx-font-style: italic;", category: "texto" },
+  { web: "text-align: center;", fx: "-fx-alignment", name: "Alineación de texto e icono", desc: "Alinea el texto dentro de la caja de un Label o Botón.", example: "-fx-alignment: center;", category: "texto" },
+  { web: "text-decoration: underline;", fx: "-fx-underline", name: "Subrayado", desc: "Dibuja línea inferior. En JavaFX es booleano.", example: "-fx-underline: true;", category: "texto" },
+  { web: "text-decoration: line-through;", fx: "-fx-strikethrough", name: "Texto tachado", desc: "Tacha el texto horizontalmente. Valor booleano.", example: "-fx-strikethrough: true;", category: "texto" },
+  { web: "white-space: normal;", fx: "-fx-wrap-text", name: "Salto de línea automático", desc: "Permite que el texto baje a la siguiente línea si desborda.", example: "-fx-wrap-text: true;", category: "texto" },
+  { web: "text-overflow: ellipsis;", fx: "-fx-ellipsis-string", name: "Carácter de recorte", desc: "Símbolo mostrado cuando el texto se recorta.", example: "-fx-ellipsis-string: '...';", category: "texto" },
+  { web: "gap: 8px; (icono-texto)", fx: "-fx-graphic-text-gap", name: "Separación gráfico y texto", desc: "Espacio en px entre el icono adjunto y las letras.", example: "-fx-graphic-text-gap: 8;", category: "texto" },
+  { web: "flex-direction (icono/texto)", fx: "-fx-content-display", name: "Posición del gráfico", desc: "Ubicación del gráfico respecto al texto (left, right, top, bottom, etc.).", example: "-fx-content-display: left;", category: "texto" },
+
+  // FONDOS
+  { web: "background-color: #282828;", fx: "-fx-background-color", name: "Color de fondo sólido", desc: "Tinte o color de relleno base de la región.", example: "-fx-background-color: #282828;", category: "fondos" },
+  { web: "border-radius: 8px; (fondo)", fx: "-fx-background-radius", name: "Radio de curvatura del fondo", desc: "Redondea las 4 esquinas del relleno de fondo.", example: "-fx-background-radius: 8;", alert: "SEPARADO DE BORDES", category: "fondos" },
+  { web: "linear-gradient(...)", fx: "-fx-background-color: linear-gradient(...)", name: "Gradiente lineal", desc: "Transición suave de color en un eje.", example: "linear-gradient(to bottom, #1db954, #191414);", category: "fondos" },
+  { web: "radial-gradient(...)", fx: "-fx-background-color: radial-gradient(...)", name: "Gradiente radial", desc: "Transición circular de color desde un punto.", example: "radial-gradient(center 50% 50%, radius 50%, #fff, #000);", category: "fondos" },
+  { web: "padding-box / insets", fx: "-fx-background-insets", name: "Márgenes del fondo", desc: "Desplazamiento del dibujo de fondo respecto al nodo.", example: "-fx-background-insets: 0, 1 1 1 1;", category: "fondos" },
+  { web: "background-image: url(...);", fx: "-fx-background-image", name: "Imagen de fondo", desc: "Carga un mapa de bits como fondo.", example: "-fx-background-image: url('foto.png');", category: "fondos" },
+  { web: "background-repeat: no-repeat;", fx: "-fx-background-repeat", name: "Repetición de imagen", desc: "Modo mosaico (repeat-x, repeat-y, no-repeat, stretch).", example: "-fx-background-repeat: no-repeat;", category: "fondos" },
+  { web: "background-position: center;", fx: "-fx-background-position", name: "Posición de imagen", desc: "Alineación de la imagen de fondo en la región.", example: "-fx-background-position: center center;", category: "fondos" },
+  { web: "background-size: cover;", fx: "-fx-background-size", name: "Tamaño de imagen", desc: "Ajuste de dimensiones (cover, contain, 100% 100%).", example: "-fx-background-size: cover;", category: "fondos" },
+
+  // BORDES
+  { web: "border-color: #333;", fx: "-fx-border-color", name: "Color del borde", desc: "Color del marco exterior (1 a 4 lados).", example: "-fx-border-color: #333333;", category: "bordes" },
+  { web: "border-width: 2px;", fx: "-fx-border-width", name: "Grosor del borde", desc: "Ancho del trazo perimetral en píxeles.", example: "-fx-border-width: 2;", category: "bordes" },
+  { web: "border-style: solid;", fx: "-fx-border-style", name: "Estilo del borde", desc: "Tipo de trazo: solid, dashed, dotted, none.", example: "-fx-border-style: dashed;", category: "bordes" },
+  { web: "border-radius: 8px; (borde)", fx: "-fx-border-radius", name: "Radio de esquinas del borde", desc: "Curva del trazo de borde. Combínalo con background-radius.", example: "-fx-border-radius: 8;", category: "bordes" },
+  { web: "outline-offset", fx: "-fx-border-insets", name: "Margen del borde", desc: "Separación del borde con respecto al límite de caja.", example: "-fx-border-insets: 0;", category: "bordes" },
+  { web: "border-image-source: url(...);", fx: "-fx-border-image-source", name: "Imagen de marco", desc: "Usa un gráfico para construir el borde (9-slice).", example: "-fx-border-image-source: url('frame.png');", category: "bordes" },
+
+  // CAJA Y LAYOUT
+  { web: "padding: 12px 16px;", fx: "-fx-padding", name: "Relleno interno", desc: "Espacio interior entre el contenido y los bordes.", example: "-fx-padding: 12 16;", category: "caja" },
+  { web: "gap: 12px;", fx: "-fx-spacing", name: "Espaciado entre nodos hijos", desc: "Separación fija entre elementos de un VBox o HBox.", example: "-fx-spacing: 12;", category: "caja" },
+  { web: "column-gap: 10px;", fx: "-fx-hgap", name: "Separación horizontal", desc: "Espacio horizontal entre columnas de un GridPane.", example: "-fx-hgap: 10;", category: "caja" },
+  { web: "row-gap: 10px;", fx: "-fx-vgap", name: "Separación vertical", desc: "Espacio vertical entre filas de un GridPane.", example: "-fx-vgap: 10;", category: "caja" },
+  { web: "width: 250px;", fx: "-fx-pref-width", name: "Ancho preferido", desc: "Ancho ideal que solicita el nodo al layout.", example: "-fx-pref-width: 250;", category: "caja" },
+  { web: "height: 40px;", fx: "-fx-pref-height", name: "Alto preferido", desc: "Alto ideal que solicita el nodo al layout.", example: "-fx-pref-height: 40;", category: "caja" },
+  { web: "min-width / min-height", fx: "-fx-min-width / -fx-min-height", name: "Dimensiones mínimas", desc: "Tamaño mínimo incompresible del nodo.", example: "-fx-min-width: 100;", category: "caja" },
+  { web: "max-width / max-height", fx: "-fx-max-width / -fx-max-height", name: "Dimensiones máximas", desc: "Límite máximo de expansión horizontal o vertical.", example: "-fx-max-width: 400;", category: "caja" },
+  { web: "justify-content / align-items", fx: "-fx-alignment", name: "Alineación del contenedor", desc: "Disposición de los nodos internos (center, top-left, etc.).", example: "-fx-alignment: center;", category: "caja" },
+
+  // FORMULARIOS E INPUTS
+  { web: "input::placeholder", fx: "-fx-prompt-text-fill", name: "Color del placeholder", desc: "Color del texto de sugerencia cuando el campo está vacío.", example: "-fx-prompt-text-fill: #777777;", category: "inputs" },
+  { web: "::selection { background: ... }", fx: "-fx-highlight-fill", name: "Fondo de selección de texto", desc: "Color del resalte de texto seleccionado con el ratón.", example: "-fx-highlight-fill: #1db954;", category: "inputs" },
+  { web: "::selection { color: ... }", fx: "-fx-highlight-text-fill", name: "Letra de texto seleccionado", desc: "Color de los glifos dentro del texto seleccionado.", example: "-fx-highlight-text-fill: #ffffff;", category: "inputs" },
+  { web: "background en textarea / list", fx: "-fx-control-inner-background", name: "Fondo interno de controles", desc: "Color del lienzo de escritura de TextArea, ListView y TableView.", example: "-fx-control-inner-background: #282828;", alert: "DARK MODE", category: "inputs" },
+  { web: "caret-color: #1db954;", fx: "-fx-caret-color", name: "Color del cursor de inserción", desc: "Tinte de la barra parpadeante de texto.", example: "-fx-caret-color: #1db954;", category: "inputs" },
+  { web: "checkbox mark", fx: "-fx-mark-color", name: "Color del check", desc: "Color del ticket dentro del recuadro del CheckBox.", example: "-fx-mark-color: #ffffff;", category: "inputs" },
+
+  // EFECTOS Y CURSOR
+  { web: "cursor: pointer;", fx: "-fx-cursor: hand;", name: "Puntero de mouse 'mano'", desc: "Mano que indica elemento clicable. En JavaFX es 'hand'.", example: "-fx-cursor: hand;", alert: "HAND NO POINTER", category: "efectos" },
+  { web: "opacity: 0.8;", fx: "-fx-opacity", name: "Opacidad global", desc: "Nivel de transparencia entre 0.0 y 1.0.", example: "-fx-opacity: 0.8;", category: "efectos" },
+  { web: "box-shadow: 0 4px 8px #000;", fx: "-fx-effect: dropshadow(...)", name: "Sombra exterior (Drop Shadow)", desc: "Proyecta una sombra difuminada detrás del nodo.", example: "dropshadow(three-pass-box, rgba(0,0,0,0.4), 10, 0, 0, 4);", category: "efectos" },
+  { web: "box-shadow: inset ...", fx: "-fx-effect: innershadow(...)", name: "Sombra interior", desc: "Proyecta sombra hacia adentro para efecto hundido.", example: "innershadow(gaussian, rgba(0,0,0,0.5), 8, 0, 0, 0);", category: "efectos" },
+  { web: "filter: blur(4px);", fx: "-fx-effect: gaussian-blur(...)", name: "Desenfoque gaussiano", desc: "Aplica filtro de desenfoque al elemento.", example: "-fx-effect: gaussian-blur(4);", category: "efectos" },
+  { web: "transform: scale(1.1);", fx: "-fx-scale-x / -fx-scale-y", name: "Escalado", desc: "Multiplica el tamaño del nodo por un factor.", example: "-fx-scale-x: 1.05; -fx-scale-y: 1.05;", category: "efectos" },
+  { web: "transform: rotate(45deg);", fx: "-fx-rotate", name: "Rotación", desc: "Giro en grados sexagesimales (sin escribir 'deg').", example: "-fx-rotate: 45;", category: "efectos" },
+  { web: "transform: translate(...);", fx: "-fx-translate-x / -fx-translate-y", name: "Desplazamiento", desc: "Mueve el nodo en X o Y sin afectar a los hermanos.", example: "-fx-translate-x: 10; -fx-translate-y: 5;", category: "efectos" },
+
+  // ESTADOS Y PSEUDO-CLASES
+  { web: ":hover", fx: ":hover", name: "Al pasar el cursor encima", desc: "Se activa mientras el cursor del ratón está sobre el control.", example: ".button:hover { -fx-background-color: #1ed760; }", category: "estados" },
+  { web: ":active", fx: ":pressed / :armed", name: "Al hacer clic / mantener pulsado", desc: "Se activa cuando el usuario tiene presionado el botón del mouse.", example: ".button:pressed { -fx-background-color: #169c46; }", category: "estados" },
+  { web: ":focus", fx: ":focused", name: "Elemento con foco", desc: "Se activa cuando el campo o control tiene el foco activo.", example: ".text-field:focused { -fx-border-color: #1db954; }", alert: "CON D FINAL", category: "estados" },
+  { web: ":disabled", fx: ":disabled", name: "Control inhabilitado", desc: "Aplica cuando node.setDisable(true) está activo.", example: ".button:disabled { -fx-opacity: 0.4; }", category: "estados" },
+  { web: ":checked", fx: ":selected", name: "Opción seleccionada", desc: "Para CheckBox, RadioButton o pestañas activas.", example: ".check-box:selected > .box { -fx-background-color: #1db954; }", category: "estados" },
+  { web: "body / :root", fx: ".root", name: "Nodo raíz de la escena", desc: "Selector del contenedor principal de la aplicación JavaFX.", example: ".root { -fx-background-color: #121212; }", alert: "CLASE .ROOT", category: "estados" },
+
+  // FUNCIONES ESPECIALES
+  { web: "color-mix / ajuste luminosidad", fx: "derive(color, porcentaje)", name: "Ajustar luminosidad relativa", desc: "Aclara (+) u oscurece (-) un color existente sin recalcular hexadecimales.", example: "-fx-background-color: derive(#1db954, 20%);", category: "funciones" },
+  { web: "contraste dinámico", fx: "ladder(color, stops...)", name: "Contraste dinámico automático", desc: "Alterna el color de texto entre claro u oscuro según la luz del fondo.", example: "-fx-text-fill: ladder(-fx-background-color, white 49%, black 50%);", category: "funciones" }
+];
+
+createApp({
+  data() {
+    return {
+      currentTab: 'todos',
+      searchQuery: '',
+      properties: ALL_PROPERTIES
+    };
+  },
+  computed: {
+    allPropsCount() {
+      return this.properties.length;
+    },
+    filteredList() {
+      const q = this.searchQuery.trim().toLowerCase();
+      if (!q) return [];
+      return this.properties.filter(p => 
+        p.web.toLowerCase().includes(q) ||
+        p.fx.toLowerCase().includes(q) ||
+        p.name.toLowerCase().includes(q) ||
+        p.desc.toLowerCase().includes(q) ||
+        p.example.toLowerCase().includes(q)
+      );
+    }
+  },
+  mounted() {
+    this.highlightCode();
+  },
+  watch: {
+    currentTab() {
+      this.$nextTick(() => this.highlightCode());
+    },
+    searchQuery() {
+      this.$nextTick(() => this.highlightCode());
+    }
+  },
+  methods: {
+    highlightCode() {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code:not(.hljs)').forEach(block => {
+          hljs.highlightElement(block);
+        });
+      }
+    }
+  }
+}).mount('#app');
+</script>
+</body>
+</html>
