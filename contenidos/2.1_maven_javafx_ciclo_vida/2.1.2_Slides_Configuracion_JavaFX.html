@@ -3,34 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Configuración JavaFX — Java OOP · Profe Carlitos</title>
-  <meta name="description" content="Presentación: Configuración de JavaFX, controles básicos y CSS — Desarrollo Orientado a Objetos">
+  <title>Estructura y Jerarquía JavaFX — Java OOP · Profe Carlitos</title>
+  <meta name="description" content="Presentación: Estructura y jerarquía de una interfaz JavaFX — Application, Stage, Scene, Node y Layouts — Desarrollo Orientado a Objetos">
   <link rel="stylesheet" href="../../shared/fonts.css">
   <link rel="stylesheet" href="../../shared/styles.css">
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/css.min.js"></script>
   <style>
     body { overflow: hidden; }
+
+    /* Diagram boxes */
     .diagram-box {
       display: inline-block;
       border: 2px solid var(--ink);
       border-radius: var(--radius-md);
-      padding: 12px 20px;
+      padding: 10px 18px;
       margin: 4px;
       font-family: var(--font-mono);
       font-size: 14px;
       font-weight: 600;
       text-align: center;
-      min-width: 140px;
+      min-width: 130px;
     }
     .diagram-box.parent { background: var(--pastel-lavanda); }
-    .diagram-box.child { background: var(--pastel-celeste); }
-    .diagram-box.alt { background: var(--pastel-menta); }
-    .diagram-box.warn { background: var(--pastel-durazno); }
+    .diagram-box.child  { background: var(--pastel-celeste); }
+    .diagram-box.alt    { background: var(--pastel-menta); }
+    .diagram-box.warn   { background: var(--pastel-durazno); }
+    .diagram-box.rosa   { background: var(--pastel-rosa); }
+    .diagram-box.stage  { background: #E8E0F0; border-color: #6C5B8A; }
+    .diagram-box.scene  { background: #D6EAF8; border-color: #2471A3; }
+    .diagram-box.node   { background: #D4EDDA; border-color: #2D6A4F; }
+
     .diagram-arrow {
       display: block;
       text-align: center;
@@ -40,63 +45,198 @@
     }
     .diagram-row {
       display: flex;
-      gap: 12px;
+      gap: 10px;
       justify-content: center;
       flex-wrap: wrap;
     }
-    .ui-preview {
-      background: #191414;
-      border: 2px solid #333;
+
+    /* Hierarchy tree */
+    .hierarchy {
+      background: var(--bg-muted);
+      border: 2px solid var(--line);
       border-radius: var(--radius-md);
-      padding: 24px;
-      color: #fff;
-      font-family: var(--font-main);
-      max-width: 500px;
+      padding: 20px 24px;
+      max-width: 640px;
       margin: 16px auto;
-    }
-    .ui-preview .ui-label { color: #b3b3b3; font-size: 13px; margin-bottom: 4px; }
-    .ui-preview .ui-input {
-      background: #333;
-      border: none;
-      border-radius: 4px;
-      padding: 8px 12px;
-      color: #fff;
-      width: 100%;
+      font-family: var(--font-mono);
       font-size: 14px;
-      margin-bottom: 12px;
-      box-sizing: border-box;
+      line-height: 2;
     }
-    .ui-preview .ui-btn {
-      background: #1db954;
-      color: #fff;
-      border: none;
-      border-radius: 20px;
-      padding: 10px 24px;
+    .hierarchy .h-label {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 6px;
       font-weight: 700;
-      font-size: 14px;
-      cursor: pointer;
+      font-size: 13px;
+      margin-left: 4px;
     }
-    .ui-preview h3 { color: #1db954; margin: 0 0 16px; font-size: 20px; }
-    .method-table {
+    .h-app    { background: var(--pastel-durazno); color: var(--accent-durazno); }
+    .h-stage  { background: var(--pastel-lavanda); color: var(--accent-lavanda); }
+    .h-scene  { background: var(--pastel-celeste); color: var(--accent-celeste); }
+    .h-node   { background: var(--pastel-menta); color: var(--accent-menta); }
+    .h-ctrl   { background: var(--pastel-rosa); color: var(--accent-rosa); }
+
+    /* TV analogy demo */
+    .tv-demo {
+      border: 4px solid #333;
+      border-radius: 12px;
+      background: #191414;
+      padding: 20px;
+      max-width: 420px;
+      margin: 16px auto;
+      text-align: center;
+      color: #fff;
+      position: relative;
+    }
+    .tv-label {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--bg);
+      padding: 0 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .tv-content {
+      border: 2px dashed #1db954;
+      border-radius: 8px;
+      padding: 16px;
+      position: relative;
+    }
+    .tv-content-label {
+      position: absolute;
+      top: -10px;
+      left: 12px;
+      background: #191414;
+      padding: 0 6px;
+      font-size: 12px;
+      color: #1db954;
+      font-weight: 700;
+    }
+
+    /* Layout demos */
+    .layout-demo {
+      border: 2px solid var(--ink);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      background: var(--bg-muted);
+      max-width: 500px;
+      margin: 12px auto;
+    }
+    .layout-demo .demo-item {
+      background: var(--pastel-celeste);
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      padding: 8px 14px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .layout-demo .demo-label {
+      background: var(--pastel-lavanda);
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .layout-demo-label {
+      text-align: center;
+      margin-bottom: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      color: var(--ink-muted);
+    }
+    .layout-vbox { display: flex; flex-direction: column; gap: 8px; }
+    .layout-hbox { display: flex; flex-direction: row; gap: 8px; }
+    .layout-grid { display: grid; grid-template-columns: auto 1fr; gap: 8px; align-items: center; }
+
+    /* BorderPane demo */
+    .bp-demo {
+      display: grid;
+      grid-template-areas: "top top top" "left center right" "bottom bottom bottom";
+      grid-template-columns: auto 1fr auto;
+      grid-template-rows: auto 1fr auto;
+      gap: 4px;
+      min-height: 200px;
+    }
+    .bp-top    { grid-area: top; background: var(--pastel-lavanda); }
+    .bp-left   { grid-area: left; background: var(--pastel-celeste); }
+    .bp-center { grid-area: center; background: var(--pastel-menta); }
+    .bp-right  { grid-area: right; background: var(--pastel-rosa); }
+    .bp-bottom { grid-area: bottom; background: var(--pastel-durazno); }
+    .bp-top, .bp-left, .bp-center, .bp-right, .bp-bottom {
+      border: 1px solid var(--ink);
+      border-radius: 6px;
+      padding: 8px 14px;
+      text-align: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* StackPane demo */
+    .sp-demo {
+      position: relative;
+      width: 240px;
+      height: 160px;
+      margin: 0 auto;
+    }
+    .sp-layer {
+      position: absolute;
+      border: 2px solid var(--ink);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .sp-back {
+      inset: 0;
+      background: var(--pastel-celeste);
+    }
+    .sp-mid {
+      inset: 20px;
+      background: var(--pastel-lavanda);
+    }
+    .sp-front {
+      inset: 40px;
+      background: var(--pastel-menta);
+    }
+
+    /* Decision table */
+    .decision-table {
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
       margin-top: 12px;
     }
-    .method-table th, .method-table td {
+    .decision-table th, .decision-table td {
       border: 1px solid var(--line);
       padding: 8px 12px;
       text-align: left;
     }
-    .method-table th {
+    .decision-table th {
       background: var(--bg-muted);
       font-weight: 700;
     }
-    .method-table tr:nth-child(even) td {
+    .decision-table tr:nth-child(even) td {
       background: var(--bg-soft);
     }
+
     @media (max-width: 760px) {
-      .ui-preview { max-width: 100%; }
+      .tv-demo { max-width: 100%; }
+      .layout-demo { max-width: 100%; }
+      .bp-demo { min-height: 150px; }
     }
   </style>
 </head>
@@ -104,7 +244,7 @@
 <div id="app" class="app">
 
 <header class="topbar">
-  <div class="topbar-brand"><span class="alien">👽</span> Java · Configuración JavaFX</div>
+  <div class="topbar-brand"><span class="alien">👽</span> Java · Estructura JavaFX</div>
   <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
   <div class="progress-bar" :style="{width: ((current+1)/total*100)+'%'}"></div>
 </header>
@@ -115,420 +255,539 @@
 <!-- SLIDE 0: PORTADA -->
 <!-- ============================================== -->
 <section v-if="current===0" data-slide class="slide">
-  <div class="kicker">Unidad 2.1 · Configuración JavaFX</div>
-  <h1 style="font-size:clamp(36px,5vw,56px);">JavaFX</h1>
-  <p class="lead">De la consola a la ventana: tu primera interfaz gráfica en Java.</p>
+  <div class="kicker">Unidad 2.1 · Estructura JavaFX</div>
+  <h1 style="font-size:clamp(34px,5vw,54px);">Estructura y Jerarquía<br>de JavaFX</h1>
+  <p class="lead">Antes de escribir código, entiende cómo se arma una interfaz gráfica en JavaFX: qué piezas existen, qué hace cada una y cómo encajan entre sí.</p>
   <div style="font-size:64px; margin-top:24px;">🛸</div>
 </section>
 
 <!-- ============================================== -->
-<!-- SLIDE 1: PUENTE CON LO ANTERIOR -->
+<!-- SLIDE 1: EL CAMBIO MENTAL -->
 <!-- ============================================== -->
 <section v-else-if="current===1" data-slide class="slide">
   <div class="kicker">Puente</div>
-  <h2>Lo que ya sabes vs. lo que viene</h2>
-  <p>Hasta ahora trabajaste con aplicaciones de <strong>consola</strong>: texto que entra por teclado y sale por pantalla. Ahora vamos a crear aplicaciones con <strong>ventanas</strong>.</p>
+  <h2>El cambio mental: de consola a ventana</h2>
+  <p>Hasta ahora tu programa era una <strong>secuencia lineal</strong>: el código se ejecuta línea por línea, el usuario ingresa datos por teclado, y el programa responde por pantalla.</p>
+  <p>Con JavaFX, tu programa <strong>arma una interfaz y espera</strong>. El usuario interactúa con botones, campos de texto y otros elementos, y el programa <strong>reacciona</strong> a esas acciones.</p>
 
   <div class="grid" style="margin-top:16px;">
     <div class="card card-lavanda">
-      <strong>Consola (lo que ya sabes)</strong>
-      <p><code>Scanner</code> para leer texto</p>
-      <p><code>System.out.println()</code> para mostrar</p>
-      <p>Menú con <code>switch</code></p>
+      <strong>Consola (antes)</strong>
+      <p>El programa controla el flujo</p>
+      <p><code>Scanner</code> lee, <code>println</code> escribe</p>
       <p>Todo es texto, línea por línea</p>
+      <p>Secuencial: paso 1 → paso 2 → paso 3</p>
     </div>
     <div class="card card-menta">
-      <strong>JavaFX (lo que viene)</strong>
-      <p><code>TextField</code> para que el usuario escriba</p>
-      <p><code>Label</code> para mostrar texto</p>
-      <p><code>Button</code> para acciones</p>
-      <p>Interfaz visual con diseño</p>
+      <strong>JavaFX (ahora)</strong>
+      <p>El usuario controla el flujo</p>
+      <p>Hace clic, escribe, selecciona</p>
+      <p>La interfaz es visual: ventana con controles</p>
+      <p>Reactivo: "cuando pase X, haz Y"</p>
     </div>
   </div>
 
   <div class="callout callout-celeste" style="margin-top:16px;">
-    <p style="margin:0;"><strong>Buena noticia:</strong> La lógica de tu programa (clases, ArrayList, constructores) no cambia. Solo cambia <em>cómo</em> el usuario interactúa con tu aplicación.</p>
+    <p style="margin:0;"><strong>Tu lógica (clases, ArrayList, constructores) no cambia.</strong> Solo cambia cómo se presenta al usuario. Por eso necesitas entender primero la estructura de una interfaz JavaFX antes de escribir código.</p>
   </div>
 </section>
 
 <!-- ============================================== -->
-<!-- SLIDE 2: QUÉ ES JAVAFX -->
+<!-- SLIDE 2: LA ANALOGÍA — EL TEATRO -->
 <!-- ============================================== -->
 <section v-else-if="current===2" data-slide class="slide">
-  <div class="kicker">Concepto</div>
-  <h2>¿Qué es JavaFX?</h2>
-  <p>JavaFX es el <strong>framework oficial</strong> para crear interfaces gráficas (GUI) en Java. Reemplazó a Swing, que era viejo y limitado visualmente.</p>
+  <div class="kicker">Concepto clave</div>
+  <h2>Analogía: una app JavaFX es como un teatro</h2>
+  <p>Para entender la estructura de JavaFX, piensa en un <strong>teatro</strong>:</p>
 
-  <div class="grid" style="margin-top:16px;">
-    <div class="card card-rosa">
-      <strong>Swing (antes) 👴</strong>
-      <p>Aspecto visual anticuado</p>
-      <p>No soporta CSS</p>
-      <p>Difícil de personalizar</p>
-      <p>Aún existe, pero ya no se recomienda para proyectos nuevos</p>
+  <div class="grid" style="margin-top:12px;">
+    <div class="card card-lavanda">
+      <strong>El teatro (edificio)</strong>
+      <p>= <code>Application</code></p>
+      <p>Es la estructura que lo hace funcionar. Abre las puertas, prepara todo, y al final cierra.</p>
+    </div>
+    <div class="card card-celeste">
+      <strong>El escenario (tarima)</strong>
+      <p>= <code>Stage</code></p>
+      <p>Es el marco físico donde ocurre la obra. En JavaFX, es la <strong>ventana</strong>.</p>
     </div>
     <div class="card card-menta">
-      <strong>JavaFX (ahora) 🚀</strong>
-      <p>Aspecto visual moderno</p>
-      <p>Soporta CSS para estilos</p>
-      <p>Controles modernos listos para usar</p>
-      <p>Es lo que la industria usa para Java de escritorio</p>
+      <strong>La obra (lo que se presenta)</strong>
+      <p>= <code>Scene</code></p>
+      <p>Es el contenido que se muestra en el escenario. Puedes cambiar de obra sin demoler el teatro.</p>
+    </div>
+    <div class="card card-durazno">
+      <strong>Los actores y utilería</strong>
+      <p>= <code>Node</code> (controles)</p>
+      <p>Botones, campos de texto, etiquetas. Cada pieza visible es un nodo.</p>
     </div>
   </div>
 
-  <div class="callout callout-lavanda" style="margin-top:12px;">
-    <p style="margin:0;">JavaFX no viene incluido en Java por defecto. Por eso necesitas Maven: para descargarlo como dependencia.</p>
+  <div class="callout callout-rosa" style="margin-top:12px;">
+    <p style="margin:0;">Esta analogía no es decorativa. Cada término (<code>Application</code>, <code>Stage</code>, <code>Scene</code>, <code>Node</code>) es una clase real de JavaFX que vas a usar en tu código.</p>
   </div>
 </section>
 
 <!-- ============================================== -->
-<!-- SLIDE 3: POM.XML PARA JAVAFX -->
+<!-- SLIDE 3: APPLICATION Y LAUNCH -->
 <!-- ============================================== -->
 <section v-else-if="current===3" data-slide class="slide">
-  <div class="kicker">Configuración</div>
-  <h2>El pom.xml para JavaFX</h2>
-  <p>Este es el <code>pom.xml</code> completo que necesitas. En la guía de actividad lo vas a copiar tal cual.</p>
+  <div class="kicker">Nivel 1</div>
+  <h2>Application y launch() — El punto de arranque</h2>
+  <p>Toda app JavaFX comienza con una clase que <strong>extiende <code>Application</code></strong>. Esta clase tiene un método especial: <code>start(Stage stage)</code>, que JavaFX llama automáticamente para que tú armes la interfaz.</p>
 
-  <pre class="code-block"><code class="language-xml">&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-         http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
-    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-
-    &lt;groupId&gt;com.spotify.mini&lt;/groupId&gt;
-    &lt;artifactId&gt;spotify-mini&lt;/artifactId&gt;
-    &lt;version&gt;1.0&lt;/version&gt;
-
-    &lt;properties&gt;
-        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
-        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
-        &lt;javafx.version&gt;21.0.2&lt;/javafx.version&gt;
-    &lt;/properties&gt;
-
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
-            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
-            &lt;version&gt;${javafx.version}&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-
-    &lt;build&gt;
-        &lt;plugins&gt;
-            &lt;plugin&gt;
-                &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
-                &lt;artifactId&gt;javafx-maven-plugin&lt;/artifactId&gt;
-                &lt;version&gt;0.0.8&lt;/version&gt;
-                &lt;configuration&gt;
-                    &lt;mainClass&gt;com.spotify.mini.SpotifyMiniApp&lt;/mainClass&gt;
-                &lt;/configuration&gt;
-            &lt;/plugin&gt;
-        &lt;/plugins&gt;
-    &lt;/build&gt;
-&lt;/project&gt;</code></pre>
-
-  <div class="callout callout-menta" style="margin-top:8px;">
-    <p style="margin:0;"><strong>No lo memorices.</strong> Solo entiende que: <code>javafx-controls</code> es la dependencia que trae los botones, labels, etc. El plugin <code>javafx-maven-plugin</code> le dice a Maven cómo ejecutar tu app JavaFX.</p>
-  </div>
-</section>
-
-<!-- ============================================== -->
-<!-- SLIDE 4: TU PRIMERA VENTANA -->
-<!-- ============================================== -->
-<section v-else-if="current===4" data-slide class="slide">
-  <div class="kicker">Primera ventana</div>
-  <h2>Tu primera ventana en JavaFX</h2>
-  <p>Este es el código mínimo para abrir una ventana vacía:</p>
-
-  <pre class="code-block"><code class="language-java">package com.spotify.mini;
-
-import javafx.application.Application;
-import javafx.scene.Scene;
-import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
-
-public class SpotifyMiniApp extends Application {
+  <pre class="code-block"><code class="language-java">public class MiApp extends Application {
 
     @Override
     public void start(Stage stage) {
-        VBox root = new VBox();                    // Contenedor principal
-        Scene scene = new Scene(root, 600, 400);   // Escena de 600x400 px
-        stage.setTitle("Spotify Mini");            // Título de la ventana
-        stage.setScene(scene);                     // Asignar la escena
-        stage.show();                              // Mostrar la ventana
+        // Aquí armas la interfaz y la muestras
     }
 
     public static void main(String[] args) {
-        launch(args);    // Arranca JavaFX
+        launch(args);   // Arranca el sistema JavaFX
     }
 }</code></pre>
 
   <div class="callout callout-celeste" style="margin-top:12px;">
-    <h4 style="margin:0 0 8px;">Línea por línea:</h4>
-    <p style="margin:0;">• Tu clase <strong>extiende</strong> <code>Application</code> — esto la convierte en una app JavaFX<br>
-    • <code>start(Stage stage)</code> — JavaFX llama a este método al iniciar. El <code>Stage</code> es la ventana<br>
-    • <code>VBox</code> — contenedor que apila elementos verticalmente<br>
-    • <code>Scene</code> — el contenido que se muestra dentro de la ventana<br>
-    • <code>launch(args)</code> — arranca todo el sistema JavaFX</p>
+    <h4 style="margin:0 0 8px;">¿Qué hace cada parte?</h4>
+    <p style="margin:0;">
+      • <code>extends Application</code> — Convierte tu clase en una app JavaFX. Sin esto, nada funciona.<br>
+      • <code>launch(args)</code> — Inicializa el motor de JavaFX y llama automáticamente a <code>start()</code>. Va siempre en el <code>main</code>.<br>
+      • <code>start(Stage stage)</code> — El método que <strong>tú</strong> escribes. JavaFX te entrega un <code>Stage</code> (ventana) listo para usar.
+    </p>
   </div>
 
-  <div class="callout callout-menta" style="margin-top:12px;">
-    <p style="margin:0;"><strong>¿Cómo se ejecuta?</strong> En la terminal con <code>mvn javafx:run</code>, o creando una clase <code>Main.java</code> con <code>SpotifyMiniApp.main(args);</code> para usar el botón "Run Java" / <code>F5</code> de VS Code. <em>(Nota: si ves un aviso de "unnamed module" en la terminal, es solo una advertencia inofensiva de JavaFX, no un error).</em></p>
+  <div class="callout callout-durazno" style="margin-top:8px;">
+    <p style="margin:0;"><strong>Regla:</strong> Nunca creas un <code>Stage</code> con <code>new Stage()</code> para tu ventana principal. JavaFX te lo entrega como parámetro de <code>start()</code>.</p>
   </div>
 </section>
 
 <!-- ============================================== -->
-<!-- SLIDE 5: LABEL -->
+<!-- SLIDE 4: STAGE — LA VENTANA -->
+<!-- ============================================== -->
+<section v-else-if="current===4" data-slide class="slide">
+  <div class="kicker">Nivel 2</div>
+  <h2>Stage — La ventana</h2>
+  <p>El <code>Stage</code> es la <strong>ventana del sistema operativo</strong>: tiene barra de título, botones de minimizar/maximizar/cerrar, y un espacio interior donde se muestra el contenido.</p>
+
+  <div class="tv-demo">
+    <span class="tv-label">Stage (ventana)</span>
+    <div style="margin:12px 0 8px; font-size:14px; color:#b3b3b3;">
+      Barra de título: "Mi Aplicación"<br>
+      Tamaño, posición, ícono
+    </div>
+    <div class="tv-content">
+      <span class="tv-content-label">← aquí va la Scene</span>
+      <div style="margin-top:8px; font-size:13px; color:#999;">
+        (el contenido visual)
+      </div>
+    </div>
+  </div>
+
+  <p>El <code>Stage</code> controla propiedades de la <strong>ventana</strong>, no del contenido:</p>
+
+  <pre class="code-block"><code class="language-java">stage.setTitle("Spotify Mini");      // Título en la barra
+stage.setWidth(600);                  // Ancho de la ventana
+stage.setHeight(400);                 // Alto de la ventana
+stage.setResizable(false);            // Impedir que el usuario cambie el tamaño
+stage.show();                         // Mostrar la ventana</code></pre>
+
+  <div class="callout callout-menta" style="margin-top:8px;">
+    <p style="margin:0;"><strong>El Stage es solo el marco.</strong> Sin una <code>Scene</code> asignada, la ventana aparece vacía. La relación es: <code>stage.setScene(scene)</code>.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 5: SCENE — EL CONTENIDO -->
 <!-- ============================================== -->
 <section v-else-if="current===5" data-slide class="slide">
-  <div class="kicker">Controles básicos</div>
-  <h2>Label — Mostrar texto</h2>
-  <p>Un <code>Label</code> muestra texto en la ventana. Es el equivalente visual de <code>System.out.println()</code>.</p>
+  <div class="kicker">Nivel 3</div>
+  <h2>Scene — El contenido de la ventana</h2>
+  <p>La <code>Scene</code> es <strong>todo lo que ves dentro</strong> de la ventana. Para crearla, necesitas darle un <strong>nodo raíz</strong> (root): el contenedor que albergará todos los demás elementos.</p>
 
-  <pre class="code-block"><code class="language-java">import javafx.scene.control.Label;
+  <pre class="code-block"><code class="language-java">VBox root = new VBox();                      // Nodo raíz (contenedor)
+Scene scene = new Scene(root, 600, 400);     // Scene con tamaño 600x400
 
-// Crear un label
-Label titulo = new Label("Spotify Mini 🎧");
-Label subtitulo = new Label("Gestiona tu colección de canciones");
-
-// Agregar al contenedor
-VBox root = new VBox(10);    // 10 = espacio entre elementos
-root.getChildren().addAll(titulo, subtitulo);</code></pre>
-
-  <div class="ui-preview" style="margin-top:16px;">
-    <h3>Spotify Mini 🎧</h3>
-    <div style="color:#b3b3b3; font-size:14px;">Gestiona tu colección de canciones</div>
-  </div>
-
-  <div class="callout callout-menta" style="margin-top:12px;">
-    <p style="margin:0;"><strong>Patrón:</strong> Crear el control → Agregarlo al contenedor con <code>getChildren().add()</code> o <code>addAll()</code>. Este patrón se repite para todos los controles.</p>
-  </div>
-</section>
-
-<!-- ============================================== -->
-<!-- SLIDE 6: BUTTON -->
-<!-- ============================================== -->
-<section v-else-if="current===6" data-slide class="slide">
-  <div class="kicker">Controles básicos</div>
-  <h2>Button — Ejecutar acciones</h2>
-  <p>Un <code>Button</code> ejecuta código cuando el usuario hace clic. Es el reemplazo del menú <code>switch</code> de la consola.</p>
-
-  <pre class="code-block"><code class="language-java">import javafx.scene.control.Button;
-
-// Crear un botón
-Button btnAgregar = new Button("Agregar Canción");
-
-// Definir qué pasa al hacer clic
-btnAgregar.setOnAction(e -> {
-    System.out.println("Botón clickeado!");
-    // Aquí irá la lógica real
-});</code></pre>
-
-  <div class="callout callout-lavanda" style="margin-top:16px;">
-    <h4 style="margin:0 0 8px;">¿Qué es <code>e -> { ... }</code>?</h4>
-    <p style="margin:0;">Es una <strong>expresión lambda</strong> — una forma corta de escribir "cuando ocurra el evento, ejecuta este código". La <code>e</code> es el evento (no lo usamos por ahora, pero debe estar).</p>
-  </div>
-
-  <div class="ui-preview" style="margin-top:12px;">
-    <button class="ui-btn">Agregar Canción</button>
-  </div>
-</section>
-
-<!-- ============================================== -->
-<!-- SLIDE 7: TEXTFIELD -->
-<!-- ============================================== -->
-<section v-else-if="current===7" data-slide class="slide">
-  <div class="kicker">Controles básicos</div>
-  <h2>TextField — Entrada de texto</h2>
-  <p>Un <code>TextField</code> permite al usuario escribir texto. Es el reemplazo de <code>Scanner</code>.</p>
-
-  <pre class="code-block"><code class="language-java">import javafx.scene.control.TextField;
-
-// Crear campo de texto
-TextField txtTitulo = new TextField();
-txtTitulo.setPromptText("Nombre de la canción");  // Texto gris de ayuda
-
-// Obtener lo que el usuario escribió
-String titulo = txtTitulo.getText();
-
-// Limpiar el campo después de usarlo
-txtTitulo.clear();</code></pre>
-
-  <div class="ui-preview" style="margin-top:16px;">
-    <div class="ui-label">Nombre de la canción</div>
-    <input class="ui-input" placeholder="Nombre de la canción" disabled>
-  </div>
-
-  <table class="method-table" style="margin-top:16px;">
-    <thead>
-      <tr><th>Método</th><th>Descripción</th></tr>
-    </thead>
-    <tbody>
-      <tr><td><code>getText()</code></td><td>Obtiene el texto que escribió el usuario</td></tr>
-      <tr><td><code>setText("texto")</code></td><td>Establece el texto del campo por código</td></tr>
-      <tr><td><code>setPromptText("...")</code></td><td>Texto gris de ayuda que se muestra cuando el campo está vacío</td></tr>
-      <tr><td><code>clear()</code></td><td>Borra el contenido del campo</td></tr>
-    </tbody>
-  </table>
-</section>
-
-<!-- ============================================== -->
-<!-- SLIDE 8: JUNTANDO TODO -->
-<!-- ============================================== -->
-<section v-else-if="current===8" data-slide class="slide">
-  <div class="kicker">Ejemplo completo</div>
-  <h2>Juntando Label + TextField + Button</h2>
-
-  <pre class="code-block"><code class="language-java">@Override
-public void start(Stage stage) {
-    // Controles
-    Label titulo = new Label("Spotify Mini 🎧");
-    TextField txtCancion = new TextField();
-    txtCancion.setPromptText("Nombre de la canción");
-    Button btnAgregar = new Button("Agregar");
-
-    // Evento del botón
-    btnAgregar.setOnAction(e -> {
-        String cancion = txtCancion.getText();
-        System.out.println("Canción agregada: " + cancion);
-        txtCancion.clear();
-    });
-
-    // Contenedor vertical con 10px de espacio
-    VBox root = new VBox(10, titulo, txtCancion, btnAgregar);
-    root.setStyle("-fx-padding: 20;");
-
-    // Escena y Stage
-    Scene scene = new Scene(root, 400, 300);
-    stage.setTitle("Spotify Mini");
-    stage.setScene(scene);
-    stage.show();
-}</code></pre>
-
-  <div class="ui-preview">
-    <h3>Spotify Mini 🎧</h3>
-    <input class="ui-input" placeholder="Nombre de la canción" disabled>
-    <button class="ui-btn">Agregar</button>
-  </div>
-</section>
-
-<!-- ============================================== -->
-<!-- SLIDE 9: CSS EN JAVAFX — INTRO -->
-<!-- ============================================== -->
-<section v-else-if="current===9" data-slide class="slide">
-  <div class="kicker">Estilo visual</div>
-  <h2>CSS en JavaFX</h2>
-  <p>JavaFX usa <strong>CSS</strong> para definir el aspecto visual de los controles. Es muy similar al CSS de páginas web, pero con algunas diferencias.</p>
+stage.setScene(scene);                       // Asignar al Stage
+stage.show();                                // Mostrar</code></pre>
 
   <div class="grid" style="margin-top:16px;">
     <div class="card card-celeste">
-      <strong>Igual que en web</strong>
-      <p>Selectores por tipo, clase e id</p>
-      <p>Propiedades como color, padding, font-size</p>
-      <p>Pseudoclases como <code>:hover</code> y <code>:focused</code></p>
-      <p>Se escribe en un archivo <code>.css</code> externo</p>
+      <strong>La Scene se encarga de:</strong>
+      <p>El tamaño del área de contenido (ancho × alto)</p>
+      <p>Contener el nodo raíz y todo lo que esté dentro de él</p>
+      <p>Aplicar hojas de estilo CSS</p>
     </div>
     <div class="card card-durazno">
-      <strong>Diferente a la web</strong>
-      <p>Las propiedades llevan el prefijo <code>-fx-</code></p>
-      <p>Ejemplo: <code>-fx-background-color</code> en vez de <code>background-color</code></p>
-      <p>Los selectores de tipo usan el nombre de la clase Java: <code>.label</code>, <code>.button</code>, <code>.text-field</code></p>
+      <strong>La Scene NO se encarga de:</strong>
+      <p>La barra de título (eso es del Stage)</p>
+      <p>Los botones minimizar/cerrar (eso es del Stage)</p>
+      <p>La posición de la ventana en pantalla (eso es del Stage)</p>
     </div>
   </div>
 
-  <div class="callout callout-menta" style="margin-top:12px;">
-    <p style="margin:0;"><strong>¿Por qué CSS?</strong> Separar el diseño del código. Puedes cambiar toda la apariencia de tu app sin tocar una línea de Java.</p>
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;"><strong>¿Puedo cambiar la Scene?</strong> Sí. <code>stage.setScene(otraScene)</code> reemplaza todo el contenido sin cerrar la ventana. Es como cambiar de canal en un televisor.</p>
   </div>
 </section>
 
 <!-- ============================================== -->
-<!-- SLIDE 10: CSS — PROPIEDADES PRINCIPALES -->
+<!-- SLIDE 6: NODE — TODO ES UN NODO -->
+<!-- ============================================== -->
+<section v-else-if="current===6" data-slide class="slide">
+  <div class="kicker">Nivel 4</div>
+  <h2>Node — La pieza fundamental</h2>
+  <p>En JavaFX, <strong>todo lo que aparece en la Scene es un Node</strong> (nodo). <code>Node</code> es la clase padre de todos los elementos visuales.</p>
+
+  <div class="grid" style="margin-top:12px;">
+    <div class="card card-menta">
+      <strong>Controles (interactivos)</strong>
+      <p><code>Button</code> — botón clickeable</p>
+      <p><code>Label</code> — texto estático</p>
+      <p><code>TextField</code> — campo de entrada</p>
+      <p><code>TextArea</code> — texto multilínea</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong>Contenedores (layouts)</strong>
+      <p><code>VBox</code> — apila verticalmente</p>
+      <p><code>HBox</code> — alinea horizontalmente</p>
+      <p><code>GridPane</code> — grilla filas/columnas</p>
+      <p><code>BorderPane</code> — 5 zonas fijas</p>
+    </div>
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:16px;">
+    <h4 style="margin:0 0 8px;">¿Por qué importa saber que todo es un Node?</h4>
+    <p style="margin:0;">Porque un contenedor (<code>VBox</code>) <strong>también</strong> es un Node. Eso significa que puedes <strong>poner un contenedor dentro de otro</strong>. Así se arman interfaces complejas: anidando contenedores como cajas dentro de cajas.</p>
+  </div>
+
+  <pre class="code-block"><code class="language-java">// Un VBox dentro de otro VBox — es válido porque ambos son Node
+VBox formulario = new VBox(10, label, textField, boton);
+VBox root = new VBox(20, titulo, formulario);     // formulario es un hijo de root</code></pre>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 7: DIAGRAMA COMPLETO -->
+<!-- ============================================== -->
+<section v-else-if="current===7" data-slide class="slide">
+  <div class="kicker">Visión completa</div>
+  <h2>La jerarquía completa</h2>
+  <p>Así se conecta todo, desde que arranca la app hasta que el usuario ve un botón en pantalla:</p>
+
+  <div class="hierarchy">
+    <div><span class="h-label h-app">Application</span> ← tu clase extiende esto</div>
+    <div>&nbsp;&nbsp;│</div>
+    <div>&nbsp;&nbsp;├── <code>launch(args)</code> → arranca JavaFX</div>
+    <div>&nbsp;&nbsp;│</div>
+    <div>&nbsp;&nbsp;└── <code>start(</code><span class="h-label h-stage">Stage</span><code>)</code> ← JavaFX te entrega la ventana</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="h-label h-scene">Scene</span> ← tú la creas y la asignas al Stage</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="h-label h-node">root (VBox, HBox, ...)</span> ← nodo raíz</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;│</div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="h-label h-ctrl">Label</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── <span class="h-label h-ctrl">TextField</span></div>
+    <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;└── <span class="h-label h-ctrl">Button</span></div>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:8px;">
+    <h4 style="margin:0 0 6px;">Resumen de responsabilidades:</h4>
+    <p style="margin:0;">
+      • <strong>Application</strong> → arranca y coordina el ciclo de vida<br>
+      • <strong>Stage</strong> → la ventana (marco, título, tamaño)<br>
+      • <strong>Scene</strong> → el contenido visible (ancho, alto, CSS)<br>
+      • <strong>Node raíz</strong> → el contenedor principal que organiza los hijos<br>
+      • <strong>Nodos hijos</strong> → los controles que el usuario ve e interactúa
+    </p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 8: ¿QUÉ ES UN CONTENEDOR? -->
+<!-- ============================================== -->
+<section v-else-if="current===8" data-slide class="slide">
+  <div class="kicker">Contenedores</div>
+  <h2>¿Qué es un contenedor (layout)?</h2>
+  <p>Un contenedor es un <code>Node</code> especial cuyo trabajo es <strong>organizar la posición</strong> de otros nodos dentro de él. Cada tipo de contenedor organiza sus hijos de forma diferente.</p>
+
+  <div class="callout callout-celeste" style="margin-top:12px;">
+    <h4 style="margin:0 0 8px;">Patrón universal para todos los contenedores:</h4>
+    <p style="margin:0;">
+      1. Crear el contenedor: <code>VBox root = new VBox();</code><br>
+      2. Agregar hijos: <code>root.getChildren().addAll(label, boton);</code><br>
+      3. Usarlo como raíz de la Scene: <code>new Scene(root, 600, 400);</code>
+    </p>
+  </div>
+
+  <p style="margin-top:16px;">JavaFX ofrece varios contenedores. La diferencia entre ellos es <strong>cómo organizan la posición de los hijos</strong>:</p>
+
+  <div class="grid" style="margin-top:8px;">
+    <div class="card card-menta">
+      <strong>Contenedores lineales</strong>
+      <p><code>VBox</code> — en columna (vertical)</p>
+      <p><code>HBox</code> — en fila (horizontal)</p>
+    </div>
+    <div class="card card-celeste">
+      <strong>Contenedores estructurados</strong>
+      <p><code>GridPane</code> — grilla (filas × columnas)</p>
+      <p><code>BorderPane</code> — 5 zonas fijas</p>
+    </div>
+    <div class="card card-lavanda">
+      <strong>Contenedores especiales</strong>
+      <p><code>StackPane</code> — capas apiladas</p>
+      <p><code>Group</code> — sin organización</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 9: VBOX Y HBOX -->
+<!-- ============================================== -->
+<section v-else-if="current===9" data-slide class="slide">
+  <div class="kicker">Contenedores lineales</div>
+  <h2>VBox y HBox — Los más simples</h2>
+
+  <div class="grid" style="margin-top:8px;">
+    <div>
+      <p><code>VBox</code> apila sus hijos <strong>verticalmente</strong>, uno debajo del otro.</p>
+      <pre class="code-block"><code class="language-java">VBox col = new VBox(10);   // 10px entre hijos
+col.getChildren().addAll(
+    titulo, campo, boton
+);</code></pre>
+      <div class="layout-demo">
+        <div class="layout-demo-label">VBox(10)</div>
+        <div class="layout-vbox">
+          <div class="demo-item">Label</div>
+          <div class="demo-item">TextField</div>
+          <div class="demo-item" style="background:var(--pastel-menta);">Button</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <p><code>HBox</code> alinea sus hijos <strong>horizontalmente</strong>, uno al lado del otro.</p>
+      <pre class="code-block"><code class="language-java">HBox fila = new HBox(10);  // 10px entre hijos
+fila.getChildren().addAll(
+    btnAgregar, btnLimpiar
+);</code></pre>
+      <div class="layout-demo">
+        <div class="layout-demo-label">HBox(10)</div>
+        <div class="layout-hbox">
+          <div class="demo-item" style="background:var(--pastel-menta);">Agregar</div>
+          <div class="demo-item" style="background:var(--pastel-durazno);">Limpiar</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-lavanda" style="margin-top:12px;">
+    <p style="margin:0;"><strong>Combinar:</strong> Puedes poner un <code>HBox</code> dentro de un <code>VBox</code>. Ejemplo: formulario vertical con una fila de botones horizontal al final. Es la combinación más usada.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 10: GRIDPANE -->
 <!-- ============================================== -->
 <section v-else-if="current===10" data-slide class="slide">
-  <div class="kicker">CSS JavaFX</div>
-  <h2>Propiedades CSS más usadas</h2>
+  <div class="kicker">Contenedor estructurado</div>
+  <h2>GridPane — Grilla de filas y columnas</h2>
+  <p><code>GridPane</code> organiza los hijos en una <strong>tabla</strong>. Tú decides en qué celda (columna, fila) va cada elemento. Ideal para formularios tipo "etiqueta : campo".</p>
 
-  <table class="method-table">
+  <pre class="code-block"><code class="language-java">GridPane form = new GridPane();
+form.setHgap(10);     // Espacio horizontal entre columnas
+form.setVgap(10);     // Espacio vertical entre filas
+
+//                    columna, fila
+form.add(lblNombre,      0,     0);
+form.add(txtNombre,      1,     0);
+form.add(lblEmail,       0,     1);
+form.add(txtEmail,       1,     1);</code></pre>
+
+  <div class="layout-demo">
+    <div class="layout-demo-label">GridPane (2 columnas × 2 filas)</div>
+    <div class="layout-grid">
+      <div class="demo-label">Nombre:</div>
+      <div class="demo-item">TextField</div>
+      <div class="demo-label">Email:</div>
+      <div class="demo-item">TextField</div>
+    </div>
+  </div>
+
+  <div class="callout callout-menta" style="margin-top:8px;">
+    <p style="margin:0;"><strong>A diferencia de VBox/HBox</strong>, en GridPane no usas <code>getChildren().add()</code>. Usas <code>form.add(nodo, columna, fila)</code> porque necesitas especificar la posición exacta.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 11: BORDERPANE -->
+<!-- ============================================== -->
+<section v-else-if="current===11" data-slide class="slide">
+  <div class="kicker">Contenedor estructurado</div>
+  <h2>BorderPane — 5 zonas fijas</h2>
+  <p><code>BorderPane</code> divide la ventana en <strong>5 regiones</strong>: top, bottom, left, right y center. Cada zona acepta <strong>un solo nodo</strong> (que puede ser otro contenedor).</p>
+
+  <pre class="code-block"><code class="language-java">BorderPane layout = new BorderPane();
+layout.setTop(menuBar);          // Barra superior
+layout.setLeft(panelNavegacion); // Panel lateral
+layout.setCenter(contenido);     // Área principal
+layout.setBottom(barraEstado);   // Barra inferior</code></pre>
+
+  <div class="layout-demo">
+    <div class="layout-demo-label">BorderPane</div>
+    <div class="bp-demo">
+      <div class="bp-top">Top (menú)</div>
+      <div class="bp-left">Left<br>(nav)</div>
+      <div class="bp-center">Center<br>(contenido principal)</div>
+      <div class="bp-right">Right</div>
+      <div class="bp-bottom">Bottom (estado)</div>
+    </div>
+  </div>
+
+  <div class="callout callout-celeste" style="margin-top:8px;">
+    <p style="margin:0;"><strong>Cuándo usarlo:</strong> Cuando tu app tiene una estructura clásica con menú arriba, navegación a un lado y contenido en el centro. Es el layout típico de aplicaciones de escritorio.</p>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 12: STACKPANE Y GROUP -->
+<!-- ============================================== -->
+<section v-else-if="current===12" data-slide class="slide">
+  <div class="kicker">Contenedores especiales</div>
+  <h2>StackPane y Group</h2>
+
+  <div class="grid" style="margin-top:8px;">
+    <div>
+      <h3 style="font-size:20px;">StackPane — Capas apiladas</h3>
+      <p><code>StackPane</code> pone todos sus hijos <strong>uno encima del otro</strong>, centrados. El último hijo agregado queda al frente.</p>
+      <pre class="code-block"><code class="language-java">StackPane capas = new StackPane();
+capas.getChildren().addAll(
+    fondo, marco, texto
+);</code></pre>
+      <div class="layout-demo">
+        <div class="layout-demo-label">StackPane</div>
+        <div class="sp-demo">
+          <div class="sp-layer sp-back">fondo</div>
+          <div class="sp-layer sp-mid">marco</div>
+          <div class="sp-layer sp-front">texto</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 style="font-size:20px;">Group — Sin organización</h3>
+      <p><code>Group</code> <strong>no organiza</strong> nada. Los hijos se posicionan manualmente con coordenadas (x, y). Es el contenedor más básico.</p>
+      <pre class="code-block"><code class="language-java">Group grupo = new Group();
+texto.setLayoutX(50);
+texto.setLayoutY(100);
+grupo.getChildren().add(texto);</code></pre>
+      <div class="callout callout-durazno" style="margin-top:12px;">
+        <p style="margin:0;"><strong>En la práctica</strong>, casi nunca usarás <code>Group</code>. Usa <code>VBox</code>, <code>HBox</code> o <code>BorderPane</code> — dejan que JavaFX calcule las posiciones por ti.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================== -->
+<!-- SLIDE 13: TABLA DE DECISIÓN -->
+<!-- ============================================== -->
+<section v-else-if="current===13" data-slide class="slide">
+  <div class="kicker">Referencia rápida</div>
+  <h2>¿Qué contenedor uso?</h2>
+  <p>Usa esta tabla para decidir qué contenedor te conviene según lo que necesitas construir:</p>
+
+  <table class="decision-table">
     <thead>
-      <tr><th>Propiedad CSS JavaFX</th><th>Qué hace</th><th>Ejemplo</th></tr>
+      <tr>
+        <th>Necesitas...</th>
+        <th>Usa</th>
+        <th>Ejemplo típico</th>
+      </tr>
     </thead>
     <tbody>
-      <tr><td><code>-fx-background-color</code></td><td>Color de fondo</td><td><code>#191414</code></td></tr>
-      <tr><td><code>-fx-text-fill</code></td><td>Color del texto</td><td><code>#ffffff</code></td></tr>
-      <tr><td><code>-fx-font-size</code></td><td>Tamaño de letra</td><td><code>16px</code></td></tr>
-      <tr><td><code>-fx-font-weight</code></td><td>Grosor de letra</td><td><code>bold</code></td></tr>
-      <tr><td><code>-fx-padding</code></td><td>Espacio interior</td><td><code>10 20 10 20</code></td></tr>
-      <tr><td><code>-fx-border-color</code></td><td>Color del borde</td><td><code>#333333</code></td></tr>
-      <tr><td><code>-fx-border-radius</code></td><td>Bordes redondeados</td><td><code>8</code></td></tr>
-      <tr><td><code>-fx-background-radius</code></td><td>Fondo redondeado</td><td><code>8</code></td></tr>
-      <tr><td><code>-fx-cursor</code></td><td>Cursor del mouse</td><td><code>hand</code></td></tr>
+      <tr>
+        <td>Elementos uno debajo del otro</td>
+        <td><code>VBox</code></td>
+        <td>Formulario simple, lista de controles</td>
+      </tr>
+      <tr>
+        <td>Elementos uno al lado del otro</td>
+        <td><code>HBox</code></td>
+        <td>Fila de botones, barra de herramientas</td>
+      </tr>
+      <tr>
+        <td>Etiqueta : campo alineados</td>
+        <td><code>GridPane</code></td>
+        <td>Formulario con labels y TextFields</td>
+      </tr>
+      <tr>
+        <td>Menú arriba + contenido + barra abajo</td>
+        <td><code>BorderPane</code></td>
+        <td>Layout principal de una app completa</td>
+      </tr>
+      <tr>
+        <td>Elementos apilados (superpuestos)</td>
+        <td><code>StackPane</code></td>
+        <td>Texto sobre imagen, indicador de carga</td>
+      </tr>
+      <tr>
+        <td>Posición libre (manual)</td>
+        <td><code>Group</code></td>
+        <td>Dibujo, animación (raro en apps normales)</td>
+      </tr>
     </tbody>
   </table>
 
-  <div class="callout callout-lavanda" style="margin-top:12px;">
-    <p style="margin:0;"><strong>Regla:</strong> Casi toda propiedad CSS de la web existe en JavaFX, solo agrégale el prefijo <code>-fx-</code>. Si no estás seguro, busca "JavaFX CSS Reference" en Google.</p>
+  <div class="callout callout-menta" style="margin-top:16px;">
+    <p style="margin:0;"><strong>Regla práctica para empezar:</strong> El 90% de las veces tu app necesita un <code>VBox</code> con un <code>HBox</code> para los botones. Cuando tengas formularios con etiquetas, usa <code>GridPane</code>. Cuando tu app crezca, envuelve todo en un <code>BorderPane</code>.</p>
   </div>
 </section>
 
 <!-- ============================================== -->
-<!-- SLIDE 11: CSS — ARCHIVO EXTERNO Y SELECTORES -->
+<!-- SLIDE 14: EJEMPLO INTEGRADOR -->
 <!-- ============================================== -->
-<section v-else-if="current===11" data-slide class="slide">
-  <div class="kicker">CSS JavaFX</div>
-  <h2>Archivo CSS externo y selectores</h2>
-  <p>El archivo CSS se guarda en <code>src/main/resources/styles.css</code> y se vincula a la escena desde Java:</p>
+<section v-else-if="current===14" data-slide class="slide">
+  <div class="kicker">Todo junto</div>
+  <h2>Ejemplo: armando una ventana paso a paso</h2>
+  <p>Observa cómo cada pieza encaja. Este código abre una ventana con un formulario simple:</p>
 
-  <pre class="code-block"><code class="language-java">// En tu método start(), después de crear la Scene:
-scene.getStylesheets().add(
-    getClass().getResource("/styles.css").toExternalForm()
-);</code></pre>
+  <pre class="code-block"><code class="language-java">public class EjemploApp extends Application {
 
-  <p style="margin-top:16px;">Y en <code>styles.css</code>:</p>
+    @Override
+    public void start(Stage stage) {
+        // 1. Crear los controles (Node)
+        Label titulo = new Label("Registro");
+        TextField txtNombre = new TextField();
+        txtNombre.setPromptText("Tu nombre");
+        Button btnOk = new Button("Aceptar");
 
-  <pre class="code-block"><code class="language-css">/* Selector por tipo: aplica a TODOS los Label */
-.label {
-    -fx-text-fill: #ffffff;
-}
+        // 2. Organizarlos en un contenedor (layout)
+        VBox root = new VBox(12, titulo, txtNombre, btnOk);
+        root.setStyle("-fx-padding: 24;");
 
-/* Selector por clase CSS (la asignas desde Java) */
-.titulo-principal {
-    -fx-font-size: 24px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1db954;
-}
+        // 3. Crear la Scene con el contenedor como raíz
+        Scene scene = new Scene(root, 350, 250);
 
-/* Selector por ID */
-#btn-agregar {
-    -fx-background-color: #1db954;
-    -fx-text-fill: #ffffff;
-    -fx-background-radius: 20;
-    -fx-cursor: hand;
-}
+        // 4. Asignar la Scene al Stage y mostrar
+        stage.setTitle("Mi primera app");
+        stage.setScene(scene);
+        stage.show();
+    }
 
-/* Pseudoclase: hover (cuando el mouse está encima) */
-#btn-agregar:hover {
-    -fx-background-color: #1ed760;
-}
-
-/* Pseudoclase: focused (cuando el campo tiene foco) */
-.text-field:focused {
-    -fx-border-color: #1db954;
-    -fx-border-width: 2;
+    public static void main(String[] args) {
+        launch(args);
+    }
 }</code></pre>
 
-  <div class="callout callout-menta" style="margin-top:8px;">
-    <h4 style="margin:0 0 6px;">Asignar clase o ID desde Java:</h4>
-    <p style="margin:0;"><code>titulo.getStyleClass().add("titulo-principal");</code><br>
-    <code>btnAgregar.setId("btn-agregar");</code></p>
+  <div class="callout callout-lavanda" style="margin-top:8px;">
+    <h4 style="margin:0 0 6px;">El flujo siempre es el mismo:</h4>
+    <p style="margin:0;"><strong>Controles</strong> → dentro de un <strong>Layout</strong> → como raíz de una <strong>Scene</strong> → asignada al <strong>Stage</strong> → <code>show()</code></p>
   </div>
 </section>
 
 <!-- ============================================== -->
-<!-- SLIDE 12: VERIFICACIÓN -->
+<!-- SLIDE 15: VERIFICACIÓN -->
 <!-- ============================================== -->
-<section v-else-if="current===12" data-slide class="slide">
+<section v-else-if="current===15" data-slide class="slide">
   <div class="kicker">Verificación</div>
-  <h2>¿Entendiste JavaFX?</h2>
+  <h2>¿Entendiste la estructura?</h2>
 
   <quiz-question v-bind="quiz1"></quiz-question>
   <quiz-question v-bind="quiz2"></quiz-question>
@@ -555,53 +814,53 @@ const app = createApp({
   data() {
     return {
       current: 0,
-      total: 13,
+      total: 16,
       quiz1: {
-        question: '¿Qué clase debe extender tu clase principal para crear una aplicación JavaFX?',
+        question: '¿Qué representa el <code>Stage</code> en JavaFX?',
         options: [
-          { text: '<code>JFrame</code>', correct: false },
-          { text: '<code>Application</code>', correct: true },
-          { text: '<code>Window</code>', correct: false },
-          { text: '<code>Stage</code>', correct: false }
+          { text: 'El contenido visual (botones, labels, etc.)', correct: false },
+          { text: 'La ventana del sistema operativo', correct: true },
+          { text: 'El contenedor que organiza los elementos', correct: false },
+          { text: 'El método que arranca la aplicación', correct: false }
         ],
-        explanation: 'La clase principal de una app JavaFX debe extender Application y sobreescribir el método start(Stage stage). JFrame es de Swing (el framework anterior).',
-        hint: 'El nombre de la clase padre es muy genérico — literalmente significa "aplicación" en inglés.',
+        explanation: 'El Stage es la ventana: barra de título, botones de minimizar/cerrar, tamaño y posición. El contenido visual se pone en la Scene.',
+        hint: 'Piensa en la analogía del teatro. ¿Qué elemento es el marco físico donde se monta la obra?',
         level: 'base'
       },
       quiz2: {
-        question: '¿Cuál es el equivalente de <code>Scanner</code> en JavaFX?',
+        question: '¿Qué necesita una <code>Scene</code> para ser creada?',
         options: [
-          { text: '<code>Label</code>', correct: false },
-          { text: '<code>Button</code>', correct: false },
-          { text: '<code>TextField</code>', correct: true },
-          { text: '<code>TextArea</code>', correct: false }
+          { text: 'Un <code>Stage</code> como parámetro', correct: false },
+          { text: 'Un nodo raíz (como <code>VBox</code> o <code>BorderPane</code>)', correct: true },
+          { text: 'Una lista de controles <code>Button</code> y <code>Label</code>', correct: false },
+          { text: 'Un archivo CSS vinculado', correct: false }
         ],
-        explanation: 'TextField permite al usuario escribir texto, igual que Scanner.nextLine() en consola. Label solo muestra texto (como println). TextArea es para texto multilínea.',
-        hint: 'El nombre del control incluye la palabra "Field" (campo) — donde el usuario ingresa datos.',
+        explanation: 'La Scene se crea con new Scene(nodoRaíz, ancho, alto). El nodo raíz es un contenedor (VBox, HBox, etc.) que contiene todos los demás elementos.',
+        hint: 'Revisa el constructor de Scene. ¿Qué es lo primero que le pasas como argumento?',
         level: 'base'
       },
       quiz3: {
-        question: '¿Cómo se escribe la propiedad CSS para cambiar el color de fondo en JavaFX?',
+        question: '¿Por qué puedes poner un <code>HBox</code> dentro de un <code>VBox</code>?',
         options: [
-          { text: '<code>background-color</code>', correct: false },
-          { text: '<code>-fx-background-color</code>', correct: true },
-          { text: '<code>fx-background</code>', correct: false },
-          { text: '<code>-fx-color</code>', correct: false }
+          { text: 'Porque <code>HBox</code> extiende <code>VBox</code>', correct: false },
+          { text: 'Porque ambos son <code>Node</code>, y un contenedor acepta cualquier Node como hijo', correct: true },
+          { text: 'Porque <code>VBox</code> tiene un método especial <code>addHBox()</code>', correct: false },
+          { text: 'No se puede — son contenedores incompatibles', correct: false }
         ],
-        explanation: 'En JavaFX CSS, las propiedades llevan el prefijo -fx-. Entonces background-color se convierte en -fx-background-color.',
-        hint: 'Todas las propiedades CSS de JavaFX comparten un mismo prefijo de dos letras.',
+        explanation: 'Todos los controles y contenedores son Node. Un contenedor acepta cualquier Node como hijo, incluyendo otros contenedores. Eso permite anidar layouts para crear interfaces complejas.',
+        hint: '¿Qué clase padre comparten todos los elementos visuales de JavaFX?',
         level: 'inter'
       },
       quiz4: {
-        question: '¿Qué método se usa para definir qué pasa cuando un <code>Button</code> es clickeado?',
+        question: '¿Qué contenedor usarías para un formulario con etiquetas a la izquierda y campos a la derecha?',
         options: [
-          { text: '<code>btn.onClick(() -> { })</code>', correct: false },
-          { text: '<code>btn.addActionListener(e -> { })</code>', correct: false },
-          { text: '<code>btn.setOnAction(e -> { })</code>', correct: true },
-          { text: '<code>btn.addEventListener("click", e -> { })</code>', correct: false }
+          { text: '<code>VBox</code> — apila todo verticalmente', correct: false },
+          { text: '<code>HBox</code> — pone todo en fila', correct: false },
+          { text: '<code>GridPane</code> — organiza en filas y columnas', correct: true },
+          { text: '<code>StackPane</code> — superpone los elementos', correct: false }
         ],
-        explanation: 'setOnAction() es el método de JavaFX para manejar clics en botones. addActionListener() es de Swing, y addEventListener() es de JavaScript.',
-        hint: 'El método empieza con "setOn" seguido del tipo de evento.',
+        explanation: 'GridPane permite colocar elementos en posiciones (columna, fila), lo que es ideal para alinear etiquetas en la columna 0 y campos en la columna 1.',
+        hint: 'Necesitas dos columnas: una para las etiquetas y otra para los campos. ¿Qué contenedor trabaja con filas y columnas?',
         level: 'inter'
       }
     };
