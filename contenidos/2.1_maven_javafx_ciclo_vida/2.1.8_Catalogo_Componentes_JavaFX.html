@@ -1,0 +1,1557 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2.1.8 — Guía de Componentes UI en JavaFX · Profe Carlitos</title>
+  <meta name="description" content="Guía pedagógica de acceso rápido para componentes de interfaz gráfica en JavaFX (OpenJFX 25). Previsualización de escritorio, código Java, métodos esenciales y casos de uso en proyectos de aula.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .doc-container {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 40px 24px 100px;
+    }
+
+    .doc-header {
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    /* Buscador y Navegación */
+    .search-bar-wrap {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .search-input {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-family: var(--font-body);
+      background: var(--bg-soft);
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--ink);
+      background: #FFFFFF;
+    }
+
+    .category-nav {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 10px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .cat-btn {
+      padding: 6px 12px;
+      border: 1px solid var(--line);
+      background: var(--bg);
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--font-body);
+      color: var(--ink-soft);
+      transition: all 0.15s;
+    }
+
+    .cat-btn:hover {
+      background: var(--bg-muted);
+      color: var(--ink);
+    }
+
+    .cat-btn.active {
+      background: var(--ink);
+      color: #FFFFFF;
+      border-color: var(--ink);
+    }
+
+    /* Tarjeta de Componente */
+    .comp-card {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .comp-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .comp-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 0;
+      color: var(--ink);
+    }
+
+    .comp-pkg {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--ink-muted);
+      margin-top: 2px;
+    }
+
+    .comp-desc {
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      margin-bottom: 16px;
+    }
+
+    /* Mini Ventana JavaFX Simulación */
+    .fx-window {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    .fx-window-titlebar {
+      background: #E2E8F0;
+      border-bottom: 1px solid #CBD5E1;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      user-select: none;
+    }
+
+    .fx-win-controls {
+      display: flex;
+      gap: 5px;
+    }
+
+    .fx-win-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+    .dot-close { background: #EF4444; }
+    .dot-min { background: #F59E0B; }
+    .dot-max { background: #10B981; }
+
+    .fx-window-body {
+      background: #FFFFFF;
+      padding: 18px;
+      min-height: 60px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Controles nativos JavaFX simulados */
+    .fx-input {
+      padding: 7px 10px;
+      border: 1px solid #B0BEC5;
+      border-radius: 3px;
+      font-size: 13.5px;
+      font-family: var(--font-body);
+      outline: none;
+      background: #FFFFFF;
+    }
+    .fx-input:focus {
+      border-color: #1976D2;
+      box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+    }
+
+    .fx-button {
+      padding: 7px 14px;
+      border: 1px solid #B0BEC5;
+      border-radius: 3px;
+      background: linear-gradient(to bottom, #F8FAFC, #ECEFF1);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      color: #263238;
+      transition: background 0.1s;
+    }
+    .fx-button:hover {
+      background: #ECEFF1;
+    }
+    .fx-button:active {
+      background: #CFD8DC;
+    }
+
+    /* Tabla de métodos */
+    .methods-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 16px 0;
+    }
+
+    .methods-table th, .methods-table td {
+      border: 1px solid var(--line);
+      padding: 8px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .methods-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    .methods-table tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+
+    .method-signature {
+      font-family: var(--font-mono);
+      font-weight: 700;
+      color: #1E3A8A;
+      font-size: 12.5px;
+    }
+
+    .method-desc {
+      color: var(--ink-soft);
+      line-height: 1.45;
+    }
+
+    /* Bloques de código */
+    .code-block {
+      margin: 10px 0 16px;
+      padding: 16px 18px;
+      font-size: 13px;
+      line-height: 1.5;
+      border-radius: var(--radius-sm);
+      overflow-x: auto;
+      background: #1E1E2E;
+      color: #CDD6F4;
+      font-family: var(--font-mono);
+    }
+
+    .code-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-muted);
+    }
+
+    .copy-btn {
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 3px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 600;
+      font-family: var(--font-body);
+    }
+    .copy-btn:hover { background: var(--bg-muted); }
+
+    /* Cajas pedagógicas */
+    .project-box {
+      background: var(--pastel-menta);
+      border-left: 3px solid var(--accent-menta);
+      padding: 10px 14px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 12px 0 8px;
+      font-size: 13.5px;
+      line-height: 1.5;
+    }
+
+    .project-box strong {
+      color: var(--accent-menta);
+    }
+
+    .tip-box {
+      background: #FFFBEB;
+      border-left: 3px solid #D97706;
+      padding: 10px 14px;
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      margin: 8px 0;
+      font-size: 13.5px;
+      color: #92400E;
+      line-height: 1.5;
+    }
+
+    .tip-box strong {
+      color: #B45309;
+    }
+  </style>
+</head>
+<body>
+<div id="app">
+  <div class="doc-container">
+
+    <header class="doc-header">
+      <div class="kicker">Unidad 2.1 · Maven y JavaFX · 2.1.8</div>
+      <div style="font-size:36px; margin-bottom:8px;">👽</div>
+      <h1 style="font-size:clamp(26px,3.4vw,40px); margin-bottom:8px;">Guía de Componentes UI en JavaFX</h1>
+      <p class="lead">
+        Referencia rápida de componentes y nodos de <strong>OpenJFX 25</strong>. 
+        Explora la previsualización de cada control en una ventana de escritorio, su implementación en código Java, los métodos más importantes para tus proyectos y las buenas prácticas de desarrollo orientado a objetos.
+      </p>
+    </header>
+
+    <!-- BUSCADOR -->
+    <div class="search-bar-wrap">
+      <input 
+        type="text" 
+        v-model="searchQuery" 
+        placeholder="Buscar por clase JavaFX (ej: TextField, TableView, ComboBox, VBox) o palabra clave..." 
+        class="search-input"
+      >
+      <button v-if="searchQuery" class="cat-btn" @click="searchQuery = ''">Limpiar</button>
+    </div>
+
+    <!-- PESTAÑAS DE CATEGORÍA -->
+    <nav class="category-nav">
+      <button 
+        v-for="cat in categories" 
+        :key="cat.id" 
+        @click="selectedCategory = cat.id"
+        class="cat-btn"
+        :class="{ active: selectedCategory === cat.id }"
+      >
+        {{ cat.name }} ({{ getCategoryCount(cat.id) }})
+      </button>
+    </nav>
+
+    <!-- LISTADO DE TARJETAS -->
+    <main>
+      <div v-if="filteredList.length === 0" style="padding:40px; text-align:center; background:var(--bg-soft); border-radius:var(--radius-sm); border:1px solid var(--line);">
+        <p style="margin:0; color:var(--ink-muted);">No se encontraron componentes que coincidan con "{{ searchQuery }}".</p>
+      </div>
+
+      <article 
+        v-for="item in filteredList" 
+        :key="item.id" 
+        :id="item.id"
+        class="comp-card"
+      >
+        <!-- CABECERA -->
+        <div class="comp-head">
+          <div>
+            <h3 class="comp-title">{{ item.name }}</h3>
+            <div class="comp-pkg">{{ item.pkg }}</div>
+          </div>
+          <span style="font-size:12px; color:var(--ink-muted); text-transform:uppercase; font-weight:700;">{{ item.categoryName }}</span>
+        </div>
+
+        <!-- PROPÓSITO TÉCNICO -->
+        <p class="comp-desc">{{ item.purpose }}</p>
+
+        <!-- PREVISUALIZACIÓN DE ESCRITORIO (MINI-VENTANA JAVAFX) -->
+        <div class="fx-window">
+          <div class="fx-window-titlebar">
+            <span>{{ item.windowTitle }}</span>
+            <div class="fx-win-controls">
+              <span class="fx-win-dot dot-min"></span>
+              <span class="fx-win-dot dot-max"></span>
+              <span class="fx-win-dot dot-close"></span>
+            </div>
+          </div>
+          <div class="fx-window-body">
+            <!-- WIDGET INTERACTIVO SEGÚN EL COMPONENTE -->
+
+            <!-- Label -->
+            <template v-if="item.id === 'label'">
+              <span style="font-weight:600; font-size:14px; color:#1E293B;">Nombre del Personaje:</span>
+              <span style="font-size:13px; color:#64748B;">(Texto estático de solo lectura)</span>
+            </template>
+
+            <!-- TextField -->
+            <template v-else-if="item.id === 'textfield'">
+              <input type="text" v-model="mockState.textVal" placeholder="Ej: Zombie" class="fx-input" style="width:240px;">
+              <span style="font-size:12px; color:#64748B;">Largo actual: {{ mockState.textVal.length }} caracteres</span>
+            </template>
+
+            <!-- PasswordField -->
+            <template v-else-if="item.id === 'passwordfield'">
+              <input type="password" v-model="mockState.passVal" placeholder="Contraseña secreta" class="fx-input" style="width:220px;">
+              <span style="font-size:12px; color:#64748B;">Caracteres ocultos</span>
+            </template>
+
+            <!-- TextArea -->
+            <template v-else-if="item.id === 'textarea'">
+              <textarea v-model="mockState.areaVal" rows="3" class="fx-input" style="width:100%; max-width:440px; resize:vertical; font-family:var(--font-mono); font-size:12.5px;"></textarea>
+            </template>
+
+            <!-- Button -->
+            <template v-else-if="item.id === 'button'">
+              <button type="button" @click="mockState.btnClicks++" class="fx-button">Guardar Registro</button>
+              <span style="font-size:13px; color:#475569;">Pulsaciones registradas: <strong>{{ mockState.btnClicks }}</strong></span>
+            </template>
+
+            <!-- CheckBox -->
+            <template v-else-if="item.id === 'checkbox'">
+              <label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13.5px; font-weight:500;">
+                <input type="checkbox" v-model="mockState.checkVal" style="width:16px; height:16px; cursor:pointer;">
+                Es Hostil (Monstruo activo)
+              </label>
+              <span style="font-size:12px; color:#64748B;">isSelected() = {{ mockState.checkVal }}</span>
+            </template>
+
+            <!-- RadioButton & ToggleGroup -->
+            <template v-else-if="item.id === 'radiobutton'">
+              <div style="display:flex; gap:16px; font-size:13.5px;">
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="radio" value="Zombie" v-model="mockState.radioVal" style="cursor:pointer;"> Zombie
+                </label>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="radio" value="Creeper" v-model="mockState.radioVal" style="cursor:pointer;"> Creeper
+                </label>
+                <label style="display:flex; align-items:center; gap:6px; cursor:pointer;">
+                  <input type="radio" value="Dragon" v-model="mockState.radioVal" style="cursor:pointer;"> Dragon
+                </label>
+              </div>
+              <span style="font-size:12px; color:#64748B; margin-left:auto;">Seleccionado: <strong>{{ mockState.radioVal }}</strong></span>
+            </template>
+
+            <!-- ToggleButton -->
+            <template v-else-if="item.id === 'togglebutton'">
+              <button 
+                type="button" 
+                @click="mockState.toggleVal = !mockState.toggleVal" 
+                class="fx-button"
+                :style="{ background: mockState.toggleVal ? '#CBD5E1' : '#ECEFF1', borderColor: mockState.toggleVal ? '#64748B' : '#B0BEC5' }"
+              >
+                {{ mockState.toggleVal ? 'Sonido Activado' : 'Sonido Silenciado' }}
+              </button>
+              <span style="font-size:12px; color:#64748B;">Estado: {{ mockState.toggleVal ? 'Presionado (True)' : 'No presionado (False)' }}</span>
+            </template>
+
+            <!-- ComboBox -->
+            <template v-else-if="item.id === 'combobox'">
+              <select v-model="mockState.comboVal" class="fx-input" style="cursor:pointer; min-width:180px;">
+                <option value="Dificultad Fácil">Fácil</option>
+                <option value="Dificultad Normal">Normal</option>
+                <option value="Dificultad Difícil">Difícil</option>
+              </select>
+              <span style="font-size:12px; color:#64748B;">getValue(): <strong>{{ mockState.comboVal }}</strong></span>
+            </template>
+
+            <!-- Slider -->
+            <template v-else-if="item.id === 'slider'">
+              <div style="display:flex; align-items:center; gap:12px; width:100%; max-width:360px;">
+                <span style="font-size:13px;">Volumen:</span>
+                <input type="range" min="0" max="100" v-model.number="mockState.sliderVal" style="flex:1;">
+                <span style="font-family:var(--font-mono); font-size:13px; font-weight:700; width:35px;">{{ mockState.sliderVal }}%</span>
+              </div>
+            </template>
+
+            <!-- Spinner -->
+            <template v-else-if="item.id === 'spinner'">
+              <div style="display:flex; border:1px solid #B0BEC5; border-radius:3px; overflow:hidden;">
+                <input type="number" v-model.number="mockState.spinnerVal" style="width:60px; border:none; padding:6px; text-align:center; outline:none; font-size:13px;">
+                <div style="display:flex; flex-direction:column; border-left:1px solid #CBD5E1;">
+                  <button @click="mockState.spinnerVal++" style="border:none; background:#F1F5F9; font-size:8px; padding:2px 6px; cursor:pointer;">▲</button>
+                  <button @click="mockState.spinnerVal--" style="border:none; background:#E2E8F0; font-size:8px; padding:2px 6px; cursor:pointer;">▼</button>
+                </div>
+              </div>
+              <span style="font-size:12px; color:#64748B;">Valor entero: {{ mockState.spinnerVal }}</span>
+            </template>
+
+            <!-- ListView -->
+            <template v-else-if="item.id === 'listview'">
+              <div style="width:100%; max-width:320px; border:1px solid #CBD5E1; border-radius:3px; max-height:80px; overflow-y:auto; font-size:13px;">
+                <div 
+                  v-for="char in ['Steve', 'Alex', 'Zombie Pigman', 'Enderman']" 
+                  :key="char"
+                  @click="mockState.selectedList = char"
+                  :style="{ background: mockState.selectedList === char ? '#DBEAFE' : 'transparent', color: mockState.selectedList === char ? '#1E3A8A' : 'inherit' }"
+                  style="padding:4px 8px; border-bottom:1px solid #F1F5F9; cursor:pointer;"
+                >
+                  ● {{ char }}
+                </div>
+              </div>
+              <span style="font-size:12px; color:#64748B;">Elemento seleccionado: <strong>{{ mockState.selectedList }}</strong></span>
+            </template>
+
+            <!-- TableView -->
+            <template v-else-if="item.id === 'tableview'">
+              <div style="width:100%; overflow-x:auto;">
+                <table style="width:100%; border-collapse:collapse; font-size:12px; border:1px solid #CBD5E1;">
+                  <thead>
+                    <tr style="background:#F1F5F9;">
+                      <th style="padding:5px 8px; border:1px solid #CBD5E1; text-align:left;">ID</th>
+                      <th style="padding:5px 8px; border:1px solid #CBD5E1; text-align:left;">Nombre</th>
+                      <th style="padding:5px 8px; border:1px solid #CBD5E1; text-align:left;">Tipo</th>
+                      <th style="padding:5px 8px; border:1px solid #CBD5E1; text-align:left;">Puntos Vida</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1; font-family:var(--font-mono);">001</td>
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1; font-weight:600;">Steve</td>
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1;">Humano</td>
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1;">20</td>
+                    </tr>
+                    <tr style="background:#F8FAFC;">
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1; font-family:var(--font-mono);">002</td>
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1; font-weight:600;">Zombie</td>
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1;">Hostil</td>
+                      <td style="padding:4px 8px; border:1px solid #CBD5E1;">15</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </template>
+
+            <!-- VBox -->
+            <template v-else-if="item.id === 'vbox'">
+              <div style="display:flex; flex-direction:column; gap:4px; width:100%; max-width:280px; font-size:11.5px;">
+                <div style="background:#E2E8F0; padding:5px; text-align:center; border-radius:2px;">Nodo Hijo 1 (Arriba)</div>
+                <div style="background:#E2E8F0; padding:5px; text-align:center; border-radius:2px;">Nodo Hijo 2 (Centro)</div>
+                <div style="background:#E2E8F0; padding:5px; text-align:center; border-radius:2px;">Nodo Hijo 3 (Abajo)</div>
+              </div>
+              <span style="font-size:12px; color:#64748B;">Organización vertical en columna única</span>
+            </template>
+
+            <!-- HBox -->
+            <template v-else-if="item.id === 'hbox'">
+              <div style="display:flex; flex-direction:row; gap:6px; width:100%; max-width:320px; font-size:11.5px;">
+                <div style="flex:1; background:#E2E8F0; padding:6px; text-align:center; border-radius:2px;">Hijo 1</div>
+                <div style="flex:1; background:#E2E8F0; padding:6px; text-align:center; border-radius:2px;">Hijo 2</div>
+                <div style="flex:1; background:#E2E8F0; padding:6px; text-align:center; border-radius:2px;">Hijo 3</div>
+              </div>
+              <span style="font-size:12px; color:#64748B;">Organización horizontal en una sola fila</span>
+            </template>
+
+            <!-- GridPane -->
+            <template v-else-if="item.id === 'gridpane'">
+              <div style="display:grid; grid-template-columns:auto 1fr; gap:6px; width:100%; max-width:320px; font-size:12px;">
+                <div style="background:#FEF3C7; padding:4px 8px; border-radius:2px; font-weight:600;">Col 0, Fila 0 (RUT)</div>
+                <div style="background:#E2E8F0; padding:4px 8px; border-radius:2px;">Col 1, Fila 0 (Campo)</div>
+                <div style="background:#FEF3C7; padding:4px 8px; border-radius:2px; font-weight:600;">Col 0, Fila 1 (Nombre)</div>
+                <div style="background:#E2E8F0; padding:4px 8px; border-radius:2px;">Col 1, Fila 1 (Campo)</div>
+              </div>
+            </template>
+
+            <!-- BorderPane -->
+            <template v-else-if="item.id === 'borderpane'">
+              <div style="display:flex; flex-direction:column; gap:2px; width:100%; max-width:320px; font-size:11px; text-align:center;">
+                <div style="background:#E2E8F0; padding:3px; border-radius:2px;">TOP (MenuBar / Cabecera)</div>
+                <div style="display:flex; gap:2px;">
+                  <div style="width:28%; background:#E2E8F0; padding:10px 2px; border-radius:2px;">LEFT</div>
+                  <div style="flex:1; background:#FFFFFF; border:1px solid #CBD5E1; padding:10px 2px; border-radius:2px; font-weight:600;">CENTER</div>
+                  <div style="width:25%; background:#E2E8F0; padding:10px 2px; border-radius:2px;">RIGHT</div>
+                </div>
+                <div style="background:#E2E8F0; padding:3px; border-radius:2px;">BOTTOM (Barra de Estado)</div>
+              </div>
+            </template>
+
+            <!-- StackPane -->
+            <template v-else-if="item.id === 'stackpane'">
+              <div style="position:relative; width:100%; max-width:300px; height:46px; background:#F1F5F9; display:flex; align-items:center; justify-content:center; border:1px dashed #CBD5E1; border-radius:3px;">
+                <div style="width:90%; height:32px; background:#E2E8F0;"></div>
+                <div style="position:absolute; font-size:12px; font-weight:700; color:#1E3A8A;">Capa superior encima (Eje Z)</div>
+              </div>
+            </template>
+
+            <!-- ScrollPane -->
+            <template v-else-if="item.id === 'scrollpane'">
+              <div style="max-height:60px; overflow-y:auto; border:1px solid #CBD5E1; padding:6px 10px; font-size:12px; width:100%; max-width:340px; background:#FFFFFF;">
+                <div>Línea 1: El contenido es más alto que el panel.</div>
+                <div>Línea 2: Aparece barra de scroll automática.</div>
+                <div>Línea 3: Desplazamiento nativo del ScrollPane.</div>
+              </div>
+            </template>
+
+            <!-- MenuBar -->
+            <template v-else-if="item.id === 'menubar'">
+              <div style="display:flex; gap:12px; background:#E2E8F0; padding:4px 10px; border-radius:3px; font-size:12.5px; font-weight:600; width:100%;">
+                <span>Archivo ▼</span>
+                <span>Editar ▼</span>
+                <span>Ayuda ▼</span>
+              </div>
+            </template>
+
+            <!-- TabPane -->
+            <template v-else-if="item.id === 'tabpane'">
+              <div style="width:100%; max-width:340px;">
+                <div style="display:flex; border-bottom:1px solid #CBD5E1; font-size:12px; gap:4px;">
+                  <button @click="mockState.activeTab = 1" :style="{ background: mockState.activeTab === 1 ? '#FFFFFF' : '#E2E8F0', borderBottomColor: mockState.activeTab === 1 ? '#FFFFFF' : '#CBD5E1' }" style="padding:4px 10px; border:1px solid #CBD5E1; border-radius:3px 3px 0 0; cursor:pointer; font-weight:600;">
+                    Inventario
+                  </button>
+                  <button @click="mockState.activeTab = 2" :style="{ background: mockState.activeTab === 2 ? '#FFFFFF' : '#E2E8F0', borderBottomColor: mockState.activeTab === 2 ? '#FFFFFF' : '#CBD5E1' }" style="padding:4px 10px; border:1px solid #CBD5E1; border-radius:3px 3px 0 0; cursor:pointer; font-weight:600; color:#64748B;">
+                    Ventas
+                  </button>
+                </div>
+                <div style="padding:10px; border:1px solid #CBD5E1; border-top:none; font-size:12.5px;">
+                  <span v-if="mockState.activeTab === 1">Contenido de la pestaña Inventario</span>
+                  <span v-else>Contenido de la pestaña Ventas</span>
+                </div>
+              </div>
+            </template>
+
+            <!-- Accordion -->
+            <template v-else-if="item.id === 'accordion'">
+              <div style="width:100%; max-width:340px; font-size:12.5px;">
+                <div @click="mockState.accOpen = 1" style="background:#F1F5F9; padding:5px 8px; font-weight:600; cursor:pointer; border:1px solid #CBD5E1; border-radius:2px;">
+                  {{ mockState.accOpen === 1 ? '▼' : '►' }} 1. Datos Personales
+                </div>
+                <div v-if="mockState.accOpen === 1" style="padding:8px; border:1px solid #CBD5E1; border-top:none; margin-bottom:4px;">
+                  Campos de nombre y correo electrónico.
+                </div>
+                <div @click="mockState.accOpen = 2" style="background:#F1F5F9; padding:5px 8px; font-weight:600; cursor:pointer; border:1px solid #CBD5E1; border-radius:2px;">
+                  {{ mockState.accOpen === 2 ? '▼' : '►' }} 2. Opciones de Cuenta
+                </div>
+                <div v-if="mockState.accOpen === 2" style="padding:8px; border:1px solid #CBD5E1; border-top:none;">
+                  Ajustes de notificaciones y seguridad.
+                </div>
+              </div>
+            </template>
+
+            <!-- Alert -->
+            <template v-else-if="item.id === 'alert'">
+              <button type="button" @click="mostrarAlertaDemo" class="fx-button">Probar Alert.showAndWait()</button>
+              <span v-if="mockState.alertMsg" style="font-size:12px; color:#15803D; font-weight:600;">{{ mockState.alertMsg }}</span>
+            </template>
+
+            <!-- FileChooser -->
+            <template v-else-if="item.id === 'filechooser'">
+              <button type="button" @click="mockState.fileName = 'personajes_partida.txt'" class="fx-button">Abrir Diálogo de Archivo</button>
+              <span style="font-size:12px; color:#64748B;">Archivo: <strong>{{ mockState.fileName || '(Ninguno seleccionado)' }}</strong></span>
+            </template>
+
+            <!-- DatePicker -->
+            <template v-else-if="item.id === 'datepicker'">
+              <input type="date" v-model="mockState.dateVal" class="fx-input">
+              <span style="font-size:12px; color:#64748B;">LocalDate: <strong>{{ mockState.dateVal }}</strong></span>
+            </template>
+
+            <!-- ImageView -->
+            <template v-else-if="item.id === 'imageview'">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <div style="width:36px; height:36px; background:#E2E8F0; border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:18px;">🖼️</div>
+                <span style="font-size:13px; color:#475569;">Renderizado de recurso gráfico escalado con proporción preservada</span>
+              </div>
+            </template>
+
+            <!-- Eventos y Hilos -->
+            <template v-else-if="item.id === 'events-threads'">
+              <button type="button" @click="ejecutarHiloDemo" class="fx-button" :disabled="mockState.hiloCorriendo">
+                {{ mockState.hiloCorriendo ? 'Procesando en segundo plano...' : 'Iniciar Tarea con Task' }}
+              </button>
+              <span style="font-size:12px; color:#64748B;">{{ mockState.hiloEstado }}</span>
+            </template>
+
+            <template v-else>
+              <span style="font-size:13px; color:#64748B;">Control gráfico interactivo de JavaFX.</span>
+            </template>
+
+          </div>
+        </div>
+
+        <!-- CÓDIGO JAVA -->
+        <div class="code-header">
+          <span>Implementación en Java</span>
+          <button class="copy-btn" @click="copiarCodigo(item.code, item.id)">
+            {{ copiadoId === item.id ? 'Copiado ✓' : 'Copiar código' }}
+          </button>
+        </div>
+        <pre class="code-block"><code class="language-java" v-html="highlightJava(item.code)"></code></pre>
+
+        <!-- TABLA DE MÉTODOS Y PROPIEDADES INDISPENSABLES -->
+        <table class="methods-table">
+          <thead>
+            <tr>
+              <th style="width:30%;">Método o Constructor</th>
+              <th style="width:25%;">Firma / Retorno</th>
+              <th style="width:45%;">¿Qué hace y cuándo usarlo?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(m, mIdx) in item.methods" :key="mIdx">
+              <td><span class="method-signature">{{ m.name }}</span></td>
+              <td><code>{{ m.sig }}</code></td>
+              <td><span class="method-desc">{{ m.desc }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- APLICACIÓN PRÁCTICA EN EL PROYECTO -->
+        <div class="project-box">
+          <strong>Aplicación en el proyecto del curso:</strong> {{ item.projectCase }}
+        </div>
+
+        <!-- CONSEJO DOCENTE / ERROR FRECUENTE -->
+        <div v-if="item.tip" class="tip-box">
+          <strong>Consejo docente (error frecuente):</strong> {{ item.tip }}
+        </div>
+
+      </article>
+    </main>
+
+  </div>
+</div>
+
+<script>
+const { createApp, ref, computed } = Vue;
+
+const app = createApp({
+  setup() {
+    const searchQuery = ref('');
+    const selectedCategory = ref('all');
+    const copiadoId = ref(null);
+
+    const mockState = ref({
+      textVal: 'Steve',
+      passVal: 'secreto123',
+      areaVal: 'Registro de partida:\n- Personaje creado: Steve\n- Vida inicial: 20',
+      btnClicks: 0,
+      checkVal: true,
+      radioVal: 'Zombie',
+      toggleVal: true,
+      comboVal: 'Dificultad Normal',
+      sliderVal: 65,
+      spinnerVal: 3,
+      selectedList: 'Steve',
+      activeTab: 1,
+      accOpen: 1,
+      dateVal: '2026-10-15',
+      fileName: '',
+      alertMsg: '',
+      hiloCorriendo: false,
+      hiloEstado: 'Hilo de UI libre'
+    });
+
+    const categories = [
+      { id: 'all', name: 'Todos' },
+      { id: 'text', name: 'Texto y Entradas' },
+      { id: 'buttons', name: 'Botones y Selección' },
+      { id: 'data', name: 'Listas y Tablas' },
+      { id: 'layouts', name: 'Contenedores Layout' },
+      { id: 'nav', name: 'Navegación y Menús' },
+      { id: 'dialogs', name: 'Diálogos y Ventanas' },
+      { id: 'media', name: 'Multimedia y Eventos' }
+    ];
+
+    const components = [
+      // 1. LABEL
+      {
+        id: 'label',
+        name: 'Label',
+        pkg: 'javafx.scene.control.Label',
+        category: 'text',
+        categoryName: 'Texto y Entradas',
+        windowTitle: 'Etiqueta informativa',
+        purpose: 'Presenta texto estático de solo lectura en la interfaz. Sirve para nombrar campos de formulario o mostrar información que el usuario no puede editar directamente.',
+        code: `Label lblNombre = new Label("Nombre del Personaje:");
+lblNombre.setStyle("-fx-font-weight: bold;");
+
+// Modificar el texto dinámicamente:
+lblNombre.setText("Nuevo Nombre:");`,
+        methods: [
+          { name: 'new Label(String text)', sig: 'Constructor', desc: 'Crea una etiqueta con el texto inicial especificado.' },
+          { name: 'setText(String value)', sig: 'void', desc: 'Cambia el texto visible de la etiqueta durante la ejecución.' },
+          { name: 'getText()', sig: 'String', desc: 'Retorna el texto actual que contiene la etiqueta.' },
+          { name: 'setWrapText(boolean val)', sig: 'void', desc: 'Permite que el texto salte de línea si excede el ancho disponible.' }
+        ],
+        projectCase: 'Rotular campos en formularios ("Vida:", "Ataque:", "RUT:") y mostrar puntajes o estados de juego.',
+        tip: 'Un Label no es un campo de entrada. Si requieres que el estudiante o usuario ingrese datos, usa TextField.'
+      },
+
+      // 2. TEXTFIELD
+      {
+        id: 'textfield',
+        name: 'TextField',
+        pkg: 'javafx.scene.control.TextField',
+        category: 'text',
+        categoryName: 'Texto y Entradas',
+        windowTitle: 'Formulario de Entrada',
+        purpose: 'Campo de texto interactivo de una sola línea para capturar datos ingresados por el usuario desde el teclado.',
+        code: `TextField txtNombre = new TextField();
+txtNombre.setPromptText("Ej: Zombie");
+
+// Al presionar un botón de guardar:
+String nombre = txtNombre.getText().trim();
+if (!nombre.isEmpty()) {
+    // Procesar datos...
+    txtNombre.clear(); // Limpiar campo
+}`,
+        methods: [
+          { name: 'new TextField()', sig: 'Constructor', desc: 'Crea un campo de texto vacío.' },
+          { name: 'getText()', sig: 'String', desc: 'Obtiene el texto actual escrito por el usuario.' },
+          { name: 'setText(String value)', sig: 'void', desc: 'Reemplaza el texto del campo programáticamente.' },
+          { name: 'setPromptText(String txt)', sig: 'void', desc: 'Muestra un texto de ayuda gris que desaparece al escribir.' },
+          { name: 'clear()', sig: 'void', desc: 'Borra todo el contenido del campo (equivale a setText("")).' },
+          { name: 'setDisable(boolean val)', sig: 'void', desc: 'Bloquea o habilita la interacción del usuario con el campo.' }
+        ],
+        projectCase: 'Sección 002D: Capturar el nombre o puntos de vida de un Character. Sección 004D: Ingresar el apodo del Hacker.',
+        tip: 'El método getText() siempre retorna un String. Si necesitas un número entero, debes parsearlo con Integer.parseInt(txt.getText()) dentro de un try-catch.'
+      },
+
+      // 3. PASSWORDFIELD
+      {
+        id: 'passwordfield',
+        name: 'PasswordField',
+        pkg: 'javafx.scene.control.PasswordField',
+        category: 'text',
+        categoryName: 'Texto y Entradas',
+        windowTitle: 'Autenticación de Usuario',
+        purpose: 'Campo de entrada especializado para contraseñas. Oculta visualmente los caracteres escritos sustituyéndolos por viñetas o puntos para proteger la privacidad.',
+        code: `PasswordField txtClave = new PasswordField();
+txtClave.setPromptText("Ingresa tu contraseña");
+
+// Leer la contraseña al hacer clic en Login:
+String clave = txtClave.getText();`,
+        methods: [
+          { name: 'new PasswordField()', sig: 'Constructor', desc: 'Crea un campo de contraseña enmascarado vacío.' },
+          { name: 'getText()', sig: 'String', desc: 'Retorna la contraseña real en texto plano para su validación.' },
+          { name: 'clear()', sig: 'void', desc: 'Limpia la contraseña de pantalla una vez procesada.' }
+        ],
+        projectCase: 'Módulo de inicio de sesión (Login) para administradores del sistema de ventas o profesores.',
+        tip: 'El método getText() retorna la clave en texto plano en memoria. No uses TextField para claves porque expondría los caracteres en pantalla.'
+      },
+
+      // 4. TEXTAREA
+      {
+        id: 'textarea',
+        name: 'TextArea',
+        pkg: 'javafx.scene.control.TextArea',
+        category: 'text',
+        categoryName: 'Texto y Entradas',
+        windowTitle: 'Consola de Registro',
+        purpose: 'Área de texto de múltiples líneas con barras de desplazamiento automáticas para descripciones extensas, bitácoras o consolas de información.',
+        code: `TextArea areaLogs = new TextArea();
+areaLogs.setPromptText("Historial de combate...");
+areaLogs.setWrapText(true);     // Ajuste de línea automático
+areaLogs.setEditable(false);    // Solo lectura
+
+// Agregar nuevas líneas sin borrar lo anterior:
+areaLogs.appendText("El héroe atacó con 15 puntos.\\n");`,
+        methods: [
+          { name: 'new TextArea()', sig: 'Constructor', desc: 'Crea un área de texto multilínea vacía.' },
+          { name: 'appendText(String str)', sig: 'void', desc: 'Agrega texto al final del contenido existente (ideal para consolas).' },
+          { name: 'setWrapText(boolean val)', sig: 'void', desc: 'Activa el salto de línea automático para que el texto no desborde hacia la derecha.' },
+          { name: 'setEditable(boolean val)', sig: 'void', desc: 'Permite bloquear la edición si solo se usará para mostrar reportes.' },
+          { name: 'clear()', sig: 'void', desc: 'Borra todo el historial del área de texto.' }
+        ],
+        projectCase: 'Consola de turnos en el juego de combate o visualización de reportes de transacciones generados.',
+        tip: 'Si vas a mostrar registros estructurados en columnas (ej. ID, Nombre, Precio), no concatenes texto en TextArea; usa TableView.'
+      },
+
+      // 5. BUTTON
+      {
+        id: 'button',
+        name: 'Button',
+        pkg: 'javafx.scene.control.Button',
+        category: 'buttons',
+        categoryName: 'Botones y Selección',
+        windowTitle: 'Acciones de Interfaz',
+        purpose: 'Botón de comando estándar que ejecuta una acción en la lógica de negocio cuando el usuario hace clic o presiona Enter/Espacio.',
+        code: `Button btnGuardar = new Button("Guardar Personaje");
+btnGuardar.setDefaultButton(true); // Se activa al pulsar Enter
+
+btnGuardar.setOnAction(event -> {
+    System.out.println("Guardando en la lista...");
+});`,
+        methods: [
+          { name: 'new Button(String text)', sig: 'Constructor', desc: 'Crea un botón con el texto visible especificado.' },
+          { name: 'setOnAction(EventHandler h)', sig: 'void', desc: 'Asigna la expresión lambda o método que se ejecuta al presionar el botón.' },
+          { name: 'setDefaultButton(boolean val)', sig: 'void', desc: 'Configura el botón como predeterminado (responde a la tecla Enter).' },
+          { name: 'setCancelButton(boolean val)', sig: 'void', desc: 'Configura el botón para activarse automáticamente al presionar Escape.' },
+          { name: 'setDisable(boolean val)', sig: 'void', desc: 'Habilita o deshabilita el botón según las validaciones del formulario.' }
+        ],
+        projectCase: 'Botones "Atacar", "Nuevo Producto", "Eliminar Seleccionado" y "Calcular Total".',
+        tip: 'Evita colocar lógica pesada de lectura de base de datos o bucles largos dentro de setOnAction, ya que congelará la ventana gráfica.'
+      },
+
+      // 6. CHECKBOX
+      {
+        id: 'checkbox',
+        name: 'CheckBox',
+        pkg: 'javafx.scene.control.CheckBox',
+        category: 'buttons',
+        categoryName: 'Botones y Selección',
+        windowTitle: 'Opciones Booleanas',
+        purpose: 'Casilla de verificación para opciones booleanas independientes que pueden estar marcadas o desmarcadas.',
+        code: `CheckBox chkHostil = new CheckBox("Es Hostil");
+chkHostil.setSelected(true); // Marcado por defecto
+
+if (chkHostil.isSelected()) {
+    // El personaje atacará automáticamente
+}`,
+        methods: [
+          { name: 'new CheckBox(String text)', sig: 'Constructor', desc: 'Crea una casilla con texto descriptivo.' },
+          { name: 'isSelected()', sig: 'boolean', desc: 'Retorna true si la casilla está marcada, false si está vacía.' },
+          { name: 'setSelected(boolean val)', sig: 'void', desc: 'Marca o desmarca la casilla programáticamente.' },
+          { name: 'selectedProperty()', sig: 'BooleanProperty', desc: 'Permite enlazar reactivamente el estado a otros componentes.' }
+        ],
+        projectCase: 'Determinar si un personaje es hostil o pacífico, o si un producto incluye despacho a domicilio.',
+        tip: 'Usa CheckBox cuando las opciones sean independientes entre sí. Si solo se puede elegir una entre varias, usa RadioButton.'
+      },
+
+      // 7. RADIOBUTTON Y TOGGLEGROUP
+      {
+        id: 'radiobutton',
+        name: 'RadioButton & ToggleGroup',
+        pkg: 'javafx.scene.control.RadioButton',
+        category: 'buttons',
+        categoryName: 'Botones y Selección',
+        windowTitle: 'Selección Excluyente',
+        purpose: 'Botones de opción redondos donde solo una alternativa puede estar seleccionada a la vez. Requieren asociarse a un ToggleGroup común.',
+        code: `ToggleGroup grupoTipo = new ToggleGroup();
+
+RadioButton rbZombie = new RadioButton("Zombie");
+rbZombie.setToggleGroup(grupoTipo);
+rbZombie.setSelected(true); // Opción inicial
+
+RadioButton rbCreeper = new RadioButton("Creeper");
+rbCreeper.setToggleGroup(grupoTipo);
+
+// Saber cuál está seleccionado:
+RadioButton seleccionado = (RadioButton) grupoTipo.getSelectedToggle();
+String tipoElegido = seleccionado.getText();`,
+        methods: [
+          { name: 'new RadioButton(String text)', sig: 'Constructor', desc: 'Crea un botón de radio individual.' },
+          { name: 'setToggleGroup(ToggleGroup g)', sig: 'void', desc: 'Asocia el radio button a su grupo de exclusión mutua.' },
+          { name: 'isSelected()', sig: 'boolean', desc: 'Indica si este botón en particular está activo.' },
+          { name: 'group.getSelectedToggle()', sig: 'Toggle', desc: 'Retorna el RadioButton que está seleccionado actualmente en el grupo.' }
+        ],
+        projectCase: 'Seleccionar el tipo concreto de personaje en polimorfismo: Zombie vs Dragon vs Creeper (Sección 002D).',
+        tip: 'Si olvidas asignar el ToggleGroup, los RadioButtons funcionarán como checkboxes y el usuario podrá marcar todos simultáneamente.'
+      },
+
+      // 8. TOGGLEBUTTON
+      {
+        id: 'togglebutton',
+        name: 'ToggleButton',
+        pkg: 'javafx.scene.control.ToggleButton',
+        category: 'buttons',
+        categoryName: 'Botones y Selección',
+        windowTitle: 'Interruptor de Estado',
+        purpose: 'Botón con aspecto de botón común que conserva su estado presionado (activo) o liberado (inactivo) al hacer clic sobre él.',
+        code: `ToggleButton btnMute = new ToggleButton("Silenciar Audio");
+
+btnMute.setOnAction(e -> {
+    if (btnMute.isSelected()) {
+        System.out.println("Audio silenciado");
+    } else {
+        System.out.println("Audio activado");
+    }
+});`,
+        methods: [
+          { name: 'new ToggleButton(String text)', sig: 'Constructor', desc: 'Crea un botón interruptor.' },
+          { name: 'isSelected()', sig: 'boolean', desc: 'Retorna true si el botón se encuentra presionado/activo.' },
+          { name: 'setSelected(boolean val)', sig: 'void', desc: 'Cambia el estado del interruptor programáticamente.' }
+        ],
+        projectCase: 'Botón de pausa en un juego o interruptor de silencio en el reproductor de música Spotify Mini.',
+        tip: 'Un Button estándar no conserva estado después del clic; usa ToggleButton cuando necesites saber si una opción quedó activada.'
+      },
+
+      // 9. COMBOBOX
+      {
+        id: 'combobox',
+        name: 'ComboBox<T>',
+        pkg: 'javafx.scene.control.ComboBox',
+        category: 'buttons',
+        categoryName: 'Botones y Selección',
+        windowTitle: 'Menú Desplegable',
+        purpose: 'Lista desplegable que permite al usuario seleccionar un único elemento desde una colección de opciones sin ocupar espacio vertical permanente.',
+        code: `ComboBox<String> cmbDificultad = new ComboBox<>();
+cmbDificultad.getItems().addAll("Fácil", "Normal", "Difícil");
+cmbDificultad.setValue("Normal"); // Valor inicial
+
+String elegida = cmbDificultad.getValue();`,
+        methods: [
+          { name: 'new ComboBox<T>()', sig: 'Constructor', desc: 'Crea una lista desplegable tipada con elementos de clase T.' },
+          { name: 'getItems()', sig: 'ObservableList<T>', desc: 'Retorna la lista de elementos para agregar opciones con add() o addAll().' },
+          { name: 'getValue()', sig: 'T', desc: 'Retorna el elemento actualmente seleccionado en el combo.' },
+          { name: 'setValue(T item)', sig: 'void', desc: 'Establece el elemento seleccionado por defecto.' },
+          { name: 'setPromptText(String txt)', sig: 'void', desc: 'Texto guía que se muestra cuando no hay nada seleccionado aún.' }
+        ],
+        projectCase: 'Seleccionar la categoría de un producto (Físico vs Digital en EP1) o la sede de estudio de un alumno.',
+        tip: 'ComboBox puede almacenar objetos de negocio completos (ej: ComboBox<Sede>), mostrando su método toString() en la lista.'
+      },
+
+      // 10. SLIDER
+      {
+        id: 'slider',
+        name: 'Slider',
+        pkg: 'javafx.scene.control.Slider',
+        category: 'buttons',
+        categoryName: 'Botones y Selección',
+        windowTitle: 'Ajuste Continuo',
+        purpose: 'Barra deslizable que permite seleccionar un valor numérico continuo arrastrando un pomo con el ratón.',
+        code: `Slider sliderVol = new Slider(0, 100, 50); // min, max, inicial
+sliderVol.setShowTickMarks(true);
+sliderVol.setShowTickLabels(true);
+
+// Escuchar cambios en tiempo real:
+sliderVol.valueProperty().addListener((obs, viejo, nuevo) -> {
+    System.out.println("Volumen actual: " + nuevo.intValue());
+});`,
+        methods: [
+          { name: 'new Slider(min, max, init)', sig: 'Constructor', desc: 'Define el valor mínimo, máximo y la posición inicial.' },
+          { name: 'getValue()', sig: 'double', desc: 'Obtiene el valor numérico actual en formato decimal.' },
+          { name: 'setValue(double val)', sig: 'void', desc: 'Mueve la posición del pomo al valor indicado.' },
+          { name: 'setShowTickMarks(boolean val)', sig: 'void', desc: 'Dibuja marcas graduadas a lo largo de la barra.' }
+        ],
+        projectCase: 'Control de volumen de audio en la app Spotify Mini o ajuste de brillo y dificultad.',
+        tip: 'Si necesitas capturar números enteros exactos (ej. número de productos o edad), usa Spinner en vez de Slider.'
+      },
+
+      // 11. SPINNER
+      {
+        id: 'spinner',
+        name: 'Spinner<T>',
+        pkg: 'javafx.scene.control.Spinner',
+        category: 'buttons',
+        categoryName: 'Botones y Selección',
+        windowTitle: 'Selector Numérico',
+        purpose: 'Control numérico secuencial que permite subir o bajar un valor entero exacto usando flechas o escribiendo directamente.',
+        code: `// Rango de 1 a 20, valor inicial 1, paso de 1:
+Spinner<Integer> spCantidad = new Spinner<>(1, 20, 1);
+spCantidad.setEditable(true); // Permitir escribir con teclado
+
+int cantidad = spCantidad.getValue();`,
+        methods: [
+          { name: 'new Spinner<>(min, max, init)', sig: 'Constructor', desc: 'Crea un selector numérico para valores enteros.' },
+          { name: 'getValue()', sig: 'T', desc: 'Retorna el valor actual seleccionado.' },
+          { name: 'setEditable(boolean val)', sig: 'void', desc: 'Permite escribir con el teclado además de pulsar las flechas.' }
+        ],
+        projectCase: 'Seleccionar la cantidad de ítems que se agregan al carrito de compras en la tienda de videojuegos.',
+        tip: 'Recuerda activar setEditable(true) si deseas que los estudiantes puedan escribir el número con el teclado numérico.'
+      },
+
+      // 12. LISTVIEW
+      {
+        id: 'listview',
+        name: 'ListView<T>',
+        pkg: 'javafx.scene.control.ListView',
+        category: 'data',
+        categoryName: 'Listas y Tablas',
+        windowTitle: 'Colección de Elementos',
+        purpose: 'Muestra una lista vertical de elementos seleccionables vinculada a una ObservableList. Implementa virtualización de celdas para manejar grandes volúmenes de datos.',
+        code: `ObservableList<String> items = FXCollections.observableArrayList(
+    "Steve", "Alex", "Zombie Pigman"
+);
+
+ListView<String> lista = new ListView<>(items);
+
+// Obtener el elemento seleccionado:
+String seleccionado = lista.getSelectionModel().getSelectedItem();`,
+        methods: [
+          { name: 'new ListView<>(ObservableList items)', sig: 'Constructor', desc: 'Vincula la lista observable de objetos al control visual.' },
+          { name: 'setItems(ObservableList items)', sig: 'void', desc: 'Reemplaza la colección de datos mostrada.' },
+          { name: 'getSelectionModel().getSelectedItem()', sig: 'T', desc: 'Retorna el elemento que el usuario tiene marcado actualmente.' },
+          { name: 'getSelectionModel().getSelectedIndex()', sig: 'int', desc: 'Retorna el índice numérico (base 0) de la fila seleccionada.' }
+        ],
+        projectCase: 'Listado de canciones en la playlist de Spotify Mini o listado de enemigos vivos en el mapa.',
+        tip: 'Nunca crees decenas de Labels manualmente dentro de un VBox para simular una lista. ListView solo dibuja las celdas visibles en pantalla.'
+      },
+
+      // 13. TABLEVIEW
+      {
+        id: 'tableview',
+        name: 'TableView<T> & TableColumn<S,T>',
+        pkg: 'javafx.scene.control.TableView',
+        category: 'data',
+        categoryName: 'Listas y Tablas',
+        windowTitle: 'Gestión de Registros',
+        purpose: 'El control fundamental para sistemas CRUD empresariales. Presenta colecciones de objetos en filas y columnas ordenables y seleccionables.',
+        code: `TableView<Personaje> tabla = new TableView<>();
+
+TableColumn<Personaje, Integer> colId = new TableColumn<>("ID");
+colId.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+TableColumn<Personaje, String> colNom = new TableColumn<>("Nombre");
+colNom.setCellValueFactory(new PropertyValueFactory<>("nombre"));
+
+tabla.getColumns().addAll(colId, colNom);
+tabla.setItems(listaObservablePersonajes);`,
+        methods: [
+          { name: 'new TableView<T>()', sig: 'Constructor', desc: 'Crea una tabla para objetos del modelo de clase T.' },
+          { name: 'getColumns().add(columna)', sig: 'boolean', desc: 'Agrega una columna tipada a la tabla.' },
+          { name: 'setItems(ObservableList items)', sig: 'void', desc: 'Enlaza la colección observable de objetos del modelo.' },
+          { name: 'getSelectionModel().getSelectedItem()', sig: 'T', desc: 'Retorna la instancia del objeto de la fila seleccionada.' },
+          { name: 'col.setCellValueFactory(...)', sig: 'void', desc: 'Conecta la columna con el getter del objeto (ej: PropertyValueFactory("nombre")).' }
+        ],
+        projectCase: 'Inventario de la Tienda de Videojuegos (EP1), registro de pacientes veterinarios o control de libros prestados.',
+        tip: 'El nombre pasado a PropertyValueFactory("nombre") debe coincidir exactamente con el método getNombre() del JavaBean; si no coincide, la columna quedará en blanco.'
+      },
+
+      // 14. VBOX
+      {
+        id: 'vbox',
+        name: 'VBox',
+        pkg: 'javafx.scene.layout.VBox',
+        category: 'layouts',
+        categoryName: 'Contenedores Layout',
+        windowTitle: 'Distribución Vertical',
+        purpose: 'Contenedor de diseño que apila y organiza sus nodos hijos en una sola columna vertical con espaciado constante.',
+        code: `VBox layoutVertical = new VBox(10); // 10px de separación
+layoutVertical.setPadding(new Insets(15));
+layoutVertical.setAlignment(Pos.CENTER);
+
+layoutVertical.getChildren().addAll(lblTitulo, txtNombre, btnGuardar);`,
+        methods: [
+          { name: 'new VBox(double spacing)', sig: 'Constructor', desc: 'Crea el contenedor especificando el espacio en píxeles entre hijos.' },
+          { name: 'getChildren().addAll(nodo1, nodo2...)', sig: 'boolean', desc: 'Agrega los controles hijos al contenedor.' },
+          { name: 'setPadding(Insets insets)', sig: 'void', desc: 'Establece márgenes interiores para que los hijos no toquen los bordes.' },
+          { name: 'setAlignment(Pos posicion)', sig: 'void', desc: 'Define la alineación (ej: Pos.CENTER, Pos.TOP_LEFT).' }
+        ],
+        projectCase: 'Estructurar formularios apilados o barras laterales de herramientas con botones uno debajo del otro.',
+        tip: 'No uses VBox si necesitas que las etiquetas queden alineadas con sus campos en columnas parejas; para eso usa GridPane.'
+      },
+
+      // 15. HBOX
+      {
+        id: 'hbox',
+        name: 'HBox',
+        pkg: 'javafx.scene.layout.HBox',
+        category: 'layouts',
+        categoryName: 'Contenedores Layout',
+        windowTitle: 'Distribución Horizontal',
+        purpose: 'Contenedor de diseño que organiza sus nodos hijos en una sola fila horizontal con espaciado y control de expansión.',
+        code: `HBox filaBotones = new HBox(10);
+Button btnGuardar = new Button("Guardar");
+Button btnCancelar = new Button("Cancelar");
+
+filaBotones.getChildren().addAll(btnGuardar, btnCancelar);
+
+// Para que un campo de texto se estire automáticamente:
+HBox.setHgrow(txtBuscar, Priority.ALWAYS);`,
+        methods: [
+          { name: 'new HBox(double spacing)', sig: 'Constructor', desc: 'Crea el contenedor horizontal con espaciado entre hijos.' },
+          { name: 'getChildren().addAll(...)', sig: 'boolean', desc: 'Agrega controles a la fila horizontal.' },
+          { name: 'HBox.setHgrow(nodo, Priority.ALWAYS)', sig: 'static void', desc: 'Permite que un campo se expanda para ocupar todo el ancho restante.' }
+        ],
+        projectCase: 'Filas de botones de acción ("Aceptar" y "Cancelar") o buscadores con un campo de texto y botón al lado.',
+        tip: 'Si la ventana se achica y los botones deben saltar al siguiente renglón en vez de cortarse, usa FlowPane.'
+      },
+
+      // 16. GRIDPANE
+      {
+        id: 'gridpane',
+        name: 'GridPane',
+        pkg: 'javafx.scene.layout.GridPane',
+        category: 'layouts',
+        categoryName: 'Contenedores Layout',
+        windowTitle: 'Formulario en Cuadrícula',
+        purpose: 'Contenedor en cuadrícula bidimensional de filas y columnas. Es el layout recomendado para formularios alineados.',
+        code: `GridPane grid = new GridPane();
+grid.setHgap(10); // Separación horizontal
+grid.setVgap(10); // Separación vertical
+grid.setPadding(new Insets(20));
+
+// grid.add(nodo, columna, fila)
+grid.add(new Label("RUT:"), 0, 0);
+grid.add(new TextField(), 1, 0);
+
+grid.add(new Label("Nombre:"), 0, 1);
+grid.add(new TextField(), 1, 1);`,
+        methods: [
+          { name: 'new GridPane()', sig: 'Constructor', desc: 'Crea una cuadrícula vacía.' },
+          { name: 'add(Node child, int col, int row)', sig: 'void', desc: 'Agrega un nodo en la coordenada indicada (columna, fila).' },
+          { name: 'setHgap(double val)', sig: 'void', desc: 'Espacio horizontal en píxeles entre columnas.' },
+          { name: 'setVgap(double val)', sig: 'void', desc: 'Espacio vertical en píxeles entre filas.' }
+        ],
+        projectCase: 'Formularios de ingreso de datos limpios donde los Labels van en columna 0 y los TextFields en columna 1.',
+        tip: 'En el método add, la columna va primero y la fila va después: add(nodo, columna, fila). No inviertas el orden.'
+      },
+
+      // 17. BORDERPANE
+      {
+        id: 'borderpane',
+        name: 'BorderPane',
+        pkg: 'javafx.scene.layout.BorderPane',
+        category: 'layouts',
+        categoryName: 'Contenedores Layout',
+        windowTitle: 'Estructura Principal de Ventana',
+        purpose: 'Organiza la ventana principal en cinco zonas estratégicas: Top, Bottom, Left, Right y Center. La región central se expande automáticamente.',
+        code: `BorderPane root = new BorderPane();
+
+root.setTop(new MenuBar());                // Barra de menú superior
+root.setLeft(new VBox(new Label("Menú"))); // Panel lateral izquierdo
+root.setCenter(new TableView<>());          // Área principal de trabajo
+root.setBottom(new Label("Listo."));        // Barra de estado inferior`,
+        methods: [
+          { name: 'new BorderPane()', sig: 'Constructor', desc: 'Crea el contenedor de 5 regiones.' },
+          { name: 'setTop(Node child)', sig: 'void', desc: 'Coloca un nodo en la cabecera superior (habitualmente MenuBar o ToolBar).' },
+          { name: 'setCenter(Node child)', sig: 'void', desc: 'Coloca el nodo principal en el centro (ocupa todo el espacio sobrante).' },
+          { name: 'setLeft(Node) / setRight(Node)', sig: 'void', desc: 'Coloca paneles laterales de navegación o filtros.' },
+          { name: 'setBottom(Node child)', sig: 'void', desc: 'Coloca el pie de página o barra de estado inferior.' }
+        ],
+        projectCase: 'Contenedor raíz de la Scene en casi todas las aplicaciones completas del curso.',
+        tip: 'Cada región solo admite un nodo directo. Si deseas tener varios botones en el Bottom, agrúpalos dentro de un HBox y asigna ese HBox a setBottom().'
+      },
+
+      // 18. STACKPANE
+      {
+        id: 'stackpane',
+        name: 'StackPane',
+        pkg: 'javafx.scene.layout.StackPane',
+        category: 'layouts',
+        categoryName: 'Contenedores Layout',
+        windowTitle: 'Capas Superpuestas',
+        purpose: 'Superpone sus nodos hijos unos encima de otros en capas en el eje Z (de atrás hacia adelante).',
+        code: `StackPane stack = new StackPane();
+ImageView fotoFondo = new ImageView("mapa.png");
+Label textoEncima = new Label("Nivel 1 Superado");
+textoEncima.setStyle("-fx-font-size: 20px; -fx-text-fill: white;");
+
+stack.getChildren().addAll(fotoFondo, textoEncima);`,
+        methods: [
+          { name: 'new StackPane()', sig: 'Constructor', desc: 'Crea el contenedor de capas superpuestas.' },
+          { name: 'getChildren().addAll(fondo, frente)', sig: 'boolean', desc: 'El primer nodo queda al fondo; el último queda al frente.' },
+          { name: 'setAlignment(Pos posicion)', sig: 'void', desc: 'Centra o alinea todas las capas respecto al contenedor.' }
+        ],
+        projectCase: 'Colocar texto o insignias encima de imágenes de fondo o superponer un spinner de carga sobre una tabla.',
+        tip: 'Si lo que buscas es apilar cosas una debajo de la otra sin taparse, usa VBox, no StackPane.'
+      },
+
+      // 19. SCROLLPANE
+      {
+        id: 'scrollpane',
+        name: 'ScrollPane',
+        pkg: 'javafx.scene.control.ScrollPane',
+        category: 'layouts',
+        categoryName: 'Contenedores Layout',
+        windowTitle: 'Desplazamiento Automático',
+        purpose: 'Envuelve a cualquier nodo hijo y le proporciona barras de scroll cuando su contenido supera las dimensiones visibles de la ventana.',
+        code: `VBox contenidoLargo = new VBox(10);
+// ... agregar muchos controles ...
+
+ScrollPane scroll = new ScrollPane(contenidoLargo);
+scroll.setFitToWidth(true); // Ajusta el ancho al de la ventana`,
+        methods: [
+          { name: 'new ScrollPane(Node content)', sig: 'Constructor', desc: 'Crea el contenedor con el nodo desplazable interior.' },
+          { name: 'setFitToWidth(boolean val)', sig: 'void', desc: 'Fuerza a que el contenido se ajuste al ancho del ScrollPane.' },
+          { name: 'setContent(Node content)', sig: 'void', desc: 'Cambia el nodo de contenido interior.' }
+        ],
+        projectCase: 'Formularios con más campos de los que caben en una resolución estándar de laptop de 768px de alto.',
+        tip: 'No metas un TableView o ListView dentro de un ScrollPane; las tablas ya traen su propio scroll virtualizado nativo.'
+      },
+
+      // 20. MENUBAR
+      {
+        id: 'menubar',
+        name: 'MenuBar, Menu & MenuItem',
+        pkg: 'javafx.scene.control.MenuBar',
+        category: 'nav',
+        categoryName: 'Navegación y Menús',
+        windowTitle: 'Menú Superior de Escritorio',
+        purpose: 'Barra superior tradicional de aplicaciones de escritorio ("Archivo", "Editar", "Ayuda") con opciones desplegables.',
+        code: `MenuBar menuBar = new MenuBar();
+Menu menuArchivo = new Menu("Archivo");
+
+MenuItem itemNuevo = new MenuItem("Nuevo Registro");
+MenuItem itemSalir = new MenuItem("Salir del Sistema");
+itemSalir.setOnAction(e -> Platform.exit());
+
+menuArchivo.getItems().addAll(itemNuevo, itemSalir);
+menuBar.getMenus().add(menuArchivo);`,
+        methods: [
+          { name: 'menuBar.getMenus().add(menu)', sig: 'boolean', desc: 'Agrega un menú desplegable a la barra superior.' },
+          { name: 'menu.getItems().add(item)', sig: 'boolean', desc: 'Agrega una opción individual a un menú.' },
+          { name: 'item.setOnAction(EventHandler h)', sig: 'void', desc: 'Define la acción que se ejecuta al pulsar la opción.' }
+        ],
+        projectCase: 'Barra superior del sistema ubicada en la zona Top de un BorderPane.',
+        tip: 'Los MenuItems no se agregan directamente al MenuBar; se agregan a un Menu, y los Menus se agregan al MenuBar.'
+      },
+
+      // 21. TABPANE
+      {
+        id: 'tabpane',
+        name: 'TabPane & Tab',
+        pkg: 'javafx.scene.control.TabPane',
+        category: 'nav',
+        categoryName: 'Navegación y Menús',
+        windowTitle: 'Pestañas de Navegación',
+        purpose: 'Organiza la aplicación en múltiples paneles independientes intercambiables mediante solapas superiores.',
+        code: `TabPane tabPane = new TabPane();
+
+Tab tab1 = new Tab("Inventario", new VBox(new Label("Panel Inventario")));
+tab1.setClosable(false); // No permitir cerrar
+
+Tab tab2 = new Tab("Ventas", new VBox(new Label("Panel Ventas")));
+tab2.setClosable(false);
+
+tabPane.getTabs().addAll(tab1, tab2);`,
+        methods: [
+          { name: 'new TabPane()', sig: 'Constructor', desc: 'Crea el contenedor de pestañas.' },
+          { name: 'new Tab(String title, Node content)', sig: 'Constructor', desc: 'Crea una pestaña con título y contenido asociado.' },
+          { name: 'tab.setClosable(boolean val)', sig: 'void', desc: 'Oculta o muestra el botón de cierre en la solapa.' },
+          { name: 'getTabs().addAll(tab1, tab2)', sig: 'boolean', desc: 'Agrega las pestañas al contenedor.' }
+        ],
+        projectCase: 'Separar módulos de un sistema comercial (Clientes / Productos / Facturas) sin abrir nuevas ventanas.',
+        tip: 'Usa siempre tab.setClosable(false) en pestañas de trabajo fijas para evitar que el usuario las cierre por accidente.'
+      },
+
+      // 22. ACCORDION
+      {
+        id: 'accordion',
+        name: 'Accordion & TitledPane',
+        pkg: 'javafx.scene.control.Accordion',
+        category: 'nav',
+        categoryName: 'Navegación y Menús',
+        windowTitle: 'Paneles Colapsables',
+        purpose: 'Agrupa paneles con encabezado expandible donde solo uno puede permanecer abierto a la vez (al abrir uno se cierran los demás).',
+        code: `TitledPane p1 = new TitledPane("1. Datos Personales", new VBox(new TextField()));
+TitledPane p2 = new TitledPane("2. Dirección", new VBox(new TextField()));
+
+Accordion acordeon = new Accordion(p1, p2);
+acordeon.setExpandedPane(p1); // Inicia abierto el primero`,
+        methods: [
+          { name: 'new Accordion(pane1, pane2...)', sig: 'Constructor', desc: 'Crea el acordeón con paneles TitledPane.' },
+          { name: 'setExpandedPane(TitledPane p)', sig: 'void', desc: 'Define qué panel arranca desplegado.' }
+        ],
+        projectCase: 'Formularios divididos en etapas de llenado o menú lateral de filtros avanzados.',
+        tip: 'Si necesitas que varios paneles puedan estar abiertos a la vez, usa TitledPanes sueltos dentro de un VBox.'
+      },
+
+      // 23. ALERT
+      {
+        id: 'alert',
+        name: 'Alert',
+        pkg: 'javafx.scene.control.Alert',
+        category: 'dialogs',
+        categoryName: 'Diálogos y Ventanas',
+        windowTitle: 'Mensaje Modal del Sistema',
+        purpose: 'Ventana emergente prefabricada para notificar información, advertencias, errores críticos o solicitar confirmación antes de eliminar datos.',
+        code: `Alert alerta = new Alert(Alert.AlertType.CONFIRMATION);
+alerta.setTitle("Confirmar");
+alerta.setHeaderText("Eliminar Registro");
+alerta.setContentText("¿Estás seguro de continuar?");
+
+Optional<ButtonType> respuesta = alerta.showAndWait();
+if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
+    System.out.println("Registro eliminado.");
+}`,
+        methods: [
+          { name: 'new Alert(AlertType tipo)', sig: 'Constructor', desc: 'Tipos: INFORMATION, WARNING, ERROR, CONFIRMATION.' },
+          { name: 'setTitle(String t)', sig: 'void', desc: 'Establece el título en la barra de ventana del diálogo.' },
+          { name: 'setHeaderText(String h)', sig: 'void', desc: 'Texto destacado en negrita en la cabecera del diálogo.' },
+          { name: 'setContentText(String c)', sig: 'void', desc: 'Cuerpo explicativo detallado del mensaje.' },
+          { name: 'showAndWait()', sig: 'Optional<ButtonType>', desc: 'Muestra el modal de forma síncrona y espera la respuesta del usuario.' }
+        ],
+        projectCase: 'Confirmar "«¿Deseas eliminar este personaje?»" o avisar "«Producto guardado con éxito»".',
+        tip: 'Usa showAndWait() y no show(). showAndWait() bloquea el flujo hasta que el usuario responda, retornando su decisión.'
+      },
+
+      // 24. FILECHOOSER
+      {
+        id: 'filechooser',
+        name: 'FileChooser',
+        pkg: 'javafx.stage.FileChooser',
+        category: 'dialogs',
+        categoryName: 'Diálogos y Ventanas',
+        windowTitle: 'Selección de Archivo del Sistema',
+        purpose: 'Abre el cuadro de diálogo oficial del sistema operativo para abrir o guardar archivos físicos en el disco duro.',
+        code: `FileChooser fc = new FileChooser();
+fc.setTitle("Seleccionar archivo de datos");
+fc.getExtensionFilters().add(
+    new FileChooser.ExtensionFilter("Texto (*.txt)", "*.txt")
+);
+
+File archivo = fc.showOpenDialog(stageActual);
+if (archivo != null) {
+    System.out.println("Ruta: " + archivo.getAbsolutePath());
+}`,
+        methods: [
+          { name: 'new FileChooser()', sig: 'Constructor', desc: 'Crea el selector de archivos.' },
+          { name: 'showOpenDialog(Stage owner)', sig: 'File', desc: 'Abre el diálogo para seleccionar un archivo existente.' },
+          { name: 'showSaveDialog(Stage owner)', sig: 'File', desc: 'Abre el diálogo para guardar un archivo nuevo.' },
+          { name: 'getExtensionFilters().add(...)', sig: 'void', desc: 'Filtra extensiones visibles (ej. *.txt, *.csv).' }
+        ],
+        projectCase: 'Cargar la lista de canciones en Spotify Mini desde un archivo de texto o exportar reportes de ventas.',
+        tip: 'Si el usuario presiona Cancelar, el método devuelve null. Valida siempre if (archivo != null) antes de usarlo.'
+      },
+
+      // 25. DATEPICKER
+      {
+        id: 'datepicker',
+        name: 'DatePicker',
+        pkg: 'javafx.scene.control.DatePicker',
+        category: 'dialogs',
+        categoryName: 'Diálogos y Ventanas',
+        windowTitle: 'Selección de Fecha',
+        purpose: 'Campo de entrada con calendario interactivo desplegable para seleccionar fechas. Se integra de manera nativa con java.time.LocalDate.',
+        code: `DatePicker dpFecha = new DatePicker(LocalDate.now());
+
+LocalDate fechaSeleccionada = dpFecha.getValue();`,
+        methods: [
+          { name: 'new DatePicker()', sig: 'Constructor', desc: 'Crea el selector de fecha vacío.' },
+          { name: 'new DatePicker(LocalDate date)', sig: 'Constructor', desc: 'Crea el selector con una fecha inicial preseleccionada.' },
+          { name: 'getValue()', sig: 'LocalDate', desc: 'Retorna el objeto LocalDate seleccionado por el usuario.' },
+          { name: 'setValue(LocalDate date)', sig: 'void', desc: 'Asigna la fecha seleccionada programáticamente.' }
+        ],
+        projectCase: 'Fecha de ingreso de un alumno, fecha de compra de un videojuego o vencimiento de garantía.',
+        tip: 'DatePicker trabaja exclusivamente con la API moderna java.time.LocalDate; no uses la clase obsoleta java.util.Date.'
+      },
+
+      // 26. IMAGEVIEW
+      {
+        id: 'imageview',
+        name: 'Image & ImageView',
+        pkg: 'javafx.scene.image.ImageView',
+        category: 'media',
+        categoryName: 'Multimedia y Eventos',
+        windowTitle: 'Visualización de Imágenes',
+        purpose: 'Image carga el archivo gráfico en memoria desde resources; ImageView es el Node del árbol visual que lo muestra y escala.',
+        code: `Image img = new Image(getClass().getResourceAsStream("/logo.png"));
+ImageView visor = new ImageView(img);
+
+visor.setFitWidth(150);
+visor.setPreserveRatio(true); // Evita deformaciones`,
+        methods: [
+          { name: 'new ImageView(Image image)', sig: 'Constructor', desc: 'Crea el visualizador con la imagen cargada.' },
+          { name: 'setFitWidth(double w)', sig: 'void', desc: 'Ancho máximo asignado a la imagen.' },
+          { name: 'setFitHeight(double h)', sig: 'void', desc: 'Alto máximo asignado a la imagen.' },
+          { name: 'setPreserveRatio(boolean val)', sig: 'void', desc: 'Conserva la proporción original para no estirar la imagen.' }
+        ],
+        projectCase: 'Mostrar la carátula de canciones en Spotify Mini, avatares de personajes o el logo del software.',
+        tip: 'No cargues la misma Image repetidamente en un bucle; crea una sola instancia de Image y reutilízala en varios ImageView.'
+      },
+
+      // 27. EVENTOS Y HILOS
+      {
+        id: 'events-threads',
+        name: 'Eventos y Hilos (Task / Platform.runLater)',
+        pkg: 'javafx.concurrent.Task',
+        category: 'media',
+        categoryName: 'Multimedia y Eventos',
+        windowTitle: 'Operaciones Asíncronas',
+        purpose: 'Permite ejecutar tareas pesadas (consultas de base de datos o lecturas de archivo lentas) en un hilo secundario sin congelar la interfaz gráfica de usuario.',
+        code: `Task<Void> tareaPesada = new Task<>() {
+    @Override
+    protected Void call() throws Exception {
+        // Código pesado en segundo plano (ej: leer 10.000 líneas)
+        Thread.sleep(2000); 
+
+        // Actualizar la interfaz de forma segura:
+        Platform.runLater(() -> {
+            lblEstado.setText("Proceso completado con éxito");
+        });
+        return null;
+    }
+};
+
+new Thread(tareaPesada).start();`,
+        methods: [
+          { name: 'new Task<V>()', sig: 'Constructor', desc: 'Crea una tarea asíncrona que define su lógica en call().' },
+          { name: 'Platform.runLater(Runnable r)', sig: 'static void', desc: 'Envía una orden de actualización a la interfaz desde un hilo secundario.' }
+        ],
+        projectCase: 'Guardar datos masivos en archivo o simular procesamiento sin congelar los botones de la pantalla.',
+        tip: 'REGLA SAGRADA: Nunca actualices controles de JavaFX directamente desde un Thread secundario sin usar Platform.runLater(). Y nunca ejecutes Thread.sleep() en el hilo principal.'
+      }
+    ];
+
+    const filteredList = computed(() => {
+      let list = components;
+      if (selectedCategory.value !== 'all') {
+        list = list.filter(c => c.category === selectedCategory.value);
+      }
+      if (searchQuery.value.trim() !== '') {
+        const q = searchQuery.value.toLowerCase().trim();
+        list = list.filter(c => 
+          c.name.toLowerCase().includes(q) ||
+          c.pkg.toLowerCase().includes(q) ||
+          c.purpose.toLowerCase().includes(q) ||
+          c.projectCase.toLowerCase().includes(q) ||
+          c.categoryName.toLowerCase().includes(q)
+        );
+      }
+      return list;
+    });
+
+    const getCategoryCount = (catId) => {
+      if (catId === 'all') return components.length;
+      return components.filter(c => c.category === catId).length;
+    };
+
+    const highlightJava = (code) => {
+      if (typeof hljs !== 'undefined') {
+        return hljs.highlight(code, { language: 'java' }).value;
+      }
+      return code;
+    };
+
+    const copiarCodigo = (code, id) => {
+      navigator.clipboard.writeText(code).then(() => {
+        copiadoId.value = id;
+        setTimeout(() => {
+          if (copiadoId.value === id) copiadoId.value = null;
+        }, 2000);
+      });
+    };
+
+    const mostrarAlertaDemo = () => {
+      mockState.value.alertMsg = 'Alerta disparada: Respuesta OK recibida.';
+      setTimeout(() => { mockState.value.alertMsg = ''; }, 3000);
+    };
+
+    const ejecutarHiloDemo = () => {
+      mockState.value.hiloCorriendo = true;
+      mockState.value.hiloEstado = 'Ejecutando tarea pesada en hilo secundario...';
+      setTimeout(() => {
+        mockState.value.hiloCorriendo = false;
+        mockState.value.hiloEstado = 'Completado: UI actualizada con Platform.runLater()';
+      }, 2000);
+    };
+
+    return {
+      searchQuery,
+      selectedCategory,
+      categories,
+      filteredList,
+      getCategoryCount,
+      highlightJava,
+      copiarCodigo,
+      copiadoId,
+      mockState,
+      mostrarAlertaDemo,
+      ejecutarHiloDemo
+    };
+  }
+});
+
+app.mount('#app');
+</script>
+</body>
+</html>
