@@ -1,0 +1,2490 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía 2.2.1 — BiblioTech Parte 1: MVC, JSON y Gson · Profe Carlitos</title>
+  <meta name="description"
+    content="Tutorial paso a paso para construir desde cero una app JavaFX con Maven que busca usuarios por RUT: patrón MVC, archivos JSON y lectura con Gson, explicado línea por línea.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .guide-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .guide-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .section-divider {
+      margin: 40px 0 28px;
+      border-top: 2px solid var(--line);
+    }
+
+    .phase-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 64px 0 24px;
+      padding: 12px 16px;
+      background: var(--pastel-lavanda);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--ink);
+      scroll-margin-top: 16px;
+    }
+
+    .phase-title small {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+
+    h3.sub {
+      font-size: 19px;
+      margin: 32px 0 12px;
+    }
+
+    .checkpoint {
+      background: var(--pastel-menta);
+      border: 2px solid #40a02b;
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 24px 0;
+    }
+
+    .checkpoint strong {
+      color: #2d6a1f;
+    }
+
+    .checkpoint p {
+      margin: 6px 0 0;
+    }
+
+    .reflection-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 16px 0;
+    }
+
+    .reflection-box p {
+      margin: 0;
+      color: var(--accent-amarillo);
+      font-size: 15px;
+    }
+
+    pre.tree,
+    .tree {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.8;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      max-width: 680px;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+    }
+
+    .tree .folder {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .tree .file {
+      color: var(--ink-soft);
+    }
+
+    .tree .new {
+      color: #d20f39;
+      font-weight: 700;
+    }
+
+    .tree .note {
+      color: var(--ink-muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+    }
+
+    /* ---------- Índice ---------- */
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 8px;
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .toc a {
+      display: block;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 15px;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+
+    .toc a:hover {
+      background: var(--bg-soft);
+      border-color: var(--ink);
+      transform: translateX(3px);
+    }
+
+    .toc a span {
+      color: var(--ink-muted);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* ---------- Línea por línea ---------- */
+    .lbl {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .lbl-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      background: var(--bg-muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .lbl-head div {
+      padding: 8px 16px;
+    }
+
+    .lbl-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      border-top: 1px solid var(--line);
+    }
+
+    .lbl-row pre {
+      margin: 0;
+      background: #1E1E2E;
+      color: #CDD6F4;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .lbl-row pre code,
+    .lbl-row pre code.hljs {
+      background: transparent;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    .lbl-exp {
+      padding: 12px 16px;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    .lbl-exp p {
+      margin: 0 0 8px;
+    }
+
+    .lbl-exp p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ---------- ¿Qué pasa si borro? ---------- */
+    details.whatif {
+      background: var(--pastel-rosa);
+      color: var(--accent-rosa);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin: 10px 0 0;
+      font-size: 14px;
+    }
+
+    details.whatif summary {
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    details.whatif summary::before {
+      content: "+ ";
+      font-family: var(--font-mono);
+    }
+
+    details.whatif[open] summary::before {
+      content: "− ";
+    }
+
+    details.whatif[open] summary {
+      margin-bottom: 6px;
+    }
+
+    details.whatif p {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    /* ---------- Capas MVC (código de color) ---------- */
+    .ly {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ly-v { background: var(--pastel-lavanda); color: var(--accent-lavanda); }
+    .ly-c { background: var(--pastel-celeste); color: var(--accent-celeste); }
+    .ly-m { background: var(--pastel-menta); color: var(--accent-menta); }
+    .ly-d { background: var(--pastel-durazno); color: var(--accent-durazno); }
+
+    /* ---------- Diagramas de flujo ---------- */
+    .flow {
+      display: flex;
+      align-items: stretch;
+      margin: 24px 0;
+    }
+
+    .flow-node {
+      flex: 1;
+      min-width: 0;
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      text-align: center;
+      border: 2px solid;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .flow-node:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .flow-node .fn-title {
+      font-weight: 800;
+      font-size: 16px;
+    }
+
+    .flow-node .fn-sub {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      margin-top: 4px;
+      word-break: break-word;
+    }
+
+    .flow-node .fn-desc {
+      font-size: 13px;
+      margin-top: 6px;
+      color: var(--ink-soft);
+    }
+
+    .fn-v { background: var(--pastel-lavanda); border-color: var(--accent-lavanda); }
+    .fn-c { background: var(--pastel-celeste); border-color: var(--accent-celeste); }
+    .fn-m { background: var(--pastel-menta); border-color: var(--accent-menta); }
+    .fn-d { background: var(--pastel-durazno); border-color: var(--accent-durazno); }
+    .fn-n { background: var(--bg-soft); border-color: var(--ink-muted); }
+
+    .flow-arrow {
+      flex: 0 0 96px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: var(--ink-soft);
+      text-align: center;
+      padding: 0 4px;
+    }
+
+    .flow-arrow.short {
+      flex-basis: 40px;
+    }
+
+    .flow-arrow .arr {
+      font-size: 20px;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    /* ---------- Bytes vs caracteres ---------- */
+    .bytes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 16px 0;
+    }
+
+    .bcell {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      text-align: center;
+      min-width: 52px;
+      overflow: hidden;
+      transition: transform 0.15s;
+    }
+
+    .bcell:hover {
+      transform: translateY(-2px);
+    }
+
+    .bcell .ch {
+      font-size: 22px;
+      font-weight: 700;
+      padding: 8px;
+    }
+
+    .bcell .by {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      background: var(--bg-muted);
+      padding: 4px 6px;
+      border-top: 1px solid var(--line);
+    }
+
+    .bcell.multi {
+      border-color: var(--accent-durazno);
+    }
+
+    .bcell.multi .by {
+      background: var(--pastel-durazno);
+      color: var(--accent-durazno);
+      font-weight: 700;
+    }
+
+    /* ---------- Tablas ---------- */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+      margin: 16px 0;
+    }
+
+    .tbl th,
+    .tbl td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tbl th {
+      background: var(--bg-muted);
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--ink-soft);
+    }
+
+    .tbl-wrap {
+      overflow-x: auto;
+    }
+
+    /* ---------- Ventana JavaFX simulada ---------- */
+    .fx-window {
+      max-width: 620px;
+      margin: 20px auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.14);
+      border: 1px solid #c8c8c8;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    }
+
+    .fx-titlebar {
+      background: #e9e9e9;
+      padding: 8px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      color: #333;
+      border-bottom: 1px solid #d0d0d0;
+    }
+
+    .fx-titlebar .fx-ctrls {
+      letter-spacing: 10px;
+      color: #777;
+      font-weight: 400;
+    }
+
+    .fx-body {
+      background: #f4f4f4;
+      padding: 20px;
+      color: #333;
+      font-size: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      min-height: 190px;
+    }
+
+    .fx-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .fx-input {
+      border: 1px solid #b5b5b5;
+      border-radius: 3px;
+      padding: 5px 8px;
+      font-size: 14px;
+      background: #fff;
+      width: 180px;
+      font-family: inherit;
+    }
+
+    .fx-input:focus {
+      outline: 2px solid #039ED3;
+      outline-offset: -1px;
+    }
+
+    .fx-btn {
+      background: linear-gradient(#fdfdfd, #e2e2e2);
+      border: 1px solid #b5b5b5;
+      border-radius: 3px;
+      padding: 5px 14px;
+      cursor: pointer;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .fx-btn:hover {
+      background: linear-gradient(#ffffff, #ececec);
+    }
+
+    .fx-btn:active {
+      background: #d6d6d6;
+    }
+
+    .fx-result {
+      min-height: 20px;
+      font-weight: 600;
+    }
+
+    .sim-options {
+      max-width: 620px;
+      margin: 0 auto 8px;
+      font-size: 14px;
+      color: var(--ink-soft);
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .trace {
+      max-width: 760px;
+      margin: 12px auto 0;
+      padding: 0;
+      list-style: none;
+      counter-reset: paso;
+    }
+
+    .trace li {
+      counter-increment: paso;
+      display: flex;
+      gap: 10px;
+      align-items: baseline;
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14.5px;
+      opacity: 0;
+      animation: trace-in 0.3s ease forwards;
+    }
+
+    .trace li::before {
+      content: counter(paso) ".";
+      font-weight: 700;
+      color: var(--ink-muted);
+      min-width: 22px;
+    }
+
+    .trace li code {
+      font-size: 13px;
+    }
+
+    @keyframes trace-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .activity-zone {
+      margin: 28px 0 8px;
+      padding-top: 8px;
+    }
+
+    .activity-zone > h4 {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin: 0 0 12px;
+    }
+
+    @media (max-width: 760px) {
+      .lbl-head { display: none; }
+      .lbl-row { grid-template-columns: 1fr; }
+      .flow { flex-direction: column; }
+      .flow-arrow { flex-basis: auto; padding: 8px 0; flex-direction: row; }
+      .flow-arrow .arr { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <div class="guide-container">
+
+      <header class="guide-header">
+        <div style="font-size:40px; margin-bottom:12px;">👽</div>
+        <div class="kicker">Guía de actividad · 2.2.1 · Parte 1</div>
+        <h1 style="font-size:clamp(32px,4vw,48px);">BiblioTech: MVC, JSON y Gson</h1>
+        <p class="lead">Vas a construir desde cero una aplicación JavaFX que busca usuarios de una biblioteca por RUT. Los
+          datos están en un archivo JSON, se leen con la librería Gson y el código se organiza con el patrón MVC. Cada
+          línea se explica antes de escribirla.</p>
+      </header>
+
+      <div class="callout callout-lavanda">
+        <h4 style="margin:0 0 8px;">Antes de empezar</h4>
+        <p style="margin:0;">Necesitas tener instalado:</p>
+        <ul style="margin:8px 0 12px; padding-left:20px;">
+          <li><strong>VS Code</strong> con el <strong>Extension Pack for Java</strong></li>
+          <li><strong>JDK 21</strong></li>
+        </ul>
+        <p style="margin:0;">Y saber usar: clases con atributos privados, constructor y getters; <code>ArrayList</code>
+          con <code>add</code> y <code>for</code>; <code>Stage</code>, <code>Scene</code>, <code>VBox</code>,
+          <code>HBox</code>, <code>Label</code>, <code>TextField</code>, <code>Button</code> y
+          <code>setOnAction</code>.</p>
+      </div>
+
+      <div class="card" style="margin-top:24px;">
+        <strong>Contenido</strong>
+        <ul class="toc">
+          <li><a href="#fase-0"><span>0</span>Entender el problema</a></li>
+          <li><a href="#fase-1"><span>1</span>El patrón MVC</a></li>
+          <li><a href="#fase-2"><span>2</span>Proyecto Maven sin arquetipo</a></li>
+          <li><a href="#fase-3"><span>3</span>Paquetes model, view, controller</a></li>
+          <li><a href="#fase-4"><span>4</span>JSON: el formato de los datos</a></li>
+          <li><a href="#fase-5"><span>5</span>El modelo User</a></li>
+          <li><a href="#fase-6"><span>6</span>Gson y UserManager</a></li>
+          <li><a href="#fase-7"><span>7</span>El controlador</a></li>
+          <li><a href="#fase-8"><span>8</span>La vista</a></li>
+          <li><a href="#fase-9"><span>9</span>Ejecutar y probar</a></li>
+          <li><a href="#fase-10"><span>10</span>Recorrido completo</a></li>
+          <li><a href="#avanzado"><span>+</span>Avanzado: TypeToken</a></li>
+        </ul>
+      </div>
+
+      <div class="callout callout-celeste" style="margin-top:24px;">
+        <p style="margin:0;"><strong>Código de colores.</strong> En toda la guía cada capa tiene un color:
+          <span class="ly ly-v">Vista</span> <span class="ly ly-c">Controlador</span>
+          <span class="ly ly-m">Modelo</span> <span class="ly ly-d">Datos (JSON)</span>.
+          Los recuadros rosados <em>"¿Qué pasa si borro esta línea?"</em> se abren con un clic.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 0 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-0">Fase 0 — Entender el problema antes de escribir código
+        <small>Qué hay que construir y qué preguntas debemos responder</small></h2>
+
+      <h3 class="sub">El encargo</h3>
+      <p>La biblioteca <strong>BiblioTech</strong> necesita una pantalla donde el bibliotecario escriba el RUT de un
+        usuario y, al presionar <strong>Buscar</strong>, vea su nombre y su correo. Si el RUT no está registrado, la
+        pantalla debe decirlo.</p>
+
+      <p>Esta es la aplicación terminada. Pruébala con <code>12345678-9</code>, con <code>98765432-1</code>, con un RUT
+        inventado y con el campo vacío:</p>
+
+      <bibliotech-sim></bibliotech-sim>
+
+      <h3 class="sub">Las preguntas de análisis</h3>
+      <p>Antes de abrir el editor, un programador responde qué tiene que hacer el programa. Cada respuesta se convertirá
+        en una parte del código.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Pregunta</th>
+              <th>Respuesta en BiblioTech</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>¿Qué información maneja el programa?</td>
+              <td>Usuarios. Cada usuario tiene RUT, nombre y correo.</td>
+            </tr>
+            <tr>
+              <td>¿Dónde están guardados esos datos?</td>
+              <td>En un archivo de texto con formato JSON que viene dentro del proyecto.</td>
+            </tr>
+            <tr>
+              <td>¿Quién lee ese archivo y busca un usuario por RUT?</td>
+              <td>Una clase que administre la lista de usuarios.</td>
+            </tr>
+            <tr>
+              <td>¿Quién muestra la información en pantalla?</td>
+              <td>La ventana de JavaFX.</td>
+            </tr>
+            <tr>
+              <td>Cuando se presiona Buscar, ¿quién decide a qué clase pedirle el usuario?</td>
+              <td>Un intermediario entre la ventana y los datos.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">¿Por qué no escribir todo en <code>start()</code>?</h3>
+      <p>Podríamos meter todo en un solo método: leer el archivo, crear la ventana y buscar al hacer clic. Funcionaría.
+        Así se vería:</p>
+
+      <pre v-pre class="code-block"><code class="language-java">public void start(Stage stage) {
+    // 1. Leer el archivo de usuarios
+    //    ... 10 líneas para abrir el archivo y convertirlo ...
+
+    // 2. Crear la ventana
+    TextField txf_rut = new TextField();
+    Button btn_buscar = new Button("Buscar");
+    //    ... 10 líneas más de Label, HBox, VBox ...
+
+    // 3. Buscar al hacer clic
+    btn_buscar.setOnAction(evento -&gt; {
+        //    ... recorrer la lista, comparar RUT, actualizar los Label ...
+    });
+}</code></pre>
+
+      <p>El problema aparece cuando el programa crece:</p>
+      <ul>
+        <li>Si los usuarios pasan a estar en una base de datos, hay que editar el mismo método que dibuja la ventana.</li>
+        <li>Si la búsqueda falla, hay que revisar un método con lectura de archivos, botones y etiquetas mezclados.</li>
+        <li>Si otra pantalla necesita buscar usuarios, no puede reutilizar nada: la búsqueda está atrapada dentro del
+          botón.</li>
+      </ul>
+      <p>La tabla de arriba ya separó tres responsabilidades: <strong>los datos</strong>, <strong>la pantalla</strong> y
+        <strong>el intermediario</strong>. Darle a cada una su propia clase tiene nombre: patrón MVC.</p>
+
+      <!-- ============================================================ -->
+      <!-- FASE 1 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-1">Fase 1 — El patrón MVC
+        <small>Qué es un patrón de diseño y qué le corresponde a cada capa</small></h2>
+
+      <h3 class="sub">¿Qué es un patrón de diseño?</h3>
+      <p>Un <strong>patrón de diseño</strong> es una solución probada a un problema que se repite al programar. No es una
+        librería ni algo que se descarga: es una forma de repartir responsabilidades entre clases que muchos programadores
+        ya usaron y les funcionó. Conocer el patrón permite que otra persona abra tu proyecto y sepa dónde buscar cada
+        cosa.</p>
+
+      <h3 class="sub">MVC: Modelo, Vista, Controlador</h3>
+      <p>MVC divide la aplicación en tres capas. Cada una tiene una responsabilidad y, tan importante como eso, cosas que
+        <strong>no</strong> debe hacer.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Capa</th>
+              <th>Su responsabilidad</th>
+              <th>Lo que no debe hacer</th>
+              <th>En BiblioTech</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="ly ly-m">Modelo</span></td>
+              <td>Representar los datos, cargarlos y buscarlos.</td>
+              <td>Crear botones, etiquetas o ventanas.</td>
+              <td><code>User</code>, <code>UserManager</code></td>
+            </tr>
+            <tr>
+              <td><span class="ly ly-v">Vista</span></td>
+              <td>Mostrar información y recibir lo que hace el usuario (escribir, hacer clic).</td>
+              <td>Leer archivos o recorrer la lista de usuarios.</td>
+              <td><code>UserDataView</code>, <code>HomeView</code></td>
+            </tr>
+            <tr>
+              <td><span class="ly ly-c">Controlador</span></td>
+              <td>Recibir los pedidos de la vista, prepararlos y pasárselos al modelo.</td>
+              <td>Dibujar en pantalla o guardar los datos él mismo.</td>
+              <td><code>UserController</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Una analogía: el restaurante</h3>
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px;">
+        <div class="card card-lavanda"><strong>Vista = la sala y la mesa</strong>
+          <p>El cliente ve la carta, hace su pedido y recibe el plato. No sabe cómo se cocina.</p>
+        </div>
+        <div class="card card-celeste"><strong>Controlador = el mesero</strong>
+          <p>Toma el pedido, lo lleva a la cocina y vuelve con el plato. No cocina.</p>
+        </div>
+        <div class="card card-menta"><strong>Modelo = la cocina</strong>
+          <p>Tiene los ingredientes y sabe prepararlos. No atiende mesas.</p>
+        </div>
+        <div class="card card-durazno"><strong>JSON = la despensa</strong>
+          <p>Donde están guardados los ingredientes. Solo la cocina entra ahí.</p>
+        </div>
+      </div>
+      <p style="margin-top:16px;">El cliente nunca entra a la cocina. En código: <strong>la vista nunca le pide datos
+          directamente al modelo</strong>, siempre pasa por el controlador.</p>
+
+      <h3 class="sub">Cómo se comunican</h3>
+      <div class="flow">
+        <div class="flow-node fn-v">
+          <div class="fn-title">Vista</div>
+          <div class="fn-sub">UserDataView</div>
+          <div class="fn-desc">TextField, Button, Label</div>
+        </div>
+        <div class="flow-arrow">
+          <div>buscarUsuario(rut)</div>
+          <div class="arr">⇄</div>
+          <div>User o null</div>
+        </div>
+        <div class="flow-node fn-c">
+          <div class="fn-title">Controlador</div>
+          <div class="fn-sub">UserController</div>
+          <div class="fn-desc">intermediario</div>
+        </div>
+        <div class="flow-arrow">
+          <div>buscarPorRut(rut)</div>
+          <div class="arr">⇄</div>
+          <div>User o null</div>
+        </div>
+        <div class="flow-node fn-m">
+          <div class="fn-title">Modelo</div>
+          <div class="fn-sub">UserManager, User</div>
+          <div class="fn-desc">lista de usuarios</div>
+        </div>
+        <div class="flow-arrow short">
+          <div class="arr">⇄</div>
+        </div>
+        <div class="flow-node fn-d">
+          <div class="fn-title">Datos</div>
+          <div class="fn-sub">users.json</div>
+          <div class="fn-desc">archivo de texto</div>
+        </div>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <matching-pairs v-bind="a.mvcPairs"></matching-pairs>
+        <quiz-question v-bind="a.mvcQ1"></quiz-question>
+        <quiz-question v-bind="a.mvcQ2"></quiz-question>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 2 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-2">Fase 2 — Crear el proyecto Maven sin arquetipo
+        <small>Un proyecto mínimo donde sabemos para qué está cada archivo</small></h2>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">1</div>
+          <div class="step-title">Crea el proyecto en VS Code</div>
+        </div>
+
+        <p>Un <strong>arquetipo</strong> es una plantilla: crea el proyecto con clases, pruebas y configuraciones de
+          ejemplo ya escritas. Vamos a crearlo <strong>sin arquetipo</strong> para partir de lo mínimo y agregar cada
+          archivo sabiendo por qué está ahí.</p>
+
+        <ol>
+          <li>Presiona <code>Ctrl+Shift+P</code> para abrir la paleta de comandos.</li>
+          <li>Escribe <strong>Java: Create Java Project</strong> y selecciónalo.</li>
+          <li>Elige <strong>Maven</strong>.</li>
+          <li>Elige <strong>No Archetype...</strong></li>
+          <li>Como <strong>group Id</strong> escribe <code>com.hachimakidev.bibliotech</code></li>
+          <li>Como <strong>artifact Id</strong> escribe <code>bibliotech</code></li>
+          <li>Elige la carpeta donde se guardará el proyecto.</li>
+        </ol>
+
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <tr>
+              <th style="width:140px;">Dato</th>
+              <th>Qué significa</th>
+            </tr>
+            <tr>
+              <td><code>groupId</code></td>
+              <td>Identifica a quién pertenece el proyecto. Por convención es un dominio al revés (como
+                <code>hachimakidev.com</code> → <code>com.hachimakidev</code>). Se usa también como nombre del paquete
+                principal.</td>
+            </tr>
+            <tr>
+              <td><code>artifactId</code></td>
+              <td>El nombre del proyecto. Es el nombre de la carpeta y del archivo que Maven genera al empaquetar.</td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="callout callout-durazno">
+          <p style="margin:0;">Usa exactamente esos valores. Si cambias el <code>groupId</code>, los nombres de paquete
+            de esta guía no van a calzar con los tuyos.</p>
+        </div>
+
+        <p>VS Code crea esta estructura:</p>
+        <pre v-pre class="tree"><span class="folder">bibliotech/</span>
+├── <span class="file">pom.xml</span>                  <span class="note">configuración de Maven</span>
+└── <span class="folder">src/</span>
+    ├── <span class="folder">main/</span>
+    │   ├── <span class="folder">java/</span>            <span class="note">el código Java (.java)</span>
+    │   │   └── <span class="folder">com/hachimakidev/bibliotech/</span>
+    │   │       └── <span class="file">Main.java</span>
+    │   └── <span class="folder">resources/</span>       <span class="note">archivos que no son código pero el programa necesita</span>
+    └── <span class="folder">test/</span>
+        └── <span class="folder">java/</span>            <span class="note">pruebas automáticas (no las usaremos)</span></pre>
+
+        <p>Cuando compiles, aparecerá una carpeta <code>target/</code>. Ahí Maven deja los archivos <code>.class</code>
+          compilados. No se edita a mano.</p>
+
+        <div class="callout callout-menta">
+          <p style="margin:0;">Si alguna carpeta no aparece (por ejemplo <code>resources</code>), créala: clic derecho
+            sobre la carpeta padre → <strong>New Folder</strong>.</p>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">2</div>
+          <div class="step-title">Configura el pom.xml</div>
+        </div>
+
+        <p>El <code>pom.xml</code> es la ficha del proyecto: cómo se llama, con qué versión de Java se compila y qué
+          librerías necesita. Reemplaza su contenido por este:</p>
+
+        <pre v-pre class="code-block"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.hachimakidev.bibliotech&lt;/groupId&gt;
+    &lt;artifactId&gt;bibliotech&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+            &lt;version&gt;21.0.1&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+&lt;/project&gt;</code></pre>
+
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Código</div>
+            <div>Por qué está</div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns=... xsi:schemaLocation=...&gt;</code></pre>
+            <div class="lbl-exp">
+              <p>Indican que el archivo es XML y qué reglas sigue. VS Code las usa para autocompletar y marcar errores.
+                No se modifican.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-xml">&lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;</code></pre>
+            <div class="lbl-exp">
+              <p>Versión del formato del <code>pom.xml</code>. Siempre es <code>4.0.0</code>.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-xml">&lt;groupId&gt;...&lt;/groupId&gt;
+&lt;artifactId&gt;...&lt;/artifactId&gt;
+&lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</code></pre>
+            <div class="lbl-exp">
+              <p>La identidad del proyecto. <code>SNAPSHOT</code> significa "versión en desarrollo, todavía no
+                terminada".</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-xml">&lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+&lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;</code></pre>
+            <div class="lbl-exp">
+              <p>Le dicen a Maven que el código está escrito en Java 21 y que se compila para ejecutarse en Java 21.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-xml">&lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;</code></pre>
+            <div class="lbl-exp">
+              <p>Indica cómo están codificados los caracteres de tus archivos <code>.java</code>. Con UTF-8, los textos
+                con tilde o ñ, como <code>"Usuario no encontrado."</code> o <code>"—"</code>, se compilan sin
+                deformarse.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+    &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+    &lt;version&gt;21.0.1&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+            <div class="lbl-exp">
+              <p>JavaFX no viene incluido en Java. Esta dependencia le pide a Maven que lo descargue y lo agregue al
+                proyecto. <code>javafx-controls</code> trae <code>Stage</code>, <code>Scene</code>, <code>Label</code>,
+                <code>Button</code>, <code>TextField</code> y los layouts.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si borro esta dependencia?</summary>
+                <p>Todos los <code>import javafx...</code> quedan en rojo: el compilador no encuentra esas clases y el
+                  proyecto no compila.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+
+        <div class="reflection-box">
+          <p>Después de guardar, VS Code puede preguntar si quieres sincronizar la configuración de Maven. Acepta. La
+            primera vez tarda unos segundos porque descarga JavaFX.</p>
+        </div>
+
+        <div class="callout callout-celeste">
+          <p style="margin:0;">Gson todavía no está en el pom. Lo agregaremos en la Fase 6, cuando lo necesitemos.
+            Así sabes exactamente qué línea del pom permite usar Gson.</p>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">3</div>
+          <div class="step-title">Crea BiblioTechApp y Main, y prueba que la ventana abre</div>
+        </div>
+
+        <p>Antes de escribir lógica, comprobamos que JavaFX funciona. En
+          <code>src/main/java/com/hachimakidev/bibliotech/</code> crea <code>BiblioTechApp.java</code>:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech;
+
+import javafx.application.Application;
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class BiblioTechApp extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        stage.setTitle("BiblioTech");
+        stage.setScene(new Scene(new VBox(), 600, 300));
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+}</code></pre>
+
+        <p>Es la estructura que ya conoces: <code>start</code> recibe el <code>Stage</code>, le asignamos una
+          <code>Scene</code> (por ahora con un <code>VBox</code> vacío) y la mostramos. En la Fase 8 cambiaremos el
+          <code>VBox</code> vacío por la vista real.</p>
+
+        <p>Luego reemplaza el contenido de <code>Main.java</code> por:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech;
+
+public class Main {
+    public static void main(String[] args) {
+        BiblioTechApp.main(args);
+    }
+}</code></pre>
+
+        <h3 class="sub" style="margin-top:20px;">¿Por qué existe Main si BiblioTechApp ya tiene main?</h3>
+        <p>Cuando ejecutas directamente una clase que <strong>extiende <code>Application</code></strong>, Java revisa
+          antes de partir que JavaFX esté instalado como módulo del sistema. En nuestro proyecto JavaFX llega por Maven,
+          como una librería más, así que esa revisión falla con el error <em>"faltan los componentes de JavaFX
+            runtime"</em>.</p>
+        <p><code>Main</code> no extiende <code>Application</code>, así que Java no hace esa revisión. <code>Main</code>
+          solo llama a <code>BiblioTechApp.main()</code>, que llama a <code>launch()</code>, y JavaFX arranca
+          normalmente.</p>
+
+        <div class="checkpoint">
+          <strong>Checkpoint</strong>
+          <p>Abre <code>Main.java</code> → clic derecho → <strong>Run Java</strong>. Debe abrirse una ventana vacía con
+            el título <em>BiblioTech</em>.</p>
+          <p>Si en la consola aparece <em>"ADVERTENCIA: Unsupported JavaFX configuration: classes were loaded from
+              'unnamed module'"</em>, no es un error. JavaFX avisa que se cargó como librería y no como módulo. La app
+            funciona igual.</p>
+        </div>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <quiz-question v-bind="a.mavenQ1"></quiz-question>
+        <quiz-question v-bind="a.mavenQ2"></quiz-question>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 3 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-3">Fase 3 — Paquetes model, view y controller
+        <small>Llevar las capas de MVC a carpetas</small></h2>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">4</div>
+          <div class="step-title">Crea los tres paquetes</div>
+        </div>
+
+        <p>Un <strong>paquete</strong> es una carpeta de clases Java. Ya estás usando uno:
+          <code>com.hachimakidev.bibliotech</code> corresponde a la carpeta <code>com/hachimakidev/bibliotech/</code>.
+          Vamos a crear un subpaquete por cada capa de MVC, para que la separación se vea al abrir el proyecto.</p>
+
+        <p>Clic derecho sobre la carpeta <code>bibliotech</code> (la que contiene <code>Main.java</code>) →
+          <strong>New Folder</strong>, tres veces:</p>
+
+        <pre v-pre class="tree"><span class="folder">src/main/java/com/hachimakidev/bibliotech/</span>
+├── <span class="folder new">controller/</span>   <span class="note">el intermediario</span>
+├── <span class="folder new">model/</span>        <span class="note">los datos y su lógica</span>
+├── <span class="folder new">view/</span>         <span class="note">las pantallas</span>
+├── <span class="file">BiblioTechApp.java</span>
+└── <span class="file">Main.java</span></pre>
+
+        <h3 class="sub">La línea <code>package</code></h3>
+        <p>La primera línea de cada archivo <code>.java</code> declara en qué paquete está. Tiene que coincidir con la
+          ruta de carpetas a partir de <code>src/main/java</code>. Una clase en <code>model/</code> empieza con:</p>
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;</code></pre>
+
+        <h3 class="sub">Usar una clase de otro paquete</h3>
+        <p>Desde otro paquete, una clase solo se puede usar si es <code>public</code> y si se importa con su nombre
+          completo:</p>
+        <pre v-pre class="code-block"><code class="language-java">import com.hachimakidev.bibliotech.model.User;</code></pre>
+        <p>Los <code>import</code> también muestran cómo se conectan las capas: si un archivo de <code>view</code>
+          importa algo de <code>model</code> para buscar datos, se está saltando al controlador.</p>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <quiz-question v-bind="a.pkgQ"></quiz-question>
+        <code-error v-bind="a.pkgErr"></code-error>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 4 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-4">Fase 4 — JSON: el formato de los datos
+        <small>Guardar los usuarios fuera del código Java</small></h2>
+
+      <h3 class="sub">El problema</h3>
+      <p>Podríamos crear los usuarios dentro del código:</p>
+      <pre v-pre class="code-block"><code class="language-java">lista_usuarios.add(new User("12345678-9", "Juan Pérez", "juan.perez@example.com"));
+lista_usuarios.add(new User("98765432-1", "María López", "maria.lopez@example.com"));</code></pre>
+      <p>Pero así, para agregar o corregir un usuario hay que editar Java y volver a compilar. Los datos deberían estar
+        en un archivo separado, con un formato que una persona pueda leer y que un programa pueda interpretar sin
+        ambigüedad.</p>
+
+      <h3 class="sub">¿Qué es JSON?</h3>
+      <p><strong>JSON</strong> (<em>JavaScript Object Notation</em>) es un formato de texto para representar datos.
+        Aunque el nombre dice JavaScript, lo usan casi todos los lenguajes, incluido Java. Es un archivo de texto común
+        que sigue unas pocas reglas:</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Regla</th>
+              <th>Ejemplo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Un <strong>objeto</strong> va entre llaves <code>{ }</code> y contiene pares
+                <code>"clave": valor</code>.</td>
+              <td><code>{ "rut": "12345678-9" }</code></td>
+            </tr>
+            <tr>
+              <td>Las claves siempre van entre comillas dobles.</td>
+              <td><code>"nombre"</code></td>
+            </tr>
+            <tr>
+              <td>Los textos van entre comillas dobles. Los números y <code>true</code>/<code>false</code> van sin
+                comillas.</td>
+              <td><code>"Juan"</code>, <code>25</code>, <code>true</code></td>
+            </tr>
+            <tr>
+              <td>Los pares se separan con coma. Después del último par no va coma.</td>
+              <td><code>{ "a": 1, "b": 2 }</code></td>
+            </tr>
+            <tr>
+              <td>Un <strong>arreglo</strong> (lista) va entre corchetes <code>[ ]</code> y sus elementos se separan con
+                coma.</td>
+              <td><code>[ {...}, {...} ]</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">El mismo usuario en Java y en JSON</h3>
+      <div class="grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+        <div>
+          <p style="margin:0 0 4px; font-weight:700;">En Java (un objeto en memoria)</p>
+          <pre v-pre class="code-block"><code class="language-java">User u = new User(
+    "12345678-9",
+    "Juan Pérez",
+    "juan.perez@example.com"
+);</code></pre>
+        </div>
+        <div>
+          <p style="margin:0 0 4px; font-weight:700;">En JSON (texto en un archivo)</p>
+          <pre v-pre class="code-block"><code class="language-json">{
+  "rut": "12345678-9",
+  "nombre": "Juan Pérez",
+  "correo": "juan.perez@example.com"
+}</code></pre>
+        </div>
+      </div>
+      <p>Cada <strong>clave</strong> del JSON corresponde a un <strong>atributo</strong> de la clase
+        <code>User</code>. Un <code>ArrayList&lt;User&gt;</code> se escribe en JSON como un arreglo <code>[ ]</code> de
+        objetos.</p>
+
+      <div class="step-block" style="margin-top:24px;">
+        <div class="step-header">
+          <div class="step-number">5</div>
+          <div class="step-title">Crea users.json en src/main/resources</div>
+        </div>
+
+        <p>Clic derecho sobre <code>src/main/resources</code> → <strong>New File</strong> → <code>users.json</code>:</p>
+
+        <pre v-pre class="code-block"><code class="language-json">[
+  {
+    "rut": "12345678-9",
+    "nombre": "Juan Pérez",
+    "correo": "juan.perez@example.com"
+  },
+  {
+    "rut": "98765432-1",
+    "nombre": "María López",
+    "correo": "maria.lopez@example.com"
+  }
+]</code></pre>
+
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Código</div>
+            <div>Qué significa</div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-json">[</code></pre>
+            <div class="lbl-exp">
+              <p>El archivo completo es un arreglo: una lista de usuarios. Este detalle importa en la Fase 6, cuando le
+                digamos a Gson qué tipo de dato construir.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-json">  {
+    "rut": "12345678-9",
+    "nombre": "Juan Pérez",
+    "correo": "juan.perez@example.com"
+  },</code></pre>
+            <div class="lbl-exp">
+              <p>Un objeto = un usuario. Las claves <code>rut</code>, <code>nombre</code> y <code>correo</code> serán
+                los nombres de los atributos de <code>User</code>.</p>
+              <p>La coma después de <code>}</code> separa este usuario del siguiente.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-json">  {
+    "rut": "98765432-1",
+    ...
+  }</code></pre>
+            <div class="lbl-exp">
+              <p>Segundo usuario. Es el último, así que después de su <code>}</code> no va coma.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-json">]</code></pre>
+            <div class="lbl-exp">
+              <p>Cierra el arreglo.</p>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="sub">¿Por qué en <code>resources</code>?</h3>
+        <p>Al compilar, Maven hace dos cosas: convierte los <code>.java</code> de <code>src/main/java</code> en
+          <code>.class</code>, y <strong>copia</strong> todo lo que está en <code>src/main/resources</code>. Ambos
+          terminan en la misma carpeta: <code>target/classes</code>.</p>
+
+        <pre v-pre class="tree"><span class="folder">target/classes/</span>
+├── <span class="folder">com/hachimakidev/bibliotech/</span>
+│   ├── <span class="file">Main.class</span>
+│   └── <span class="note">... el resto de clases compiladas</span>
+└── <span class="file new">users.json</span>   <span class="note">copiado desde src/main/resources</span></pre>
+
+        <p>Esa carpeta, donde Java busca las clases del programa mientras se ejecuta, se llama
+          <strong>classpath</strong>. Como <code>users.json</code> queda en el classpath, el programa lo encuentra
+          siempre en el mismo lugar, sin importar en qué carpeta del computador esté guardado el proyecto. En la Fase 6
+          veremos el método que lo busca ahí.</p>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <matching-pairs v-bind="a.jsonPairs"></matching-pairs>
+        <quiz-question v-bind="a.jsonQ"></quiz-question>
+        <code-error v-bind="a.jsonErr"></code-error>
+        <code-error v-bind="a.jsonErr2"></code-error>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 5 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-5">Fase 5 — El modelo User
+        <small>La clase que representa a un usuario</small></h2>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">6</div>
+          <div class="step-title">Crea model/User.java</div>
+        </div>
+
+        <p>Ya sabes escribir una clase como esta. Lo nuevo es <strong>dónde</strong> va (en <code>model</code>, porque
+          representa datos) y <strong>una regla</strong> que impone Gson.</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class User {
+    private String rut;
+    private String nombre;
+    private String correo;
+
+    public User() {}
+
+    public User(String rut, String nombre, String correo) {
+        this.rut = rut;
+        this.nombre = nombre;
+        this.correo = correo;
+    }
+
+    public String getRut() { return rut; }
+    public String getNombre() { return nombre; }
+    public String getCorreo() { return correo; }
+}</code></pre>
+
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Código</div>
+            <div>Por qué está</div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;</code></pre>
+            <div class="lbl-exp">
+              <p>El archivo está en la carpeta <code>model</code>. <code>User</code> es parte del Modelo: representa un
+                dato, no dibuja nada ni recibe clics.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">private String rut;
+private String nombre;
+private String correo;</code></pre>
+            <div class="lbl-exp">
+              <p><strong>La regla de Gson:</strong> los nombres de los atributos deben ser idénticos a las claves del
+                JSON, incluyendo mayúsculas y minúsculas. Gson toma la clave <code>"rut"</code> y busca un atributo
+                llamado <code>rut</code>.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si renombro correo a email?</summary>
+                <p>El código compila y no aparece ningún error. Gson encuentra la clave <code>"correo"</code> en el
+                  JSON, no encuentra un atributo con ese nombre y la ignora. <code>email</code> queda en
+                  <code>null</code> y la app muestra <em>"Correo: null"</em>. Es un error silencioso.</p>
+              </details>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">public User() {}</code></pre>
+            <div class="lbl-exp">
+              <p>Constructor vacío. Gson crea cada objeto en dos pasos: primero lo crea vacío con este constructor y
+                luego escribe cada atributo con el valor de la clave que tiene el mismo nombre.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si lo borro?</summary>
+                <p>En este proyecto seguiría funcionando, porque Gson tiene un mecanismo interno de respaldo para crear
+                  objetos sin constructor vacío. Igual se declara: es la forma documentada en que Gson crea objetos y
+                  evita depender de ese respaldo.</p>
+              </details>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">public User(String rut, String nombre, String correo) { ... }</code></pre>
+            <div class="lbl-exp">
+              <p>Constructor con parámetros, para crear un <code>User</code> desde nuestro propio código. Gson no lo
+                usa.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">public String getRut() { return rut; }
+public String getNombre() { return nombre; }
+public String getCorreo() { return correo; }</code></pre>
+            <div class="lbl-exp">
+              <p>Los atributos son privados. La vista necesita leerlos para mostrarlos, así que exponemos getters.</p>
+              <p>No hay setters porque en esta parte nadie modifica un usuario: solo se leen.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <quiz-question v-bind="a.userQ"></quiz-question>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 6 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-6">Fase 6 — Gson y UserManager
+        <small>Leer el archivo JSON y convertirlo en objetos Java línea por línea</small></h2>
+
+      <h3 class="sub">¿Qué es una librería externa?</h3>
+      <p>Java incluye en su kit de desarrollo estándar (JDK) muchas clases útiles: <code>ArrayList</code>, <code>String</code>,
+        <code>Math</code> o <code>System</code>. Sin embargo, Java estándar <strong>no incluye</strong> un lector de archivos JSON.</p>
+
+      <p>Para no escribir cientos de líneas de código manual que analicen comillas, llaves y corchetes, los programadores recurren
+        a <strong>librerías externas</strong>: código ya escrito, probado y empaquetado por otros equipos.
+        <strong>Gson</strong> es una librería desarrollada por Google cuyo único propósito es convertir texto en formato JSON
+        a objetos de Java (y viceversa).</p>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">7</div>
+          <div class="step-title">Agrega la dependencia de Gson en el pom.xml</div>
+        </div>
+
+        <p>Abre <code>pom.xml</code> y agrega el bloque de Gson dentro de la etiqueta <code>&lt;dependencies&gt;</code>,
+          justo debajo de JavaFX:</p>
+
+        <pre v-pre class="code-block"><code class="language-xml">        &lt;dependency&gt;
+            &lt;groupId&gt;com.google.code.gson&lt;/groupId&gt;
+            &lt;artifactId&gt;gson&lt;/artifactId&gt;
+            &lt;version&gt;2.14.0&lt;/version&gt;
+        &lt;/dependency&gt;</code></pre>
+
+        <p>Al guardar el archivo <code>pom.xml</code>, Maven descarga automáticamente el archivo empaquetado de Gson desde
+          Internet y lo deja disponible para todas las clases de tu proyecto.</p>
+
+        <details class="whatif">
+          <summary>¿Qué pasa si borro esta dependencia?</summary>
+          <p>Al intentar escribir <code>import com.google.gson.Gson;</code> en tu código, el compilador marcará un error en rojo:
+            <em>"The import com.google.gson cannot be resolved"</em>. Tu código no sabrá qué es Gson.</p>
+        </details>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">8</div>
+          <div class="step-title">Crea model/UserManager.java</div>
+        </div>
+
+        <p>Dentro de la carpeta <code>src/main/java/com/hachimakidev/bibliotech/model/</code> crea el archivo
+          <code>UserManager.java</code>. Esta clase pertenece al <strong>Modelo</strong>: su responsabilidad es mantener la
+          lista de usuarios en memoria, cargarlos desde el archivo y buscar a un usuario cuando se lo soliciten.</p>
+
+        <p>Escribe el siguiente código completo:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+
+public class UserManager {
+
+    private ArrayList&lt;User&gt; lista_usuarios = new ArrayList&lt;&gt;();
+    private boolean datos_cargados = false;
+
+    public UserManager() {
+        cargarDatos();
+    }
+
+    private void cargarDatos() {
+        try {
+            InputStream stream = getClass().getResourceAsStream("/users.json");
+
+            InputStreamReader reader = new InputStreamReader(stream);
+
+            Gson gson = new Gson();
+            User[] arreglo_usuarios = gson.fromJson(reader, User[].class);
+
+            for (User u : arreglo_usuarios) {
+                lista_usuarios.add(u);
+            }
+
+            datos_cargados = true;
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar users.json: " + e);
+        }
+    }
+
+    public boolean isDatosCargados() {
+        return datos_cargados;
+    }
+
+    public User buscarPorRut(String rut_a_buscar) {
+        for (User u : lista_usuarios) {
+            if (u.getRut().equals(rut_a_buscar)) {
+                return u;
+            }
+        }
+        return null;
+    }
+}</code></pre>
+
+        <h3 class="sub">Explicación línea por línea de UserManager</h3>
+
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Línea de código</div>
+            <div>Por qué existe y qué hace</div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">private ArrayList&lt;User&gt; lista_usuarios = new ArrayList&lt;&gt;();</code></pre>
+            <div class="lbl-exp">
+              <p>Es la lista dinámica donde guardamos todos los objetos <code>User</code> en la memoria RAM del programa.
+                Al ser privada, ninguna otra clase puede modificar o borrar elementos directamente.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">private boolean datos_cargados = false;</code></pre>
+            <div class="lbl-exp">
+              <p>Es una <strong>bandera de estado</strong> (flag). Comienza en <code>false</code>. Solo cambiará a <code>true</code>
+                si el archivo se leyó y procesó sin ningún error. Permite saber si el sistema tiene datos listos para operar.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">public UserManager() {
+    cargarDatos();
+}</code></pre>
+            <div class="lbl-exp">
+              <p>El constructor de la clase. Al crear un <code>new UserManager()</code>, se ejecuta inmediatamente
+                <code>cargarDatos()</code> para que los usuarios queden disponibles desde el primer segundo.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">InputStream stream = getClass().getResourceAsStream("/users.json");</code></pre>
+            <div class="lbl-exp">
+              <p><strong>¿Cómo encuentra Java el archivo?</strong> El archivo <code>users.json</code> no está guardado en una
+                carpeta estática del disco duro como <code>C:\archivos</code>. Está empaquetado dentro de tu aplicación en el
+                <strong>classpath</strong>.</p>
+              <p>El método <code>getClass().getResourceAsStream("/users.json")</code> le dice a Java:
+                <em>"Busca el recurso llamado users.json en la raíz del classpath del programa y abre un canal de lectura"</em>.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si borro la barra diagonal / inicial?</summary>
+                <p>Si escribes <code>"users.json"</code> sin <code>/</code>, Java no buscará en la raíz del classpath, sino dentro de la carpeta
+                  del paquete actual (<code>com/hachimakidev/bibliotech/model/users.json</code>). Como el archivo no está ahí,
+                  <code>stream</code> devolverá <code>null</code> y la carga fallará.</p>
+              </details>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">InputStreamReader reader = new InputStreamReader(stream);</code></pre>
+            <div class="lbl-exp">
+              <p><strong>Bytes vs. Caracteres:</strong> Un <code>InputStream</code> entrega solo números binarios crudos (bytes).
+                Pero nuestro JSON está escrito en texto con letras, acentos y signos de puntuación.</p>
+              <p><code>InputStreamReader</code> actúa como un <strong>adaptador de traducción</strong>: toma los bytes del flujo
+                y los decodifica en caracteres legibles de texto para que puedan ser interpretados.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">Gson gson = new Gson();</code></pre>
+            <div class="lbl-exp">
+              <p>Crea el objeto convertidor proporcionado por la librería externa Gson.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">User[] arreglo_usuarios = gson.fromJson(reader, User[].class);</code></pre>
+            <div class="lbl-exp">
+              <p>El método <code>fromJson</code> realiza la conversión completa:</p>
+              <ol style="margin:4px 0 0; padding-left:20px; font-size:14px;">
+                <li>Lee los caracteres a través del <code>reader</code>.</li>
+                <li>Identifica que el archivo comienza con un corchete <code>[</code>, correspondiente a un arreglo.</li>
+                <li>Por cada bloque <code>{ ... }</code>, crea una instancia de <code>User</code> y llena sus atributos
+                  <code>rut</code>, <code>nombre</code> y <code>correo</code>.</li>
+                <li>Retorna todos los usuarios agrupados en un arreglo de tipo <code>User[]</code>.</li>
+              </ol>
+              <p style="margin-top:6px;">Usamos <code>User[].class</code> porque es la forma directa en que Java le indica a Gson:
+                <em>"El resultado que espero es un arreglo de objetos User"</em>.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">for (User u : arreglo_usuarios) {
+    lista_usuarios.add(u);
+}</code></pre>
+            <div class="lbl-exp">
+              <p>Un arreglo común (<code>User[]</code>) tiene tamaño fijo. Usamos el ciclo <code>for</code> tradicional que ya conoces
+                para pasar cada usuario al <code>ArrayList</code> (<code>lista_usuarios</code>), donde podremos consultar y operar
+                con flexibilidad.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">datos_cargados = true;</code></pre>
+            <div class="lbl-exp">
+              <p>Si la ejecución llegó hasta este punto sin interrupciones, confirmamos que todos los usuarios fueron cargados con éxito.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">} catch (Exception e) {
+    System.out.println("Error al cargar users.json: " + e);
+}</code></pre>
+            <div class="lbl-exp">
+              <p>Si el archivo no se encuentra, o si alguien escribió una coma incorrecta en el JSON, Java lanza una excepción.
+                El bloque <code>catch</code> captura el problema, imprime el diagnóstico detallado en la consola técnica
+                y evita que la aplicación se congele o se cierre de golpe.</p>
+              <p>Como <code>datos_cargados</code> permanece en <code>false</code>, el resto de la aplicación sabrá que no hay datos disponibles.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">public User buscarPorRut(String rut_a_buscar) {
+    for (User u : lista_usuarios) {
+        if (u.getRut().equals(rut_a_buscar)) {
+            return u;
+        }
+    }
+    return null;
+}</code></pre>
+            <div class="lbl-exp">
+              <p>El algoritmo de búsqueda lineal:</p>
+              <ol style="margin:4px 0 0; padding-left:20px; font-size:14px;">
+                <li>Recorre cada usuario <code>u</code> de <code>lista_usuarios</code>.</li>
+                <li>Compara el RUT del usuario con el RUT solicitado usando <code>.equals()</code> (nunca con <code>==</code>, porque en Java los Strings son objetos).</li>
+                <li>Si coincide, retorna inmediatamente el objeto <code>u</code> encontrado (deteniendo el ciclo).</li>
+                <li>Si el ciclo termina de revisar toda la lista y no hubo coincidencias, retorna <code>null</code>.</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="sub">Visualizando Bytes vs. Caracteres</h3>
+        <p>Observa cómo se transforman los datos desde el archivo hasta tu objeto Java:</p>
+
+        <div class="bytes">
+          <div class="bcell">
+            <div class="ch">P</div>
+            <div class="by">0x50</div>
+          </div>
+          <div class="bcell multi">
+            <div class="ch">é</div>
+            <div class="by">0xC3 0xA9</div>
+          </div>
+          <div class="bcell">
+            <div class="ch">r</div>
+            <div class="by">0x72</div>
+          </div>
+          <div class="bcell">
+            <div class="ch">e</div>
+            <div class="by">0x65</div>
+          </div>
+          <div class="bcell">
+            <div class="ch">z</div>
+            <div class="by">0x7A</div>
+          </div>
+        </div>
+        <p style="font-size:14px; color:var(--ink-soft); margin-top:4px;">
+          En codificación UTF-8, la letra acentuada <code>é</code> ocupa <strong>2 bytes</strong> (<code>0xC3 0xA9</code>).
+          <code>InputStream</code> solo ve números hexadecimales sueltos. <code>InputStreamReader</code> los reúne y entrega el carácter
+          exacto <code>'é'</code> a Gson.
+        </p>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <order-steps v-bind="a.gsonSteps"></order-steps>
+        <quiz-question v-bind="a.gsonQ1"></quiz-question>
+        <code-fill v-bind="a.gsonFill"></code-fill>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 7 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-7">Fase 7 — El controlador
+        <small>El intermediario que comunica la pantalla con los datos</small></h2>
+
+      <p>En el patrón MVC, la <strong>Vista</strong> nunca debe comunicarse directamente con el <strong>Modelo</strong>.
+        Si la ventana llamara directo a <code>UserManager</code>, la interfaz gráfica quedaría acoplada a la forma en que
+        se almacenan los datos. Si mañana los datos vienen de una base de datos o de Internet, tendrías que reescribir la ventana.</p>
+
+      <p>El <strong>Controlador</strong> es el puente: recibe la acción de la pantalla, limpia y valida la entrada,
+        le solicita el resultado al modelo y responde a la vista.</p>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">9</div>
+          <div class="step-title">Crea controller/UserController.java</div>
+        </div>
+
+        <p>Dentro de la carpeta <code>src/main/java/com/hachimakidev/bibliotech/controller/</code> crea el archivo
+          <code>UserController.java</code>:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.controller;
+
+import com.hachimakidev.bibliotech.model.User;
+import com.hachimakidev.bibliotech.model.UserManager;
+
+public class UserController {
+
+    private UserManager manager;
+
+    public UserController() {
+        manager = new UserManager();
+    }
+
+    public boolean datosDisponibles() {
+        return manager.isDatosCargados();
+    }
+
+    public User buscarUsuario(String rut_ingresado) {
+        String rut_limpio = rut_ingresado.trim();
+        return manager.buscarPorRut(rut_limpio);
+    }
+}</code></pre>
+
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Código</div>
+            <div>Por qué está y qué resuelve</div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">private UserManager manager;
+
+public UserController() {
+    manager = new UserManager();
+}</code></pre>
+            <div class="lbl-exp">
+              <p>El controlador crea y mantiene su propia instancia de <code>UserManager</code>. La vista no necesita saber
+                que existe <code>UserManager</code>, solo conoce al controlador.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">public boolean datosDisponibles() {
+    return manager.isDatosCargados();
+}</code></pre>
+            <div class="lbl-exp">
+              <p>Permite que la vista consulte si el sistema está operativo antes de hacer una búsqueda. Si el archivo
+                <code>users.json</code> no pudo cargarse, el controlador informará <code>false</code>.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">public User buscarUsuario(String rut_ingresado) {
+    String rut_limpio = rut_ingresado.trim();
+    return manager.buscarPorRut(rut_limpio);
+}</code></pre>
+            <div class="lbl-exp">
+              <p>El método central de mediación. Aplica <code>.trim()</code> para eliminar posibles espacios en blanco
+                accidentales al principio o al final que el usuario haya escrito en la caja de texto (por ejemplo
+                <code>"  12345678-9  "</code>), y le pide al modelo que busque el registro limpio.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <quiz-question v-bind="a.controllerQ"></quiz-question>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 8 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-8">Fase 8 — La vista
+        <small>Construir la pantalla con controles y conectar el botón al controlador</small></h2>
+
+      <p>La <strong>Vista</strong> solo tiene dos tareas:</p>
+      <ol>
+        <li>Dibujar los controles en pantalla (cajas de texto, botones, etiquetas).</li>
+        <li>Escuchar los eventos del usuario (hacer clic en un botón) y pedirle al controlador que haga el trabajo.</li>
+      </ol>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">10</div>
+          <div class="step-title">Crea view/UserDataView.java</div>
+        </div>
+
+        <p>Dentro de <code>src/main/java/com/hachimakidev/bibliotech/view/</code> crea el archivo
+          <code>UserDataView.java</code>:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+
+import com.hachimakidev.bibliotech.controller.UserController;
+import com.hachimakidev.bibliotech.model.User;
+
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+public class UserDataView {
+
+    public VBox userData() {
+
+        UserController controller = new UserController();
+
+        Label lbl_user_rut = new Label("RUT del usuario:");
+        TextField txf_user_rut = new TextField();
+        txf_user_rut.setPromptText("Ej: 12345678-9");
+        Button btn_buscar = new Button("Buscar");
+
+        Label lbl_resultado = new Label();
+        Label lbl_rut = new Label("RUT: —");
+        Label lbl_nombre = new Label("Nombre: —");
+        Label lbl_correo = new Label("Correo: —");
+
+        btn_buscar.setOnAction(evento -&gt; {
+            lbl_rut.setText("RUT: —");
+            lbl_nombre.setText("Nombre: —");
+            lbl_correo.setText("Correo: —");
+
+            String rut_ingresado = txf_user_rut.getText();
+
+            if (!controller.datosDisponibles()) {
+                lbl_resultado.setText("Error: no se pudieron cargar los datos de usuarios.");
+            } else if (rut_ingresado.isBlank()) {
+                lbl_resultado.setText("Escribe un RUT antes de buscar.");
+            } else {
+                User usuario = controller.buscarUsuario(rut_ingresado);
+
+                if (usuario != null) {
+                    lbl_resultado.setText("Usuario encontrado.");
+                    lbl_rut.setText("RUT: " + usuario.getRut());
+                    lbl_nombre.setText("Nombre: " + usuario.getNombre());
+                    lbl_correo.setText("Correo: " + usuario.getCorreo());
+                } else {
+                    lbl_resultado.setText("Usuario no encontrado.");
+                }
+            }
+        });
+
+        HBox fila_busqueda = new HBox(10, lbl_user_rut, txf_user_rut, btn_buscar);
+        VBox box = new VBox(10, fila_busqueda, lbl_resultado, lbl_rut, lbl_nombre, lbl_correo);
+        box.setPadding(new Insets(20));
+
+        return box;
+    }
+
+}</code></pre>
+
+        <h3 class="sub">Explicación del evento del botón</h3>
+        <p>Analicemos la lógica que ocurre cuando el usuario presiona el botón <strong>Buscar</strong>:</p>
+
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Bloque de evento</div>
+            <div>Explicación paso a paso</div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">lbl_rut.setText("RUT: —");
+lbl_nombre.setText("Nombre: —");
+lbl_correo.setText("Correo: —");</code></pre>
+            <div class="lbl-exp">
+              <p><strong>Limpieza visual preventiva:</strong> Antes de mostrar cualquier resultado nuevo, restablecemos
+                las etiquetas a su estado neutro <code>"—"</code> para no dejar en pantalla datos de una búsqueda anterior.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">String rut_ingresado = txf_user_rut.getText();</code></pre>
+            <div class="lbl-exp">
+              <p>Extrae el texto que el usuario escribió dentro del campo <code>TextField</code>.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">if (!controller.datosDisponibles()) {
+    lbl_resultado.setText("Error: no se pudieron cargar los datos de usuarios.");
+}</code></pre>
+            <div class="lbl-exp">
+              <p>Consulta al controlador si los datos están listos. Si el archivo JSON falló al cargarse, le avisa claramente
+                al usuario en pantalla en lugar de fallar silenciosamente.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">else if (rut_ingresado.isBlank()) {
+    lbl_resultado.setText("Escribe un RUT antes de buscar.");
+}</code></pre>
+            <div class="lbl-exp">
+              <p>Valida que el usuario no haya presionado el botón con el campo vacío o lleno solo de espacios en blanco.</p>
+            </div>
+          </div>
+
+          <div class="lbl-row">
+            <pre v-pre><code class="language-java">User usuario = controller.buscarUsuario(rut_ingresado);
+
+if (usuario != null) {
+    lbl_resultado.setText("Usuario encontrado.");
+    lbl_rut.setText("RUT: " + usuario.getRut());
+    lbl_nombre.setText("Nombre: " + usuario.getNombre());
+    lbl_correo.setText("Correo: " + usuario.getCorreo());
+} else {
+    lbl_resultado.setText("Usuario no encontrado.");
+}</code></pre>
+            <div class="lbl-exp">
+              <p>Le pide el usuario al controlador. Si el objeto devuelto <strong>no es null</strong>, extrae los valores con
+                los métodos accesores (<code>getRut()</code>, <code>getNombre()</code>, <code>getCorreo()</code>) y los pinta en los <code>Label</code>.</p>
+              <p>Si el resultado es <code>null</code>, la vista informa con precisión: <em>"Usuario no encontrado."</em>.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-number">11</div>
+          <div class="step-title">Crea view/HomeView.java y conecta con BiblioTechApp</div>
+        </div>
+
+        <p>Para mantener ordenado el proyecto, creamos una vista contenedora para la escena principal.
+          En <code>src/main/java/com/hachimakidev/bibliotech/view/</code> crea <code>HomeView.java</code>:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+
+import javafx.scene.Scene;
+import javafx.scene.layout.VBox;
+
+public class HomeView {
+
+    public Scene homeScene() {
+
+        UserDataView user_data = new UserDataView();
+
+        VBox box_user_data = user_data.userData();
+
+        Scene home_scene = new Scene(box_user_data, 600, 300);
+
+        return home_scene;
+    }
+
+}</code></pre>
+
+        <p>Por último, abre <code>BiblioTechApp.java</code> y actualiza su método <code>start()</code> para que use
+          <code>HomeView</code>:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech;
+
+import com.hachimakidev.bibliotech.view.HomeView;
+
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class BiblioTechApp extends Application {
+
+    @Override
+    public void start(Stage stage) {
+
+        HomeView home_view = new HomeView();
+
+        stage.setTitle("BiblioTech");
+        stage.setScene(home_view.homeScene());
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+
+}</code></pre>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <code-error v-bind="a.viewErr"></code-error>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 9 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-9">Fase 9 — Ejecutar y probar
+        <small>Comprobar los 5 casos de prueba del sistema</small></h2>
+
+      <p>Abre el archivo <code>Main.java</code> en VS Code, haz clic derecho y selecciona <strong>Run Java</strong>
+        (o presiona <code>F5</code>). Se abrirá la ventana oficial de <strong>BiblioTech</strong>.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Caso de prueba</th>
+              <th>Entrada ingresada</th>
+              <th>Resultado esperado en pantalla</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Usuario 1 existente</td>
+              <td><code>12345678-9</code></td>
+              <td>Muestra <em>"Usuario encontrado."</em> con nombre Juan Pérez y su correo.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Usuario 2 existente</td>
+              <td><code>98765432-1</code></td>
+              <td>Muestra <em>"Usuario encontrado."</em> con nombre María López y su correo.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Usuario no registrado</td>
+              <td><code>11111111-1</code></td>
+              <td>Muestra <em>"Usuario no encontrado."</em> y los campos vuelven a <code>"—"</code>.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Campo vacío</td>
+              <td><em>(dejar en blanco y presionar Buscar)</em></td>
+              <td>Muestra <em>"Escribe un RUT antes de buscar."</em>.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Tolerancia a espacios</td>
+              <td><code>&nbsp;&nbsp;12345678-9&nbsp;&nbsp;</code></td>
+              <td>El controlador aplica <code>.trim()</code> y encuentra a Juan Pérez con éxito.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="checkpoint">
+        <strong>Prueba de fuego (Resiliencia ante errores)</strong>
+        <p>Abre <code>src/main/resources/users.json</code> y borra una comilla para dejar el archivo intencionalmente dañado.
+          Guarda y ejecuta la aplicación nuevamente. Al presionar <strong>Buscar</strong> verás:</p>
+        <p><em>"Error: no se pudieron cargar los datos de usuarios."</em></p>
+        <p>Tu aplicación no se cayó ni se congeló: atrapó la excepción en el modelo, alertó al controlador y la vista
+          mostró un mensaje amigable al operador. Restablece el archivo <code>users.json</code> para continuar.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 10 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-10">Fase 10 — Recorrido completo
+        <small>El viaje de un dato desde el clic del ratón hasta la pantalla</small></h2>
+
+      <p>Cuando el operador hace clic en <strong>Buscar</strong> con el RUT <code>12345678-9</code>, el sistema ejecuta
+        esta secuencia exacta a través de las tres capas de la arquitectura MVC:</p>
+
+      <ul class="trace">
+        <li>
+          <div>
+            <strong>1. Evento en la Vista:</strong> El usuario presiona el <code>Button</code>. Se dispara el listener
+            <code>btn_buscar.setOnAction()</code> en <span class="ly ly-v">UserDataView</span>.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>2. Petición al Controlador:</strong> La vista obtiene el texto del <code>TextField</code> y llama al método
+            <code>controller.buscarUsuario("12345678-9")</code> en <span class="ly ly-c">UserController</span>.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>3. Limpieza y delegación:</strong> El controlador limpia los espacios con <code>.trim()</code> y le solicita
+            el usuario al modelo: <code>manager.buscarPorRut("12345678-9")</code>.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>4. Búsqueda en el Modelo:</strong> <span class="ly ly-m">UserManager</span> recorre con un <code>for</code> su
+            <code>ArrayList&lt;User&gt;</code> en memoria RAM (previamente cargado desde <code>users.json</code> con Gson).
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>5. Coincidencia:</strong> Al encontrar la coincidencia con <code>.equals()</code>, retorna la referencia del objeto
+            <code>User</code> encontrado.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>6. Retorno al Controlador:</strong> El controlador recibe el objeto <code>User</code> y se lo devuelve a la vista.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>7. Renderizado en pantalla:</strong> La vista recibe el objeto, extrae los valores con
+            <code>usuario.getNombre()</code> y actualiza los <code>Label</code> correspondientes.
+          </div>
+        </li>
+      </ul>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión</h4>
+        <order-steps v-bind="a.flowOrder"></order-steps>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- SECCIÓN AVANZADA -->
+      <!-- ============================================================ -->
+      <div class="section-divider"></div>
+
+      <div class="card card-lavanda" id="avanzado">
+        <span class="tag tag-avanzado">🟣 Avanzado</span>
+        <h3 style="margin:12px 0 8px;">Lectura directa a ArrayList con TypeToken</h3>
+        <p>En este tutorial aprendiste a leer el JSON convirtiéndolo primero en un arreglo tradicional:
+          <code>gson.fromJson(reader, User[].class)</code> y luego volcándolo a un <code>ArrayList</code> con un <code>for</code>.
+          Esta forma es directa y comprensible porque ya dominas arreglos y bucles.</p>
+
+        <p>Sin embargo, en Java profesional verás con frecuencia esta línea alternativa que lee directamente a una lista sin usar arreglos:</p>
+
+        <pre v-pre class="code-block"><code class="language-java">Type tipoLista = new TypeToken&lt;ArrayList&lt;User&gt;&gt;() {}.getType();
+lista_usuarios = gson.fromJson(reader, tipoLista);</code></pre>
+
+        <p><strong>¿Por qué existe TypeToken?</strong> En Java ocurre un fenómeno llamado <em>Type Erasure</em> (borrado de tipos).
+          Cuando compilas tu código, Java elimina la información genérica: en tiempo de ejecución solo existe <code>ArrayList</code>,
+          pero Java ya no recuerda si era una lista de <code>User</code>, de <code>String</code> o de <code>Integer</code>.</p>
+        <p>Si intentas escribir <code>gson.fromJson(reader, ArrayList&lt;User&gt;.class)</code>, el compilador no lo permite.
+          Para resolver esto, los creadores de Gson diseñaron la clase auxiliar <code>TypeToken</code>, que utiliza reflexión
+          interna para capturar y conservar el tipo completo <code>ArrayList&lt;User&gt;</code>.</p>
+        <p>Ambas alternativas son válidas y producen exactamente el mismo resultado en memoria.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- CIERRE -->
+      <!-- ============================================================ -->
+      <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+        <div style="font-size:40px; margin-bottom:12px;">🛸</div>
+        <h3>BiblioTech: Parte 1 Completada</h3>
+        <p class="lead" style="margin:0 auto; max-width:640px;">Construiste desde cero una aplicación completa basada en
+          arquitectura MVC, con lectura robusta de archivos JSON mediante Gson y una interfaz JavaFX reactiva y validada.</p>
+        <div style="margin-top:20px;">
+          <div class="callout callout-lavanda" style="display:inline-block; text-align:left; max-width:540px;">
+            <h4 style="margin:0 0 8px;">Conceptos fundamentales dominados:</h4>
+            <p style="margin:0; font-size:14.5px; line-height:1.7;">
+              • <strong>MVC:</strong> Separación estricta de responsabilidades (Model, View, Controller).<br>
+              • <strong>JSON:</strong> Estructuración de datos en llaves y corchetes independiente del lenguaje.<br>
+              • <strong>Classpath y getResourceAsStream:</strong> Carga de recursos empaquetados en Maven.<br>
+              • <strong>Gson:</strong> Deserialización de texto a objetos Java línea a línea.<br>
+              • <strong>Manejo preventivo de errores:</strong> Control de archivos dañados o datos inexistentes.
+            </p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../../shared/activity-engine.js"></script>
+
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      data() {
+        return {
+          a: {
+            // FASE 1: MVC
+            mvcPairs: {
+              instruction: "Conecta cada capa del patrón MVC con su responsabilidad en BiblioTech.",
+              level: "base",
+              pairs: [
+                { term: "Modelo (User, UserManager)", definition: "Mantiene los datos en memoria y busca usuarios." },
+                { term: "Vista (UserDataView)", definition: "Muestra la pantalla y recibe los clics del usuario." },
+                { term: "Controlador (UserController)", definition: "Intermediario: recibe la petición de la vista y consulta al modelo." },
+                { term: "Datos (users.json)", definition: "Archivo de texto en el disco que contiene la información sin procesar." }
+              ]
+            },
+            mvcQ1: {
+              question: "¿Por qué la Vista no debe leer directamente el archivo JSON ni recorrer la lista de usuarios?",
+              level: "base",
+              options: [
+                { text: "Porque si cambia la forma de almacenar los datos, habría que reescribir la interfaz gráfica.", correct: true },
+                { text: "Porque Java prohíbe que una clase con botones tenga ciclos for.", correct: false },
+                { text: "Porque el archivo JSON solo puede ser leído por clases que extienden Application.", correct: false }
+              ],
+              explanation: "El desacoplamiento es la clave de MVC: la interfaz debe enfocarse solo en pintar componentes y recibir eventos. La lógica de datos le pertenece al modelo.",
+              hint: "Piensa en qué pasaría si mañana cambiamos el archivo JSON por una base de datos MySQL."
+            },
+            mvcQ2: {
+              question: "En la analogía del restaurante, ¿qué rol cumple el <strong>Controlador</strong>?",
+              level: "base",
+              options: [
+                { text: "Es el cocinero que prepara los platos con los ingredientes.", correct: false },
+                { text: "Es el mesero que toma el pedido de la mesa, se lo lleva a la cocina y regresa con la respuesta.", correct: true },
+                { text: "Es la mesa donde el cliente se sienta a comer.", correct: false }
+              ],
+              explanation: "El mesero (controlador) no cocina (modelo) ni se come el plato (vista); actúa como intermediario para comunicar a ambos mundos.",
+              hint: "El mesero conecta al comensal con la cocina."
+            },
+
+            // FASE 2: MAVEN
+            mavenQ1: {
+              question: "¿Qué función cumple el <code>groupId</code> en un proyecto Maven?",
+              level: "base",
+              options: [
+                { text: "Identifica a la organización o desarrollador dueño del proyecto, usando convención de dominio inverso.", correct: true },
+                { text: "Define el nombre del archivo ejecutable final.", correct: false },
+                { text: "Indica la versión de Java instalada en el sistema operativo.", correct: false }
+              ],
+              explanation: "El groupId representa al autor u organización (ej. com.hachimakidev.bibliotech) y organiza el espacio de nombres de los paquetes.",
+              hint: "Se parece a una dirección web escrita al revés."
+            },
+            mavenQ2: {
+              question: "¿Por qué se utiliza una clase <code>Main.java</code> separada para iniciar JavaFX en lugar de ejecutar directamente la clase que extiende <code>Application</code>?",
+              level: "inter",
+              options: [
+                { text: "Porque la máquina virtual de Java exige que la clase principal no herede de Application cuando JavaFX se carga como librería común.", correct: true },
+                { text: "Porque JavaFX 21 no permite tener métodos main dentro de clases que heredan de Application.", correct: false },
+                { text: "Porque sin Main.java el archivo pom.xml no compila.", correct: false }
+              ],
+              explanation: "Cuando una clase extiende de Application y se lanza directamente, el cargador de Java revisa que JavaFX esté en el módulo del sistema. Al usar Main como lanzador indirecto, esa verificación estricta se sortea.",
+              hint: "Evita el error 'faltan los componentes de JavaFX runtime'."
+            },
+
+            // FASE 3: PAQUETES
+            pkgQ: {
+              question: "¿Qué debe colocarse obligatoriamente en la primera línea de <code>UserManager.java</code> si está dentro de <code>src/main/java/com/hachimakidev/bibliotech/model/</code>?",
+              level: "base",
+              options: [
+                { text: "package com.hachimakidev.bibliotech.model;", correct: true },
+                { text: "import com.hachimakidev.bibliotech.model.*;", correct: false },
+                { text: "namespace bibliotech.model;", correct: false }
+              ],
+              explanation: "La sentencia package debe coincidir exactamente con la estructura de carpetas a partir de src/main/java.",
+              hint: "La palabra reservada en Java es 'package'."
+            },
+            pkgErr: {
+              instruction: "Encuentra la línea que tiene un error de visibilidad o convención de paquetes:",
+              level: "inter",
+              codeLines: [
+                { text: "package com.hachimakidev.bibliotech.view;", hasError: false },
+                { text: "import com.hachimakidev.bibliotech.controller.UserController;", hasError: false },
+                { text: "import com.hachimakidev.bibliotech.model.UserManager;", hasError: true },
+                { text: "public class UserDataView {", hasError: false },
+                { text: "    private UserController controller = new UserController();", hasError: false },
+                { text: "}", hasError: false }
+              ],
+              explanation: "En la arquitectura MVC, la Vista NO debe importar ni conocer a UserManager (el modelo). La vista únicamente se comunica con el controlador.",
+              hint: "Revisa qué import viola la separación de capas de MVC."
+            },
+
+            // FASE 4: JSON
+            jsonPairs: {
+              instruction: "Conecta cada símbolo de la sintaxis JSON con su significado técnico.",
+              level: "base",
+              pairs: [
+                { term: "{ } (Llaves)", definition: "Delimitan un objeto con pares clave-valor." },
+                { term: "[ ] (Corchetes)", definition: "Delimitan un arreglo o lista ordenada de elementos." },
+                { term: "\"clave\": valor", definition: "Un campo donde el nombre siempre debe llevar comillas dobles." },
+                { term: ", (Coma)", definition: "Separador entre elementos (prohibida después del último elemento)." }
+              ]
+            },
+            jsonQ: {
+              question: "¿Por qué <code>users.json</code> se guarda en <code>src/main/resources</code> y no en una carpeta cualquiera del disco?",
+              level: "base",
+              options: [
+                { text: "Porque Maven copia automáticamente el contenido de resources al classpath junto con los .class compilados.", correct: true },
+                { text: "Porque Java solo puede leer archivos si están en una carpeta llamada resources.", correct: false },
+                { text: "Porque las librerías externas como Gson solo aceptan archivos de esa carpeta.", correct: false }
+              ],
+              explanation: "Al compilar, Maven empaqueta el contenido de resources dentro de target/classes. Así, el archivo viaja junto al programa donde sea que se instale.",
+              hint: "Tiene que ver con el classpath y cómo Maven empaqueta el proyecto."
+            },
+            jsonErr: {
+              instruction: "Encuentra la línea con un error de sintaxis que impedirá a Gson leer este archivo JSON:",
+              level: "inter",
+              codeLines: [
+                { text: "[", hasError: false },
+                { text: "  {", hasError: false },
+                { text: "    \"rut\": \"12345678-9\",", hasError: false },
+                { text: "    \"nombre\": \"Juan Pérez\",", hasError: false },
+                { text: "    \"correo\": \"juan@example.com\",", hasError: true },
+                { text: "  }", hasError: false },
+                { text: "]", hasError: false }
+              ],
+              explanation: "En JSON estándar está estrictamente prohibida la coma final (trailing comma) después del último elemento de un objeto o arreglo.",
+              hint: "Revisa si hay una coma sobrante al final de una propiedad."
+            },
+            jsonErr2: {
+              instruction: "Encuentra la línea que viola las reglas estrictas de comillas en JSON:",
+              level: "inter",
+              codeLines: [
+                { text: "[", hasError: false },
+                { text: "  {", hasError: false },
+                { text: "    rut: \"12345678-9\",", hasError: true },
+                { text: "    \"nombre\": \"María López\",", hasError: false },
+                { text: "    \"correo\": \"maria@example.com\"", hasError: false },
+                { text: "  }", hasError: false },
+                { text: "]", hasError: false }
+              ],
+              explanation: "En JSON todas las claves deben estar obligatoriamente rodeadas por comillas dobles. Las claves sin comillas no son válidas.",
+              hint: "Observa la clave 'rut'."
+            },
+
+            // FASE 5: MODELO USER
+            userQ: {
+              question: "¿Por qué los nombres de los atributos en <code>User.java</code> (rut, nombre, correo) deben coincidir exactamente con las claves del JSON?",
+              level: "inter",
+              options: [
+                { text: "Porque Gson asocia las claves del JSON con los campos de la clase buscando exactamente los mismos nombres.", correct: true },
+                { text: "Porque el compilador de Java produce un error si los atributos se llaman diferente al archivo.", correct: false },
+                { text: "Porque JavaFX exige que los campos de texto se llamen igual a las variables del modelo.", correct: false }
+              ],
+              explanation: "Gson realiza el mapeo automático por nombre. Si en JSON dice 'correo' y en Java escribes 'email', Gson no encontrará coincidencia y dejará el atributo en null.",
+              hint: "¿Cómo sabe Gson qué valor va en qué atributo?"
+            },
+
+            // FASE 6: GSON Y USERMANAGER
+            gsonSteps: {
+              instruction: "Ordena los pasos que ocurren dentro de <code>cargarDatos()</code> en <code>UserManager</code>:",
+              level: "inter",
+              explanation: "Primero se abre el canal al recurso en el classpath, se adapta a caracteres, Gson analiza el JSON y finalmente volcamos al ArrayList.",
+              steps: [
+                { text: "InputStream stream = getClass().getResourceAsStream(\"/users.json\");", correctOrder: 1 },
+                { text: "InputStreamReader reader = new InputStreamReader(stream);", correctOrder: 2 },
+                { text: "Gson gson = new Gson();", correctOrder: 3 },
+                { text: "User[] arreglo_usuarios = gson.fromJson(reader, User[].class);", correctOrder: 4 },
+                { text: "for (User u : arreglo_usuarios) { lista_usuarios.add(u); }", correctOrder: 5 }
+              ]
+            },
+            gsonQ1: {
+              question: "¿Cuál es la función específica de <code>InputStreamReader</code> al leer el archivo JSON?",
+              level: "inter",
+              options: [
+                { text: "Traducir el flujo de bytes binarios crudos en caracteres legibles de texto respetando su codificación.", correct: true },
+                { text: "Crear los objetos User en la memoria RAM.", correct: false },
+                { text: "Buscar el archivo dentro del disco duro del computador.", correct: false }
+              ],
+              explanation: "InputStream solo entrega bytes (octetos numéricos). InputStreamReader es el puente que convierte esos bytes a caracteres de texto (char).",
+              hint: "Recuerda la diferencia entre bytes numéricos y letras con acento."
+            },
+            gsonFill: {
+              instruction: "Completa las líneas clave para instanciar Gson y deserializar el arreglo:",
+              level: "inter",
+              explanation: "Creamos la instancia de Gson con new Gson() y llamamos al método fromJson indicando el lector y la clase User[].class.",
+              hint: "La clase es Gson y el método de deserialización es fromJson.",
+              segments: [
+                { text: "Gson gson = new ", isBlank: false },
+                { text: "", isBlank: true, answer: "Gson()" },
+                { text: ";\nUser[] arreglo = gson.", isBlank: false },
+                { text: "", isBlank: true, answer: "fromJson" },
+                { text: "(reader, User[].class);", isBlank: false }
+              ]
+            },
+
+            // FASE 7: CONTROLADOR
+            controllerQ: {
+              question: "Si el bibliotecario escribe el RUT con espacios accidentales como <code>\"  12345678-9  \"</code>, ¿en qué capa se debe limpiar el dato antes de buscar?",
+              level: "base",
+              options: [
+                { text: "En el Controlador (UserController), aplicando .trim() antes de consultar al modelo.", correct: true },
+                { text: "En el archivo users.json modificando el texto almacenado.", correct: false },
+                { text: "En BiblioTechApp al momento de inicializar el Stage.", correct: false }
+              ],
+              explanation: "El controlador es el encargado de procesar, limpiar y coordinar la entrada recibida de la vista antes de pasársela al modelo.",
+              hint: "El controlador valida y prepara la entrada."
+            },
+
+            // FASE 8: VISTA
+            viewErr: {
+              instruction: "Encuentra la línea errónea donde la vista intenta acceder indebidamente al modelo en vez de usar el controlador:",
+              level: "avanzado",
+              codeLines: [
+                { text: "btn_buscar.setOnAction(evento -> {", hasError: false },
+                { text: "    String rut = txf_user_rut.getText();", hasError: false },
+                { text: "    UserManager manager = new UserManager();", hasError: true },
+                { text: "    User u = manager.buscarPorRut(rut);", hasError: false },
+                { text: "    if (u != null) lbl_nombre.setText(u.getNombre());", hasError: false },
+                { text: "});", hasError: false }
+              ],
+              explanation: "Instanciar UserManager dentro de la vista viola la arquitectura MVC. La vista debe llamar a controller.buscarUsuario(rut).",
+              hint: "La vista nunca debe crear ni llamar directamente a UserManager."
+            },
+
+            // FASE 10: FLUJO COMPLETO
+            flowOrder: {
+              instruction: "Ordena cronológicamente qué ocurre al hacer clic en 'Buscar':",
+              level: "avanzado",
+              explanation: "El evento viaja de la Vista al Controlador, el Controlador consulta al Modelo, el Modelo busca en memoria y la Vista pinta la respuesta.",
+              steps: [
+                { text: "El usuario presiona Buscar y se dispara setOnAction en UserDataView.", correctOrder: 1 },
+                { text: "UserDataView llama a controller.buscarUsuario(rut).", correctOrder: 2 },
+                { text: "UserController limpia el RUT con .trim() y llama a manager.buscarPorRut(rut).", correctOrder: 3 },
+                { text: "UserManager itera lista_usuarios con un for comparando con .equals().", correctOrder: 4 },
+                { text: "UserManager retorna el objeto User (o null) al controlador.", correctOrder: 5 },
+                { text: "UserDataView recibe el resultado y actualiza los Labels en pantalla.", correctOrder: 6 }
+              ]
+            }
+          }
+        };
+      }
+    });
+
+    // COMPONENTE: SIMULADOR BIBLIOTECH
+    app.component('bibliotech-sim', {
+      data() {
+        return {
+          rutInput: '12345678-9',
+          simularFallo: false,
+          msgResultado: '',
+          lblRut: 'RUT: —',
+          lblNombre: 'Nombre: —',
+          lblCorreo: 'Correo: —',
+          ultimoEstado: null
+        };
+      },
+      methods: {
+        buscar() {
+          this.lblRut = 'RUT: —';
+          this.lblNombre = 'Nombre: —';
+          this.lblCorreo = 'Correo: —';
+
+          const rut = this.rutInput.trim();
+
+          if (this.simularFallo) {
+            this.msgResultado = 'Error: no se pudieron cargar los datos de usuarios.';
+            this.ultimoEstado = 'error';
+            return;
+          }
+
+          if (!rut) {
+            this.msgResultado = 'Escribe un RUT antes de buscar.';
+            this.ultimoEstado = 'vacio';
+            return;
+          }
+
+          const baseDatos = [
+            { rut: '12345678-9', nombre: 'Juan Pérez', correo: 'juan.perez@example.com' },
+            { rut: '98765432-1', nombre: 'María López', correo: 'maria.lopez@example.com' }
+          ];
+
+          const encontrado = baseDatos.find(u => u.rut === rut);
+
+          if (encontrado) {
+            this.msgResultado = 'Usuario encontrado.';
+            this.lblRut = 'RUT: ' + encontrado.rut;
+            this.lblNombre = 'Nombre: ' + encontrado.nombre;
+            this.lblCorreo = 'Correo: ' + encontrado.correo;
+            this.ultimoEstado = 'ok';
+          } else {
+            this.msgResultado = 'Usuario no encontrado.';
+            this.ultimoEstado = 'no_encontrado';
+          }
+        }
+      },
+      mounted() {
+        this.buscar();
+      },
+      template: `
+        <div>
+          <div class="sim-options">
+            <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13.5px;">
+              <input type="checkbox" v-model="simularFallo" @change="buscar">
+              <span>Simular archivo <code>users.json</code> con error o ausente</span>
+            </label>
+          </div>
+
+          <div class="fx-window">
+            <div class="fx-titlebar">
+              <span>BiblioTech</span>
+              <span class="fx-ctrls">― □ ✕</span>
+            </div>
+            <div class="fx-body">
+              <div class="fx-row">
+                <label style="font-weight:600;">RUT del usuario:</label>
+                <input class="fx-input" v-model="rutInput" placeholder="Ej: 12345678-9" @keyup.enter="buscar" />
+                <button class="fx-btn" @click="buscar">Buscar</button>
+              </div>
+
+              <div class="fx-result" :style="{
+                color: ultimoEstado === 'ok' ? '#2d6a1f' :
+                       ultimoEstado === 'error' ? '#a0415d' :
+                       ultimoEstado === 'no_encontrado' ? '#a0522d' : '#4a4a5a'
+              }">
+                {{ msgResultado }}
+              </div>
+
+              <div style="display:flex; flex-direction:column; gap:4px; font-family:var(--font-mono); font-size:13px; color:#444;">
+                <div>{{ lblRut }}</div>
+                <div>{{ lblNombre }}</div>
+                <div>{{ lblCorreo }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    });
+
+    ActivityEngine.register(app);
+    app.mount('#app');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+      }
+    });
+  </script>
+</body>
+
+</html>
+
