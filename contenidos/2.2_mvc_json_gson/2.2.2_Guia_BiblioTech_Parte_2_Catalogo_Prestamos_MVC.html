@@ -1,0 +1,2753 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía 2.2.2 — BiblioTech Parte 2: Catálogo Polimórfico, TableView y Préstamos · Profe Carlitos</title>
+  <meta name="description"
+    content="Construye paso a paso la segunda parte de BiblioTech: catálogo con herencia y polimorfismo (Libros y Revistas), lectura de JSON compuesto, TableView en JavaFX y lógica de préstamos con excepciones.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .guide-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .guide-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .action-bar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .btn-nav-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+
+    .btn-nav-top:hover {
+      color: var(--ink);
+      border-color: var(--ink-muted);
+      background: var(--bg-muted);
+    }
+
+    .section-divider {
+      margin: 48px 0 32px;
+      border-top: 2px solid var(--line);
+    }
+
+    .phase-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 64px 0 24px;
+      padding: 14px 18px;
+      background: var(--pastel-lavanda);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--ink);
+      scroll-margin-top: 60px;
+    }
+
+    .phase-title small {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+
+    h3.sub {
+      font-size: 19px;
+      margin: 32px 0 12px;
+      font-weight: 700;
+    }
+
+    .checkpoint {
+      background: var(--pastel-menta);
+      border: 2px solid #40a02b;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin: 28px 0;
+    }
+
+    .checkpoint strong {
+      color: #2d6a1f;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .checkpoint p {
+      margin: 6px 0 0;
+      line-height: 1.6;
+    }
+
+    .reflection-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 16px 20px;
+      margin: 18px 0;
+    }
+
+    .reflection-box p {
+      margin: 0;
+      color: var(--accent-amarillo);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Meta-bloque LEGO */
+    .lego-step {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      margin: 24px 0 36px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .lego-step-header {
+      background: var(--bg-muted);
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .lego-step-header .meta-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lego-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .lego-file-loc {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    .lego-step-body {
+      padding: 22px;
+    }
+
+    .imports-box {
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #334155;
+    }
+
+    .imports-box strong {
+      color: #0f172a;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .purpose-banner {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      font-size: 14.5px;
+      color: #1e3a8a;
+      line-height: 1.6;
+    }
+
+    .purpose-banner strong {
+      color: #1d4ed8;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    pre.tree,
+    .tree {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.8;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      max-width: 680px;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+    }
+
+    .tree .folder {
+      color: var(--ink);
+      font-weight: 700;
+    }
+
+    .tree .file {
+      color: var(--ink-soft);
+    }
+
+    .tree .new {
+      color: #d20f39;
+      font-weight: 700;
+    }
+
+    .tree .mod {
+      color: #df8e1d;
+      font-weight: 700;
+    }
+
+    .tree .note {
+      color: var(--ink-muted);
+      font-family: var(--font-body);
+      font-size: 13px;
+    }
+
+    /* Tabla explicativa línea por línea */
+    .lbl {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 16px 0 20px;
+    }
+
+    .lbl-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      background: var(--bg-muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+    }
+
+    .lbl-head div {
+      padding: 8px 16px;
+    }
+
+    .lbl-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      border-top: 1px solid var(--line);
+    }
+
+    .lbl-row pre {
+      margin: 0;
+      background: #1E1E2E;
+      color: #CDD6F4;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .lbl-row pre code,
+    .lbl-row pre code.hljs {
+      background: transparent;
+      padding: 0;
+      font-family: inherit;
+    }
+
+    .lbl-exp {
+      padding: 12px 16px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--ink);
+    }
+
+    .lbl-exp p {
+      margin: 0 0 6px;
+    }
+
+    .lbl-exp p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Desplegables de ayuda */
+    details.whatif {
+      background: var(--pastel-rosa);
+      color: var(--accent-rosa);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+      margin: 12px 0 0;
+      font-size: 14px;
+    }
+
+    details.whatif summary {
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    details.whatif summary::before {
+      content: "+ ";
+      font-family: var(--font-mono);
+    }
+
+    details.whatif[open] summary::before {
+      content: "− ";
+    }
+
+    details.whatif[open] summary {
+      margin-bottom: 6px;
+    }
+
+    details.whatif p {
+      margin: 0;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    /* Desplegable de sincronización de archivo completo */
+    details.filesync {
+      background: var(--bg-muted);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin: 16px 0 8px;
+      font-size: 14px;
+    }
+
+    details.filesync summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--ink);
+      list-style: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    details.filesync summary::before {
+      content: "👁️ ";
+    }
+
+    details.filesync[open] summary {
+      margin-bottom: 10px;
+    }
+
+    /* Desplegable de errores comunes */
+    details.troubleshoot {
+      background: #fff1f2;
+      border: 1px solid #fecdd3;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+
+    details.troubleshoot summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: #be123c;
+      list-style: none;
+    }
+
+    details.troubleshoot summary::before {
+      content: "🚑 ";
+    }
+
+    details.troubleshoot[open] summary {
+      margin-bottom: 8px;
+    }
+
+    details.troubleshoot p {
+      margin: 0 0 6px;
+      color: #4c0519;
+      line-height: 1.5;
+    }
+
+    /* Pastillas de capas MVC */
+    .ly {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ly-v { background: var(--pastel-lavanda); color: var(--accent-lavanda); }
+    .ly-c { background: var(--pastel-celeste); color: var(--accent-celeste); }
+    .ly-m { background: var(--pastel-menta); color: var(--accent-menta); }
+    .ly-d { background: var(--pastel-durazno); color: var(--accent-durazno); }
+
+    /* TOC */
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .toc a {
+      display: block;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 14.5px;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+
+    .toc a:hover {
+      background: var(--bg-soft);
+      border-color: var(--ink);
+      transform: translateX(3px);
+    }
+
+    .toc a span {
+      color: var(--ink-muted);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* Diagrama de flujo */
+    .flow {
+      display: flex;
+      align-items: stretch;
+      margin: 24px 0;
+    }
+
+    .flow-node {
+      flex: 1;
+      min-width: 0;
+      border-radius: var(--radius-md);
+      padding: 14px 12px;
+      text-align: center;
+      border: 2px solid;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .flow-node:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    }
+
+    .flow-node .fn-title {
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .flow-node .fn-sub {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      margin-top: 4px;
+      word-break: break-word;
+    }
+
+    .flow-node .fn-desc {
+      font-size: 12.5px;
+      margin-top: 6px;
+      color: var(--ink-soft);
+    }
+
+    .fn-v { background: var(--pastel-lavanda); border-color: var(--accent-lavanda); }
+    .fn-c { background: var(--pastel-celeste); border-color: var(--accent-celeste); }
+    .fn-m { background: var(--pastel-menta); border-color: var(--accent-menta); }
+    .fn-d { background: var(--pastel-durazno); border-color: var(--accent-durazno); }
+
+    .flow-arrow {
+      flex: 0 0 70px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      color: var(--ink-soft);
+      text-align: center;
+      padding: 0 4px;
+    }
+
+    .flow-arrow .arr {
+      font-size: 18px;
+      line-height: 1;
+      color: var(--ink);
+    }
+
+    /* Traza numerada */
+    .trace {
+      list-style: none;
+      padding: 0;
+      margin: 20px 0;
+      position: relative;
+    }
+
+    .trace::before {
+      content: "";
+      position: absolute;
+      top: 14px;
+      bottom: 14px;
+      left: 17px;
+      width: 2px;
+      background: var(--line);
+    }
+
+    .trace li {
+      position: relative;
+      padding-left: 44px;
+      margin-bottom: 20px;
+    }
+
+    .trace li::before {
+      content: "";
+      position: absolute;
+      top: 6px;
+      left: 10px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--ink);
+      border: 3px solid var(--bg);
+    }
+
+    /* Tablas tradicionales */
+    .tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14.5px;
+      margin: 16px 0;
+    }
+
+    .tbl th,
+    .tbl td {
+      border: 1px solid var(--line);
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tbl th {
+      background: var(--bg-muted);
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-soft);
+    }
+
+    /* Simulador Desktop JavaFX */
+    .fx-window {
+      max-width: 820px;
+      margin: 24px auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.16);
+      border: 1px solid #c8c8c8;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #fbfbfb;
+    }
+
+    .fx-titlebar {
+      background: #e6e6e6;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      color: #333;
+      border-bottom: 1px solid #d0d0d0;
+    }
+
+    .fx-titlebar .fx-ctrls {
+      letter-spacing: 8px;
+      color: #888;
+      font-weight: 400;
+    }
+
+    .fx-tabs {
+      display: flex;
+      background: #dedede;
+      border-bottom: 1px solid #c8c8c8;
+      padding: 4px 8px 0;
+      gap: 4px;
+    }
+
+    .fx-tab {
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 6px 6px 0 0;
+      color: #555;
+      background: #d4d4d4;
+      border: 1px solid transparent;
+      border-bottom: none;
+      transition: all 0.15s;
+    }
+
+    .fx-tab.active {
+      background: #fbfbfb;
+      color: #1a1a2e;
+      border-color: #c8c8c8;
+    }
+
+    .fx-body {
+      padding: 20px;
+      min-height: 400px;
+    }
+
+    .fx-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+
+    .fx-input {
+      padding: 7px 12px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      font-size: 13.5px;
+      flex: 1;
+      min-width: 180px;
+    }
+
+    .fx-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+    }
+
+    .fx-btn {
+      padding: 7px 16px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .fx-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .fx-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      border: 1px solid #d4d4d4;
+      background: white;
+    }
+
+    .fx-table th {
+      background: #f1f5f9;
+      text-align: left;
+      padding: 9px 12px;
+      border-bottom: 2px solid #cbd5e1;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .fx-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+    }
+
+    .fx-table tr.selected {
+      background: #dbeafe !important;
+      color: #1e40af;
+      font-weight: 600;
+    }
+
+    .fx-table tr:hover:not(.selected) {
+      background: #f8fafc;
+      cursor: pointer;
+    }
+
+    .fx-alert-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.45);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+
+    .fx-alert-box {
+      background: white;
+      border-radius: 8px;
+      width: 420px;
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      border: 1px solid #cbd5e1;
+    }
+
+    .fx-alert-header {
+      background: #f8fafc;
+      padding: 12px 16px;
+      font-size: 13.5px;
+      font-weight: 700;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .fx-alert-content {
+      padding: 20px 16px;
+      font-size: 14px;
+      color: #1e293b;
+      line-height: 1.6;
+    }
+
+    .fx-alert-actions {
+      padding: 10px 16px;
+      background: #f8fafc;
+      border-top: 1px solid #e2e8f0;
+      text-align: right;
+    }
+
+    .xray-tracker {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      border: 1px solid #334155;
+    }
+
+    .xray-step {
+      opacity: 0.35;
+      transition: opacity 0.2s;
+    }
+
+    .xray-step.active {
+      opacity: 1;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .activity-zone {
+      margin: 32px 0 12px;
+      padding-top: 8px;
+    }
+
+    .activity-zone > h4 {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      margin: 0 0 12px;
+    }
+
+    @media (max-width: 760px) {
+      .lbl-head { display: none; }
+      .lbl-row { grid-template-columns: 1fr; }
+      .flow { flex-direction: column; }
+      .flow-arrow { flex-basis: auto; padding: 8px 0; flex-direction: row; }
+      .flow-arrow .arr { transform: rotate(90deg); }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- BARRA SUPERIOR DE NAVEGACIÓN -->
+    <div class="top-action-bar">
+      <div class="action-bar-inner">
+        <a href="../../index.html" class="btn-nav-top">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+          Volver al Portal
+        </a>
+        <div style="font-size:13px; font-weight:700; color:var(--ink-soft);">
+          Unidad 2.2 · Guía 2.2.2
+        </div>
+        <a href="2.2.1_Guia_BiblioTech_MVC_JSON_Gson.html" class="btn-nav-top">
+          ← Ver Parte 1 (Base)
+        </a>
+      </div>
+    </div>
+
+    <div class="guide-container">
+
+      <!-- ENCABEZADO -->
+      <header class="guide-header">
+        <div style="font-size:42px; margin-bottom:12px;">📚</div>
+        <div class="kicker">Guía de actividad · 2.2.2 · Parte 2</div>
+        <h1 style="font-size:clamp(30px,4vw,46px);">BiblioTech: Catálogo Polimórfico, TableView y Préstamos</h1>
+        <p class="lead">Continuación directa de la Parte 1. Vas a transformar tu aplicación en un sistema real de biblioteca:
+          diseñarás el catálogo con <strong>herencia y polimorfismo</strong> (Libros y Revistas), resolverás el reto de leer
+          un <strong>JSON compuesto</strong> con Gson, poblarás una <strong>TableView</strong> interactiva y programarás
+          la regla de negocio de préstamos con control de stock y excepciones.</p>
+      </header>
+
+      <!-- CALLOUT DE CONEXIÓN CON PARTE 1 -->
+      <div class="callout callout-celeste">
+        <h4 style="margin:0 0 8px;">Punto de partida: ¿dónde quedaste en la Parte 1?</h4>
+        <p style="margin:0; line-height:1.6;">
+          Al finalizar la <a href="2.2.1_Guia_BiblioTech_MVC_JSON_Gson.html" style="color:var(--accent-celeste); font-weight:700;">Guía 2.2.1</a>,
+          tu proyecto tenía exactamente 6 archivos Java y un JSON:
+        </p>
+        <ul style="margin:8px 0 8px; padding-left:20px; line-height:1.6;">
+          <li><code>Main.java</code> y <code>BiblioTechApp.java</code> (arranque JavaFX).</li>
+          <li><code>model/User.java</code> (con <code>rut</code>, <code>nombre</code>, <code>correo</code>) y <code>model/UserManager.java</code> (lectura de <code>users.json</code> con Gson).</li>
+          <li><code>controller/UserController.java</code> (instancia de <code>UserManager</code>, método <code>buscarUsuario()</code> con <code>.trim()</code>).</li>
+          <li><code>view/UserDataView.java</code> (panel de búsqueda) y <code>view/HomeView.java</code> (escena con <code>user_data.userData()</code>).</li>
+        </ul>
+        <p style="margin:0; font-size:14px; color:var(--ink-soft);">
+          <strong>Esta guía no sobreescribe nada de eso:</strong> el buscador de usuarios sigue funcionando intacto.
+          Lo que haremos es agregar la segunda mitad de la biblioteca: <em>los materiales de lectura y el registro de préstamos</em>.
+        </p>
+      </div>
+
+      <!-- ÍNDICE -->
+      <div class="card" style="margin-top:24px;">
+        <strong>Ruta de aprendizaje modular</strong>
+        <ul class="toc">
+          <li><a href="#fase-0"><span>0</span>El encargo y simulador interactivo</a></li>
+          <li><a href="#fase-1"><span>1</span>Diseño del catálogo: Material, Libro y Revista</a></li>
+          <li><a href="#fase-2"><span>2</span>Implementación del modelo polimórfico</a></li>
+          <li><a href="#fase-3"><span>3</span>El reto del JSON compuesto con Gson</a></li>
+          <li><a href="#fase-4"><span>4</span>Reglas de negocio: PrestamoException y Controller</a></li>
+          <li><a href="#fase-5"><span>5</span>La vista del catálogo con TableView</a></li>
+          <li><a href="#fase-6"><span>6</span>Navegación con TabPane en HomeView</a></li>
+          <li><a href="#fase-7"><span>7</span>Ejecutar, probar y resiliencia</a></li>
+          <li><a href="#fase-8"><span>8</span>Recorrido completo del clic</a></li>
+          <li><a href="#referencia-final"><span>★</span>Código de referencia completo (16 archivos)</a></li>
+        </ul>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 0 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-0">Fase 0 — El encargo y la metodología de trabajo
+        <small>Qué vamos a construir y cómo navegar la guía sin perderse</small></h2>
+
+      <h3 class="sub">El encargo de negocio</h3>
+      <p>La biblioteca municipal <strong>BiblioTech</strong> amplía su sistema. Ahora necesita:</p>
+      <ol style="line-height:1.7; padding-left:22px;">
+        <li>Una pestaña con el <strong>Catálogo de Materiales</strong> en una tabla interactiva: Libros y Revistas mezclados, mostrando autor, título, tipo, detalle, días de préstamo y stock.</li>
+        <li>Un formulario inferior para <strong>prestar el material seleccionado</strong> a un usuario ingresando su RUT.</li>
+        <li><strong>Control estricto de stock:</strong> si un material no tiene unidades disponibles, no se puede prestar.</li>
+        <li><strong>Cálculo polimórfico de devolución:</strong> los libros se prestan por <strong>14 días</strong> y las revistas por <strong>3 días</strong>, calculando la fecha exacta con <code>LocalDate</code>.</li>
+      </ol>
+
+      <div class="callout callout-lavanda" style="margin:20px 0;">
+        <h4 style="margin:0 0 6px;">📍 Navegación por puntos de referencia semánticos (sin números de línea rígidos)</h4>
+        <p style="margin:0; font-size:14.5px; line-height:1.6;">
+          Cada desarrollador tiene su propio espaciado, comentarios o imports distintos, por lo que <strong>los números de línea nunca coinciden entre compañeros</strong>.
+          En esta guía <strong>jamás te diremos "ve a la línea 40" o "en la línea 75"</strong>. Cada bloque tendrá una etiqueta clara con:
+        </p>
+        <div style="margin-top:8px; font-family:var(--font-mono); font-size:13px; background:var(--bg); padding:6px 10px; border-radius:4px; display:inline-block; border:1px solid var(--line);">
+          📄 Archivo: CatalogoView.java · 📍 Ubicación: dentro de catalogo(), después de crear la tabla
+        </div>
+      </div>
+
+      <h3 class="sub">Simulador en vivo de la aplicación terminada</h3>
+      <p>Prueba la aplicación final aquí mismo en el navegador. Cambia de pestaña, selecciona una fila, escribe el RUT <code>12345678-9</code> y pulsa <strong>Prestar seleccionado</strong>. Activa el <strong>Modo Rayos X</strong> para ver cómo viajan los datos entre capas:</p>
+
+      <!-- SIMULADOR V2 -->
+      <bibliotech-sim-v2></bibliotech-sim-v2>
+
+      <!-- ============================================================ -->
+      <!-- FASE 1 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-1">Fase 1 — El diseño del catálogo (Herencia y Polimorfismo)
+        <small>Conectando la Evaluación Parcial 1 con la arquitectura MVC</small></h2>
+
+      <p>Si rendiste la Evaluación Parcial 1 (o revisaste el caso de la Biblioteca Municipal), esta estructura te resultará familiar:
+        <strong>esto ya lo diseñaste en la Unidad 1</strong>. La diferencia es que ahora vivirá dentro de una interfaz JavaFX conectada a JSON.</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Concepto</th>
+              <th>En la clase abstracta Material</th>
+              <th>En Libro (hija)</th>
+              <th>En Revista (hija)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Atributos comunes</strong></td>
+              <td><code>titulo</code>, <code>autor</code>, <code>cantidadDisponible</code></td>
+              <td>Heredados con <code>super()</code></td>
+              <td>Heredados con <code>super()</code></td>
+            </tr>
+            <tr>
+              <td><strong>Atributo exclusivo</strong></td>
+              <td><em>(ninguno)</em></td>
+              <td><code>numPaginas</code> (int)</td>
+              <td><code>mesPublicacion</code> (String)</td>
+            </tr>
+            <tr>
+              <td><strong>Polimorfismo: días</strong></td>
+              <td><code>abstract int calcularDiasPrestamo()</code></td>
+              <td>Retorna <code>14</code></td>
+              <td>Retorna <code>3</code></td>
+            </tr>
+            <tr>
+              <td><strong>Polimorfismo: etiquetas</strong></td>
+              <td><code>abstract String getTipo()</code> y <code>getDetalle()</code></td>
+              <td><code>"Libro"</code> y <code>"464 páginas"</code></td>
+              <td><code>"Revista"</code> y <code>"Edición Octubre"</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión · Relaciones POO</h4>
+        <matching-pairs v-bind="a.umlPairs"></matching-pairs>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 2 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-2">Fase 2 — Implementación del modelo polimórfico
+        <small>Escribir Material, Libro y Revista en el paquete model</small></h2>
+
+      <!-- BLOQUE 2.1: Material.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Nuevo</span>
+            <span class="lego-file-loc">📄 model/Material.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="purpose-banner">
+            <strong>¿Por qué existe esta clase?</strong>
+            Define el contrato base para cualquier lectura de la biblioteca. Es <code>abstract</code> porque en la realidad no existe un "material genérico": nadie pide prestado "un material", piden un <em>Libro</em> o una <em>Revista</em>.
+          </div>
+
+          <div class="lbl">
+            <div class="lbl-head">
+              <div>Bloque de código</div>
+              <div>¿Por qué está y qué resuelve?</div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public abstract class Material {
+
+    private String titulo;
+    private String autor;
+    private int cantidadDisponible;</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Atributos protegidos:</strong> Son comunes a todo material. Encapsulados como privados para evitar que la vista u otra clase altere el stock directamente.</p>
+              </div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">    public Material() {}
+
+    public Material(String titulo, String autor, int cantidadDisponible) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.cantidadDisponible = cantidadDisponible;
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Constructor vacío:</strong> Requerido por Gson para crear objetos mediante reflexión.</p>
+                <p><strong>Constructor con parámetros:</strong> Reutilizado por las subclases usando <code>super()</code>.</p>
+              </div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">    public abstract int calcularDiasPrestamo();
+    public abstract String getTipo();
+    public abstract String getDetalle();
+
+    public int getDiasPrestamo() {
+        return calcularDiasPrestamo();
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>El contrato polimórfico:</strong> Obliga a que cada hijo defina cuántos días se presta y cómo se describe.</p>
+                <p><strong>El puente con TableView:</strong> La tabla JavaFX buscará un getter con convención JavaBean. <code>getDiasPrestamo()</code> llama internamente al método abstracto <code>calcularDiasPrestamo()</code>.</p>
+                <details class="whatif">
+                  <summary>¿Qué pasa si borro getDiasPrestamo()?</summary>
+                  <p>La columna "Días" de la <code>TableView</code> saldrá en blanco, porque <code>PropertyValueFactory("diasPrestamo")</code> busca exactamente un método llamado <code>getDiasPrestamo()</code>.</p>
+                </details>
+              </div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">    public void prestarEjemplar() throws PrestamoException {
+        if (cantidadDisponible <= 0) {
+            throw new PrestamoException("No quedan ejemplares disponibles de \"" + titulo + "\".");
+        }
+        cantidadDisponible--;
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Regla de negocio en el Modelo:</strong> Si no queda stock, el objeto <em>se defiende</em> lanzando una excepción propia. No dejamos que el stock quede en números negativos.</p>
+              </div>
+            </div>
+          </div>
+
+          <details class="filesync">
+            <summary>Ver el archivo model/Material.java completo con sus getters</summary>
+            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public abstract class Material {
+
+    private String titulo;
+    private String autor;
+    private int cantidadDisponible;
+
+    public Material() {}
+
+    public Material(String titulo, String autor, int cantidadDisponible) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.cantidadDisponible = cantidadDisponible;
+    }
+
+    public String getTitulo() { return titulo; }
+    public String getAutor() { return autor; }
+    public int getCantidadDisponible() { return cantidadDisponible; }
+
+    public abstract int calcularDiasPrestamo();
+    public abstract String getTipo();
+    public abstract String getDetalle();
+
+    public int getDiasPrestamo() {
+        return calcularDiasPrestamo();
+    }
+
+    public void prestarEjemplar() throws PrestamoException {
+        if (cantidadDisponible <= 0) {
+            throw new PrestamoException("No quedan ejemplares disponibles de \"" + titulo + "\".");
+        }
+        cantidadDisponible--;
+    }
+}</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- BLOQUE 2.2: Libro.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Nuevo</span>
+            <span class="lego-file-loc">📄 model/Libro.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="purpose-banner">
+            <strong>Especialización Libro:</strong> Hereda de <code>Material</code>, agrega <code>numPaginas</code> y define 14 días de préstamo.
+          </div>
+
+          <div class="lbl">
+            <div class="lbl-head">
+              <div>Bloque de código</div>
+              <div>Explicación</div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class Libro extends Material {
+
+    private int numPaginas;
+
+    public Libro() {}
+
+    public Libro(String titulo, String autor, int cantidadDisponible, int numPaginas) {
+        super(titulo, autor, cantidadDisponible);
+        this.numPaginas = numPaginas;
+    }
+
+    public int getNumPaginas() { return numPaginas; }
+
+    @Override
+    public int calcularDiasPrestamo() { return 14; }
+
+    @Override
+    public String getTipo() { return "Libro"; }
+
+    @Override
+    public String getDetalle() { return numPaginas + " páginas"; }
+}</code></pre>
+              <div class="lbl-exp">
+                <p><strong>super():</strong> Reutiliza la inicialización de los tres atributos del padre.</p>
+                <p><strong>@Override:</strong> Cumple con los tres métodos abstractos. Un libro siempre otorga 14 días.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 2.3: Revista.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Nuevo</span>
+            <span class="lego-file-loc">📄 model/Revista.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="purpose-banner">
+            <strong>Especialización Revista:</strong> Hereda de <code>Material</code>, agrega <code>mesPublicacion</code> y define solo 3 días de préstamo.
+          </div>
+
+          <div class="lbl">
+            <div class="lbl-head">
+              <div>Bloque de código</div>
+              <div>Explicación</div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class Revista extends Material {
+
+    private String mesPublicacion;
+
+    public Revista() {}
+
+    public Revista(String titulo, String autor, int cantidadDisponible, String mesPublicacion) {
+        super(titulo, autor, cantidadDisponible);
+        this.mesPublicacion = mesPublicacion;
+    }
+
+    public String getMesPublicacion() { return mesPublicacion; }
+
+    @Override
+    public int calcularDiasPrestamo() { return 3; }
+
+    @Override
+    public String getTipo() { return "Revista"; }
+
+    @Override
+    public String getDetalle() { return "Edición " + mesPublicacion; }
+}</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Mismo contrato, distinto comportamiento:</strong> La vista tratará a libros y revistas como simples <code>Material</code>, pero al pedir los días, cada uno responderá lo suyo (14 o 3).</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 3 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-3">Fase 3 — El reto del JSON compuesto con Gson
+        <small>Por qué Gson no puede instanciar clases abstractas y cómo resolverlo elegantemente</small></h2>
+
+      <div class="reflection-box">
+        <p><strong>Pregunta trampa:</strong> En la Parte 1 hicimos <code>gson.fromJson(reader, User[].class)</code>.
+        ¿Podríamos hacer ahora <code>gson.fromJson(reader, Material[].class)</code>?</p>
+        <p><strong>¡NO!</strong> Si lo intentas, Gson arrojará una excepción en tiempo de ejecución:
+        <code>java.lang.InstantiationException: Material is abstract</code>. Como <code>Material</code> es abstracto,
+        Java no puede hacer <code>new Material()</code> para llenarlo con los datos del archivo.</p>
+      </div>
+
+      <p>La solución limpia y profesional para este nivel es estructurar <code>catalogo.json</code> como un <strong>objeto compuesto</strong> con dos listas tipadas, y crear una pequeña clase molde llamada <code>CatalogoJson</code>:</p>
+
+      <!-- BLOQUE 3.1: catalogo.json -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-d">Datos · Nuevo</span>
+            <span class="lego-file-loc">📄 src/main/resources/catalogo.json</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <p>Clic derecho sobre <code>src/main/resources</code> → <strong>New File</strong> → <code>catalogo.json</code>:</p>
+          <pre v-pre class="code-block"><code class="language-json">{
+  "libros": [
+    {
+      "titulo": "Clean Code",
+      "autor": "Robert C. Martin",
+      "cantidadDisponible": 3,
+      "numPaginas": 464
+    },
+    {
+      "titulo": "Cien años de soledad",
+      "autor": "Gabriel García Márquez",
+      "cantidadDisponible": 2,
+      "numPaginas": 471
+    },
+    {
+      "titulo": "El Principito",
+      "autor": "Antoine de Saint-Exupéry",
+      "cantidadDisponible": 1,
+      "numPaginas": 96
+    }
+  ],
+  "revistas": [
+    {
+      "titulo": "National Geographic",
+      "autor": "National Geographic Society",
+      "cantidadDisponible": 2,
+      "mesPublicacion": "Septiembre 2026"
+    },
+    {
+      "titulo": "Muy Interesante",
+      "autor": "Editorial Televisa",
+      "cantidadDisponible": 1,
+      "mesPublicacion": "Octubre 2026"
+    }
+  ]
+}</code></pre>
+          <p style="font-size:13.5px; color:var(--ink-soft);">
+            <em>Nota didáctica:</em> Observa que <code>El Principito</code> y <code>Muy Interesante</code> tienen solo <strong>1 ejemplar</strong> disponible. Esto te permitirá probar el caso de "stock agotado" con un solo préstamo durante tus pruebas.
+          </p>
+        </div>
+      </div>
+
+      <!-- BLOQUE 3.2: CatalogoJson.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Nuevo</span>
+            <span class="lego-file-loc">📄 model/CatalogoJson.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="purpose-banner">
+            <strong>La clase molde:</strong> Copia la forma exacta de la raíz del JSON: una clave <code>libros</code> y una clave <code>revistas</code>.
+          </div>
+
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class CatalogoJson {
+
+    private Libro[] libros;
+    private Revista[] revistas;
+
+    public Libro[] getLibros() { return libros; }
+    public Revista[] getRevistas() { return revistas; }
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- BLOQUE 3.3: MaterialManager.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Nuevo</span>
+            <span class="lego-file-loc">📄 model/MaterialManager.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="imports-box">
+            <strong>Imports necesarios:</strong>
+            <code>java.io.InputStream</code>, <code>java.io.InputStreamReader</code>, <code>java.util.ArrayList</code>, <code>com.google.gson.Gson</code>
+          </div>
+
+          <div class="lbl">
+            <div class="lbl-head">
+              <div>Bloque de código</div>
+              <div>Explicación</div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">public class MaterialManager {
+
+    private ArrayList&lt;Material&gt; lista_materiales = new ArrayList&lt;&gt;();
+    private boolean datos_cargados = false;
+
+    public MaterialManager() {
+        cargarDatos();
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Colección polimórfica:</strong> La lista almacena <code>Material</code> (el tipo padre). Tanto los libros como las revistas convivirán juntos en la misma colección.</p>
+              </div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">    private void cargarDatos() {
+        try {
+            InputStream stream = getClass().getResourceAsStream("/catalogo.json");
+            InputStreamReader reader = new InputStreamReader(stream);
+
+            Gson gson = new Gson();
+            CatalogoJson catalogo = gson.fromJson(reader, CatalogoJson.class);
+
+            for (Libro libro : catalogo.getLibros()) {
+                lista_materiales.add(libro);
+            }
+            for (Revista revista : catalogo.getRevistas()) {
+                lista_materiales.add(revista);
+            }
+
+            datos_cargados = true;
+        } catch (Exception e) {
+            System.out.println("Error al cargar catalogo.json: " + e);
+        }
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Lectura limpia:</strong> Gson lee primero el contenedor compuesto <code>CatalogoJson</code>. Luego vertemos ambos arreglos al <code>ArrayList&lt;Material&gt;</code> unificado.</p>
+              </div>
+            </div>
+          </div>
+
+          <details class="filesync">
+            <summary>Ver el archivo model/MaterialManager.java completo</summary>
+            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+
+public class MaterialManager {
+
+    private ArrayList&lt;Material&gt; lista_materiales = new ArrayList&lt;&gt;();
+    private boolean datos_cargados = false;
+
+    public MaterialManager() {
+        cargarDatos();
+    }
+
+    private void cargarDatos() {
+        try {
+            InputStream stream = getClass().getResourceAsStream("/catalogo.json");
+
+            InputStreamReader reader = new InputStreamReader(stream);
+
+            Gson gson = new Gson();
+            CatalogoJson catalogo = gson.fromJson(reader, CatalogoJson.class);
+
+            for (Libro libro : catalogo.getLibros()) {
+                lista_materiales.add(libro);
+            }
+            for (Revista revista : catalogo.getRevistas()) {
+                lista_materiales.add(revista);
+            }
+
+            datos_cargados = true;
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar catalogo.json: " + e);
+        }
+    }
+
+    public boolean isDatosCargados() {
+        return datos_cargados;
+    }
+
+    public ArrayList&lt;Material&gt; obtenerCatalogo() {
+        return lista_materiales;
+    }
+}</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 4 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-4">Fase 4 — Reglas de negocio: PrestamoException, Prestamo y CatalogoController
+        <small>El controlador como orquestador y mediador entre capas</small></h2>
+
+      <!-- BLOQUE 4.1: PrestamoException.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Nuevo</span>
+            <span class="lego-file-loc">📄 model/PrestamoException.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="purpose-banner">
+            <strong>Excepción personalizada (repaso Unidad 1.4):</strong>
+            En vez de retornar cadenas extrañas como <code>"ERROR"</code> o <code>"FAIL"</code>, creamos un tipo propio de excepción que represente un fallo en el negocio de préstamos.
+          </div>
+
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class PrestamoException extends Exception {
+
+    public PrestamoException(String mensaje) {
+        super(mensaje);
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- BLOQUE 4.2: Prestamo.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Nuevo</span>
+            <span class="lego-file-loc">📄 model/Prestamo.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="imports-box">
+            <strong>Imports necesarios:</strong> <code>java.time.LocalDate</code>
+          </div>
+
+          <div class="lbl">
+            <div class="lbl-head">
+              <div>Bloque de código</div>
+              <div>Explicación</div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.time.LocalDate;
+
+public class Prestamo {
+
+    private User usuario;
+    private Material material;
+    private LocalDate fechaPrestamo;
+    private LocalDate fechaDevolucion;
+
+    public Prestamo(User usuario, Material material) {
+        this.usuario = usuario;
+        this.material = material;
+        this.fechaPrestamo = LocalDate.now();
+        this.fechaDevolucion = fechaPrestamo.plusDays(material.calcularDiasPrestamo());
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Unión de los dos mundos:</strong> Relaciona un <code>User</code> con un <code>Material</code>.</p>
+                <p><strong>Polimorfismo en fechas:</strong> <code>material.calcularDiasPrestamo()</code> sumará 14 días si es un libro, o 3 días si es una revista, usando el API moderna <code>java.time.LocalDate</code>.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BLOQUE 4.3: CatalogoController.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-c">Controlador · Nuevo</span>
+            <span class="lego-file-loc">📄 controller/CatalogoController.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="imports-box">
+            <strong>Imports necesarios:</strong>
+            <code>java.util.ArrayList</code>, <code>com.hachimakidev.bibliotech.model.*</code>
+          </div>
+
+          <div class="lbl">
+            <div class="lbl-head">
+              <div>Bloque de código</div>
+              <div>Responsabilidad</div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">public class CatalogoController {
+
+    private MaterialManager manager_materiales;
+    private UserManager manager_usuarios;
+    private ArrayList&lt;Prestamo&gt; lista_prestamos = new ArrayList&lt;&gt;();
+
+    public CatalogoController() {
+        manager_materiales = new MaterialManager();
+        manager_usuarios = new UserManager();
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>El orquestador de MVC:</strong> El controlador es el único que conoce a ambos managers (usuarios y materiales). La vista jamás toca los managers directamente.</p>
+              </div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">    public Prestamo prestar(String rut_ingresado, Material material) throws PrestamoException {
+
+        if (material == null) {
+            throw new PrestamoException("Selecciona un material en la tabla.");
+        }
+
+        String rut_limpio = rut_ingresado.trim();
+        if (rut_limpio.isEmpty()) {
+            throw new PrestamoException("Escribe el RUT de quien pide el préstamo.");
+        }
+
+        User usuario = manager_usuarios.buscarPorRut(rut_limpio);
+        if (usuario == null) {
+            throw new PrestamoException("No existe un usuario con RUT " + rut_limpio + ".");
+        }
+
+        material.prestarEjemplar();
+
+        Prestamo prestamo = new Prestamo(usuario, material);
+        lista_prestamos.add(prestamo);
+        return prestamo;
+    }</code></pre>
+              <div class="lbl-exp">
+                <p><strong>Validaciones escalonadas:</strong></p>
+                <p>1. ¿Hay material seleccionado?<br>
+                   2. ¿El RUT está en blanco?<br>
+                   3. ¿El usuario existe en la biblioteca?<br>
+                   4. Si todo es válido, <code>material.prestarEjemplar()</code> descuenta el stock.<br>
+                   5. Retorna el nuevo <code>Prestamo</code> creado.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 5 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-5">Fase 5 — La vista del catálogo con TableView
+        <small>Construir la pantalla con columnas enlazadas y diálogo de confirmación</small></h2>
+
+      <!-- BLOQUE 5.1: CatalogoView.java -->
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-v">Vista · Nueva</span>
+            <span class="lego-file-loc">📄 view/CatalogoView.java · 📍 Archivo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <p>Dentro de <code>src/main/java/com/hachimakidev/bibliotech/view/</code> crea <code>CatalogoView.java</code>.
+          Construiremos el método <code>catalogo()</code> en 4 bloques claramente identificables:</p>
+
+          <div class="lbl">
+            <div class="lbl-head">
+              <div>Parte del código</div>
+              <div>Propósito</div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">TableView&lt;Material&gt; tbl_catalogo = new TableView&lt;&gt;();
+tbl_catalogo.setPlaceholder(new Label("No hay materiales para mostrar."));
+
+TableColumn&lt;Material, String&gt; col_tipo = new TableColumn&lt;&gt;("Tipo");
+col_tipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+
+TableColumn&lt;Material, String&gt; col_titulo = new TableColumn&lt;&gt;("Título");
+col_titulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
+col_titulo.setPrefWidth(220);
+
+TableColumn&lt;Material, Integer&gt; col_stock = new TableColumn&lt;&gt;("Disponibles");
+col_stock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
+
+tbl_catalogo.getColumns().addAll(col_tipo, col_titulo, ...);
+tbl_catalogo.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));</code></pre>
+              <div class="lbl-exp">
+                <p><strong>1. Configurar la tabla:</strong> Cada columna usa <code>PropertyValueFactory</code> con el nombre de la propiedad. Por ejemplo, <code>"cantidadDisponible"</code> invoca automáticamente a <code>getCantidadDisponible()</code>.</p>
+                <p><strong>FXCollections.observableArrayList:</strong> Envuelve la lista en una colección observable que JavaFX sabe pintar y monitorear.</p>
+              </div>
+            </div>
+            <div class="lbl-row">
+              <pre v-pre><code class="language-java">btn_prestar.setOnAction(evento -> {
+    Material seleccionado = tbl_catalogo.getSelectionModel().getSelectedItem();
+
+    try {
+        Prestamo prestamo = controller.prestar(txf_rut.getText(), seleccionado);
+
+        tbl_catalogo.refresh();
+
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+        String mensaje = prestamo.getUsuario().getNombre()
+                + " se lleva \"" + seleccionado.getTitulo() + "\".\n"
+                + "Plazo: " + seleccionado.calcularDiasPrestamo() + " días.\n"
+                + "Devolver el: " + prestamo.getFechaDevolucion().format(formato);
+
+        mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo registrado", mensaje);
+
+    } catch (PrestamoException e) {
+        mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", e.getMessage());
+    }
+});</code></pre>
+              <div class="lbl-exp">
+                <p><strong>2. El evento de préstamo:</strong></p>
+                <p>• <code>tbl_catalogo.refresh()</code>: Como <code>Material</code> modificó su stock en memoria, forzamos a la tabla a repintar el número.</p>
+                <p>• <strong>Manejo de excepciones:</strong> Si el controlador lanzó <code>PrestamoException</code>, el bloque <code>catch</code> captura el mensaje exacto y abre una alerta de tipo <code>WARNING</code>.</p>
+              </div>
+            </div>
+          </div>
+
+          <details class="troubleshoot">
+            <summary>¿Tu tabla aparece con columnas vacías?</summary>
+            <p>Revisa la palabra exacta dentro de <code>new PropertyValueFactory&lt;&gt;("...")</code>. Debe coincidir exactamente con el getter: si en la clase dice <code>getTitulo()</code>, la propiedad debe decir <code>"titulo"</code> en minúscula. Si escribes <code>"Titulo"</code> con mayúscula, JavaFX no encontrará el método y dejará la celda vacía.</p>
+          </details>
+
+          <details class="filesync">
+            <summary>Ver el archivo view/CatalogoView.java completo</summary>
+            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.view;
+
+import java.time.format.DateTimeFormatter;
+
+import com.hachimakidev.bibliotech.controller.CatalogoController;
+import com.hachimakidev.bibliotech.model.Material;
+import com.hachimakidev.bibliotech.model.Prestamo;
+import com.hachimakidev.bibliotech.model.PrestamoException;
+
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+public class CatalogoView {
+
+    public VBox catalogo() {
+
+        CatalogoController controller = new CatalogoController();
+
+        // ---------- 1. La tabla ----------
+        TableView&lt;Material&gt; tbl_catalogo = new TableView&lt;&gt;();
+        tbl_catalogo.setPlaceholder(new Label("No hay materiales para mostrar."));
+
+        TableColumn&lt;Material, String&gt; col_tipo = new TableColumn&lt;&gt;("Tipo");
+        col_tipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+
+        TableColumn&lt;Material, String&gt; col_titulo = new TableColumn&lt;&gt;("Título");
+        col_titulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
+        col_titulo.setPrefWidth(220);
+
+        TableColumn&lt;Material, String&gt; col_autor = new TableColumn&lt;&gt;("Autor");
+        col_autor.setCellValueFactory(new PropertyValueFactory&lt;&gt;("autor"));
+        col_autor.setPrefWidth(170);
+
+        TableColumn&lt;Material, String&gt; col_detalle = new TableColumn&lt;&gt;("Detalle");
+        col_detalle.setCellValueFactory(new PropertyValueFactory&lt;&gt;("detalle"));
+        col_detalle.setPrefWidth(150);
+
+        TableColumn&lt;Material, Integer&gt; col_dias = new TableColumn&lt;&gt;("Días");
+        col_dias.setCellValueFactory(new PropertyValueFactory&lt;&gt;("diasPrestamo"));
+
+        TableColumn&lt;Material, Integer&gt; col_stock = new TableColumn&lt;&gt;("Disponibles");
+        col_stock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
+
+        tbl_catalogo.getColumns().add(col_tipo);
+        tbl_catalogo.getColumns().add(col_titulo);
+        tbl_catalogo.getColumns().add(col_autor);
+        tbl_catalogo.getColumns().add(col_detalle);
+        tbl_catalogo.getColumns().add(col_dias);
+        tbl_catalogo.getColumns().add(col_stock);
+
+        tbl_catalogo.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));
+
+        // ---------- 2. El formulario de préstamo ----------
+        Label lbl_rut = new Label("RUT del usuario:");
+        TextField txf_rut = new TextField();
+        txf_rut.setPromptText("Ej: 12345678-9");
+        Button btn_prestar = new Button("Prestar seleccionado");
+
+        Label lbl_estado = new Label();
+
+        if (!controller.datosDisponibles()) {
+            lbl_estado.setText("Error: no se pudieron cargar el catálogo o los usuarios.");
+            btn_prestar.setDisable(true);
+        }
+
+        // ---------- 3. El evento del botón ----------
+        btn_prestar.setOnAction(evento -> {
+
+            Material seleccionado = tbl_catalogo.getSelectionModel().getSelectedItem();
+
+            try {
+                Prestamo prestamo = controller.prestar(txf_rut.getText(), seleccionado);
+
+                tbl_catalogo.refresh();
+
+                DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                String mensaje = prestamo.getUsuario().getNombre()
+                        + " se lleva \"" + seleccionado.getTitulo() + "\".\n"
+                        + "Plazo: " + seleccionado.calcularDiasPrestamo() + " días.\n"
+                        + "Devolver el: " + prestamo.getFechaDevolucion().format(formato);
+
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo registrado", mensaje);
+
+            } catch (PrestamoException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", e.getMessage());
+            }
+        });
+
+        // ---------- 4. Armar la pantalla ----------
+        HBox fila_prestamo = new HBox(10, lbl_rut, txf_rut, btn_prestar);
+        VBox box = new VBox(10, tbl_catalogo, fila_prestamo, lbl_estado);
+        box.setPadding(new Insets(20));
+
+        return box;
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+}</code></pre>
+          </details>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 6 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-6">Fase 6 — Navegación con TabPane en HomeView
+        <small>Integrar las dos pantallas en una sola ventana sin romper lo anterior</small></h2>
+
+      <p>Abre <code>src/main/java/com/hachimakidev/bibliotech/view/HomeView.java</code>.
+      En la Parte 1 este archivo solo creaba <code>UserDataView</code>. Ahora lo actualizaremos para crear un contenedor con dos pestañas:</p>
+
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-v">Vista · Modificación</span>
+            <span class="lego-file-loc">📄 view/HomeView.java · 📍 Reemplazo completo</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <div class="imports-box">
+            <strong>Imports necesarios:</strong>
+            <code>javafx.scene.Scene</code>, <code>javafx.scene.control.Tab</code>, <code>javafx.scene.control.TabPane</code>
+          </div>
+
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+
+import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+
+public class HomeView {
+
+    public Scene homeScene() {
+
+        UserDataView user_data = new UserDataView();
+        CatalogoView catalogo_view = new CatalogoView();
+
+        Tab tab_usuarios = new Tab("Usuarios", user_data.userData());
+        Tab tab_catalogo = new Tab("Catálogo y préstamos", catalogo_view.catalogo());
+
+        TabPane tab_pane = new TabPane(tab_usuarios, tab_catalogo);
+        tab_pane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        Scene home_scene = new Scene(tab_pane, 820, 520);
+
+        return home_scene;
+    }
+
+}</code></pre>
+
+          <details class="whatif">
+            <summary>¿Qué hace setTabClosingPolicy(UNAVAILABLE)?</summary>
+            <p>Por defecto JavaFX permite que el usuario cierre pestañas con una cruz ('x'). Como esta es una app de gestión, no queremos que el operador cierre accidentalmente la pantalla de catálogo.</p>
+          </details>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 7 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-7">Fase 7 — Ejecutar, probar y resiliencia
+        <small>La batería completa de pruebas para verificar que tu código es robusto</small></h2>
+
+      <p>Ejecuta la aplicación abriendo <code>Main.java</code> y haciendo clic en <strong>Run</strong> (o en la terminal con <code>mvn clean compile exec:java</code>).
+      Realiza las siguientes 6 pruebas en orden para verificar cada regla de negocio:</p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Prueba</th>
+              <th>Acción en la pantalla</th>
+              <th>Resultado esperado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>1</td>
+              <td>Préstamo de Libro</td>
+              <td>Selecciona <em>Clean Code</em>, escribe <code>12345678-9</code> y pulsa <em>Prestar</em></td>
+              <td>Alerta de información: préstamo por <strong>14 días</strong>. El stock baja de 3 a 2.</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>Préstamo de Revista</td>
+              <td>Selecciona <em>National Geographic</em>, escribe <code>98765432-1</code> y pulsa <em>Prestar</em></td>
+              <td>Alerta de información: préstamo por <strong>3 días</strong>. El stock baja de 2 a 1.</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>Agotamiento de stock</td>
+              <td>Selecciona <em>El Principito</em> (stock 1), presta una vez y vuelve a prestarlo</td>
+              <td>En el segundo intento salta Alerta Warning: <em>"No quedan ejemplares disponibles..."</em>.</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>Usuario no registrado</td>
+              <td>Selecciona cualquier libro y escribe <code>11111111-1</code></td>
+              <td>Alerta Warning: <em>"No existe un usuario con RUT 11111111-1."</em>. El stock no cambia.</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>Sin selección de fila</td>
+              <td>Haz clic en un espacio vacío fuera de la tabla y pulsa <em>Prestar</em></td>
+              <td>Alerta Warning: <em>"Selecciona un material en la tabla."</em>.</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>RUT en blanco</td>
+              <td>Selecciona un libro, borra el campo de texto y pulsa <em>Prestar</em></td>
+              <td>Alerta Warning: <em>"Escribe el RUT de quien pide el préstamo."</em>.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="checkpoint">
+        <strong>Prueba de fuego (Resiliencia ante archivos faltantes)</strong>
+        <p>Renombra temporalmente <code>catalogo.json</code> a <code>catalogo_backup.json</code> y ejecuta la aplicación.
+        Observa cómo la interfaz no colapsa: el botón <em>Prestar</em> se deshabilita automáticamente y muestra
+        <em>"Error: no se pudieron cargar el catálogo o los usuarios"</em>. Tu aplicación maneja los errores con elegancia y no se cae.
+        Vuelve a dejar el archivo con su nombre original para continuar.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 8 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-8">Fase 8 — Recorrido completo del clic
+        <small>El viaje de un préstamo a través de las capas MVC</small></h2>
+
+      <div class="flow">
+        <div class="flow-node fn-v">
+          <div class="fn-title">1. Vista</div>
+          <div class="fn-sub">CatalogoView</div>
+          <div class="fn-desc">El operador presiona el botón "Prestar seleccionado"</div>
+        </div>
+        <div class="flow-arrow">
+          <div class="arr">→</div>
+          <div>prestar(rut, mat)</div>
+        </div>
+        <div class="flow-node fn-c">
+          <div class="fn-title">2. Controlador</div>
+          <div class="fn-sub">CatalogoController</div>
+          <div class="fn-desc">Limpia el RUT, consulta al UserManager y coordina</div>
+        </div>
+        <div class="flow-arrow">
+          <div class="arr">→</div>
+          <div>prestarEjemplar()</div>
+        </div>
+        <div class="flow-node fn-m">
+          <div class="fn-title">3. Modelo</div>
+          <div class="fn-sub">Material / Libro</div>
+          <div class="fn-desc">Verifica stock > 0, descuenta 1 y calcula días (14 o 3)</div>
+        </div>
+      </div>
+
+      <ul class="trace">
+        <li>
+          <div>
+            <strong>1. Evento en la Vista (<span class="ly ly-v">CatalogoView</span>):</strong>
+            <code>btn_prestar.setOnAction()</code> extrae el objeto seleccionado de la <code>TableView</code> y el texto del <code>TextField</code>.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>2. Petición al Controlador (<span class="ly ly-c">CatalogoController</span>):</strong>
+            La vista llama a <code>controller.prestar(rut, material)</code>.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>3. Validación y Búsqueda (<span class="ly ly-c">CatalogoController</span>):</strong>
+            El controlador limpia el RUT con <code>.trim()</code> y consulta a <code>manager_usuarios.buscarPorRut()</code>. Si no existe, lanza <code>PrestamoException</code>.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>4. Regla de negocio en el Modelo (<span class="ly ly-m">Material</span>):</strong>
+            Se invoca <code>material.prestarEjemplar()</code>. Si <code>cantidadDisponible <= 0</code>, el modelo se defiende lanzando una excepción. Si hay stock, decrementa en 1.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>5. Instanciación Polimórfica (<span class="ly ly-m">Prestamo</span>):</strong>
+            El constructor de <code>Prestamo</code> invoca <code>material.calcularDiasPrestamo()</code>. Según sea <code>Libro</code> o <code>Revista</code>, Java ejecuta dinámicamente la versión que corresponde.
+          </div>
+        </li>
+        <li>
+          <div>
+            <strong>6. Respuesta a la Vista (<span class="ly ly-v">CatalogoView</span>):</strong>
+            La vista recibe el objeto <code>Prestamo</code>, refresca la tabla con <code>tbl_catalogo.refresh()</code> y despliega la alerta de confirmación con la fecha calculada.
+          </div>
+        </li>
+      </ul>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión · Orden del flujo de ejecución</h4>
+        <order-steps v-bind="a.prestamoSteps"></order-steps>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- REFERENCIA FINAL -->
+      <!-- ============================================================ -->
+      <div class="section-divider"></div>
+
+      <h2 class="phase-title" id="referencia-final">★ Código de referencia completo (16 archivos)
+        <small>Todos los archivos del proyecto final verificados y compilados con Maven</small></h2>
+
+      <p>Usa esta sección si necesitas comparar tu proyecto contra la versión final oficial. Cada archivo se puede desplegar para revisar su contenido exacto:</p>
+
+      <div style="display:flex; flex-direction:column; gap:8px; margin:20px 0;">
+        <details class="filesync">
+          <summary><strong>pom.xml</strong> (Configuración de dependencias Maven)</summary>
+          <pre v-pre class="code-block"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.hachimakidev.bibliotech&lt;/groupId&gt;
+    &lt;artifactId&gt;bibliotech&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+            &lt;version&gt;21.0.1&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.google.code.gson&lt;/groupId&gt;
+            &lt;artifactId&gt;gson&lt;/artifactId&gt;
+            &lt;version&gt;2.14.0&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+&lt;/project&gt;</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/resources/catalogo.json</strong> (Datos de libros y revistas)</summary>
+          <pre v-pre class="code-block"><code class="language-json">{
+  "libros": [
+    {
+      "titulo": "Clean Code",
+      "autor": "Robert C. Martin",
+      "cantidadDisponible": 3,
+      "numPaginas": 464
+    },
+    {
+      "titulo": "Cien años de soledad",
+      "autor": "Gabriel García Márquez",
+      "cantidadDisponible": 2,
+      "numPaginas": 471
+    },
+    {
+      "titulo": "El Principito",
+      "autor": "Antoine de Saint-Exupéry",
+      "cantidadDisponible": 1,
+      "numPaginas": 96
+    }
+  ],
+  "revistas": [
+    {
+      "titulo": "National Geographic",
+      "autor": "National Geographic Society",
+      "cantidadDisponible": 2,
+      "mesPublicacion": "Septiembre 2026"
+    },
+    {
+      "titulo": "Muy Interesante",
+      "autor": "Editorial Televisa",
+      "cantidadDisponible": 1,
+      "mesPublicacion": "Octubre 2026"
+    }
+  ]
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Material.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public abstract class Material {
+
+    private String titulo;
+    private String autor;
+    private int cantidadDisponible;
+
+    public Material() {}
+
+    public Material(String titulo, String autor, int cantidadDisponible) {
+        this.titulo = titulo;
+        this.autor = autor;
+        this.cantidadDisponible = cantidadDisponible;
+    }
+
+    public String getTitulo() { return titulo; }
+    public String getAutor() { return autor; }
+    public int getCantidadDisponible() { return cantidadDisponible; }
+
+    public abstract int calcularDiasPrestamo();
+    public abstract String getTipo();
+    public abstract String getDetalle();
+
+    public int getDiasPrestamo() {
+        return calcularDiasPrestamo();
+    }
+
+    public void prestarEjemplar() throws PrestamoException {
+        if (cantidadDisponible <= 0) {
+            throw new PrestamoException("No quedan ejemplares disponibles de \"" + titulo + "\".");
+        }
+        cantidadDisponible--;
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Libro.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class Libro extends Material {
+
+    private int numPaginas;
+
+    public Libro() {}
+
+    public Libro(String titulo, String autor, int cantidadDisponible, int numPaginas) {
+        super(titulo, autor, cantidadDisponible);
+        this.numPaginas = numPaginas;
+    }
+
+    public int getNumPaginas() { return numPaginas; }
+
+    @Override
+    public int calcularDiasPrestamo() {
+        return 14;
+    }
+
+    @Override
+    public String getTipo() {
+        return "Libro";
+    }
+
+    @Override
+    public String getDetalle() {
+        return numPaginas + " páginas";
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Revista.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class Revista extends Material {
+
+    private String mesPublicacion;
+
+    public Revista() {}
+
+    public Revista(String titulo, String autor, int cantidadDisponible, String mesPublicacion) {
+        super(titulo, autor, cantidadDisponible);
+        this.mesPublicacion = mesPublicacion;
+    }
+
+    public String getMesPublicacion() { return mesPublicacion; }
+
+    @Override
+    public int calcularDiasPrestamo() {
+        return 3;
+    }
+
+    @Override
+    public String getTipo() {
+        return "Revista";
+    }
+
+    @Override
+    public String getDetalle() {
+        return "Edición " + mesPublicacion;
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/CatalogoJson.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class CatalogoJson {
+
+    private Libro[] libros;
+    private Revista[] revistas;
+
+    public Libro[] getLibros() { return libros; }
+    public Revista[] getRevistas() { return revistas; }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/MaterialManager.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+
+public class MaterialManager {
+
+    private ArrayList&lt;Material&gt; lista_materiales = new ArrayList&lt;&gt;();
+    private boolean datos_cargados = false;
+
+    public MaterialManager() {
+        cargarDatos();
+    }
+
+    private void cargarDatos() {
+        try {
+            InputStream stream = getClass().getResourceAsStream("/catalogo.json");
+
+            InputStreamReader reader = new InputStreamReader(stream);
+
+            Gson gson = new Gson();
+            CatalogoJson catalogo = gson.fromJson(reader, CatalogoJson.class);
+
+            for (Libro libro : catalogo.getLibros()) {
+                lista_materiales.add(libro);
+            }
+            for (Revista revista : catalogo.getRevistas()) {
+                lista_materiales.add(revista);
+            }
+
+            datos_cargados = true;
+
+        } catch (Exception e) {
+            System.out.println("Error al cargar catalogo.json: " + e);
+        }
+    }
+
+    public boolean isDatosCargados() {
+        return datos_cargados;
+    }
+
+    public ArrayList&lt;Material&gt; obtenerCatalogo() {
+        return lista_materiales;
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Prestamo.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.time.LocalDate;
+
+public class Prestamo {
+
+    private User usuario;
+    private Material material;
+    private LocalDate fechaPrestamo;
+    private LocalDate fechaDevolucion;
+
+    public Prestamo(User usuario, Material material) {
+        this.usuario = usuario;
+        this.material = material;
+        this.fechaPrestamo = LocalDate.now();
+        this.fechaDevolucion = fechaPrestamo.plusDays(material.calcularDiasPrestamo());
+    }
+
+    public User getUsuario() { return usuario; }
+    public Material getMaterial() { return material; }
+    public LocalDate getFechaPrestamo() { return fechaPrestamo; }
+    public LocalDate getFechaDevolucion() { return fechaDevolucion; }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/PrestamoException.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class PrestamoException extends Exception {
+
+    public PrestamoException(String mensaje) {
+        super(mensaje);
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/controller/CatalogoController.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.controller;
+
+import java.util.ArrayList;
+
+import com.hachimakidev.bibliotech.model.Material;
+import com.hachimakidev.bibliotech.model.MaterialManager;
+import com.hachimakidev.bibliotech.model.Prestamo;
+import com.hachimakidev.bibliotech.model.PrestamoException;
+import com.hachimakidev.bibliotech.model.User;
+import com.hachimakidev.bibliotech.model.UserManager;
+
+public class CatalogoController {
+
+    private MaterialManager manager_materiales;
+    private UserManager manager_usuarios;
+    private ArrayList&lt;Prestamo&gt; lista_prestamos = new ArrayList&lt;&gt;();
+
+    public CatalogoController() {
+        manager_materiales = new MaterialManager();
+        manager_usuarios = new UserManager();
+    }
+
+    public boolean datosDisponibles() {
+        return manager_materiales.isDatosCargados() && manager_usuarios.isDatosCargados();
+    }
+
+    public ArrayList&lt;Material&gt; obtenerCatalogo() {
+        return manager_materiales.obtenerCatalogo();
+    }
+
+    public Prestamo prestar(String rut_ingresado, Material material) throws PrestamoException {
+
+        if (material == null) {
+            throw new PrestamoException("Selecciona un material en la tabla.");
+        }
+
+        String rut_limpio = rut_ingresado.trim();
+        if (rut_limpio.isEmpty()) {
+            throw new PrestamoException("Escribe el RUT de quien pide el préstamo.");
+        }
+
+        User usuario = manager_usuarios.buscarPorRut(rut_limpio);
+        if (usuario == null) {
+            throw new PrestamoException("No existe un usuario con RUT " + rut_limpio + ".");
+        }
+
+        material.prestarEjemplar();
+
+        Prestamo prestamo = new Prestamo(usuario, material);
+        lista_prestamos.add(prestamo);
+        return prestamo;
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/view/CatalogoView.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+
+import java.time.format.DateTimeFormatter;
+
+import com.hachimakidev.bibliotech.controller.CatalogoController;
+import com.hachimakidev.bibliotech.model.Material;
+import com.hachimakidev.bibliotech.model.Prestamo;
+import com.hachimakidev.bibliotech.model.PrestamoException;
+
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+public class CatalogoView {
+
+    public VBox catalogo() {
+
+        CatalogoController controller = new CatalogoController();
+
+        // ---------- 1. La tabla ----------
+        TableView&lt;Material&gt; tbl_catalogo = new TableView&lt;&gt;();
+        tbl_catalogo.setPlaceholder(new Label("No hay materiales para mostrar."));
+
+        TableColumn&lt;Material, String&gt; col_tipo = new TableColumn&lt;&gt;("Tipo");
+        col_tipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+
+        TableColumn&lt;Material, String&gt; col_titulo = new TableColumn&lt;&gt;("Título");
+        col_titulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
+        col_titulo.setPrefWidth(220);
+
+        TableColumn&lt;Material, String&gt; col_autor = new TableColumn&lt;&gt;("Autor");
+        col_autor.setCellValueFactory(new PropertyValueFactory&lt;&gt;("autor"));
+        col_autor.setPrefWidth(170);
+
+        TableColumn&lt;Material, String&gt; col_detalle = new TableColumn&lt;&gt;("Detalle");
+        col_detalle.setCellValueFactory(new PropertyValueFactory&lt;&gt;("detalle"));
+        col_detalle.setPrefWidth(150);
+
+        TableColumn&lt;Material, Integer&gt; col_dias = new TableColumn&lt;&gt;("Días");
+        col_dias.setCellValueFactory(new PropertyValueFactory&lt;&gt;("diasPrestamo"));
+
+        TableColumn&lt;Material, Integer&gt; col_stock = new TableColumn&lt;&gt;("Disponibles");
+        col_stock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
+
+        tbl_catalogo.getColumns().add(col_tipo);
+        tbl_catalogo.getColumns().add(col_titulo);
+        tbl_catalogo.getColumns().add(col_autor);
+        tbl_catalogo.getColumns().add(col_detalle);
+        tbl_catalogo.getColumns().add(col_dias);
+        tbl_catalogo.getColumns().add(col_stock);
+
+        tbl_catalogo.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));
+
+        // ---------- 2. El formulario de préstamo ----------
+        Label lbl_rut = new Label("RUT del usuario:");
+        TextField txf_rut = new TextField();
+        txf_rut.setPromptText("Ej: 12345678-9");
+        Button btn_prestar = new Button("Prestar seleccionado");
+
+        Label lbl_estado = new Label();
+
+        if (!controller.datosDisponibles()) {
+            lbl_estado.setText("Error: no se pudieron cargar el catálogo o los usuarios.");
+            btn_prestar.setDisable(true);
+        }
+
+        // ---------- 3. El evento del botón ----------
+        btn_prestar.setOnAction(evento -> {
+
+            Material seleccionado = tbl_catalogo.getSelectionModel().getSelectedItem();
+
+            try {
+                Prestamo prestamo = controller.prestar(txf_rut.getText(), seleccionado);
+
+                tbl_catalogo.refresh();
+
+                DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+                String mensaje = prestamo.getUsuario().getNombre()
+                        + " se lleva \"" + seleccionado.getTitulo() + "\".\n"
+                        + "Plazo: " + seleccionado.calcularDiasPrestamo() + " días.\n"
+                        + "Devolver el: " + prestamo.getFechaDevolucion().format(formato);
+
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo registrado", mensaje);
+
+            } catch (PrestamoException e) {
+                mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", e.getMessage());
+            }
+        });
+
+        // ---------- 4. Armar la pantalla ----------
+        HBox fila_prestamo = new HBox(10, lbl_rut, txf_rut, btn_prestar);
+        VBox box = new VBox(10, tbl_catalogo, fila_prestamo, lbl_estado);
+        box.setPadding(new Insets(20));
+
+        return box;
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alerta = new Alert(tipo);
+        alerta.setTitle(titulo);
+        alerta.setHeaderText(null);
+        alerta.setContentText(mensaje);
+        alerta.showAndWait();
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>src/main/java/com/hachimakidev/bibliotech/view/HomeView.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+
+import javafx.scene.Scene;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
+
+public class HomeView {
+
+    public Scene homeScene() {
+
+        UserDataView user_data = new UserDataView();
+        CatalogoView catalogo_view = new CatalogoView();
+
+        Tab tab_usuarios = new Tab("Usuarios", user_data.userData());
+        Tab tab_catalogo = new Tab("Catálogo y préstamos", catalogo_view.catalogo());
+
+        TabPane tab_pane = new TabPane(tab_usuarios, tab_catalogo);
+        tab_pane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+
+        Scene home_scene = new Scene(tab_pane, 820, 520);
+
+        return home_scene;
+    }
+
+}</code></pre>
+        </details>
+      </div>
+
+      <!-- CIERRE -->
+      <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
+        <div style="font-size:42px; margin-bottom:12px;">🎉</div>
+        <h3>¡Felicitaciones! Has completado BiblioTech Parte 2</h3>
+        <p class="lead" style="margin:0 auto; max-width:640px;">
+          Tu aplicación integra todos los pilares vistos en la asignatura: clases abstractas, polimorfismo dinámico,
+          excepciones defensivas, persistencia en JSON y una interfaz JavaFX completa con navegación por pestañas y tablas interactivas.
+        </p>
+        <div style="margin-top:24px;">
+          <a href="../../index.html" class="btn" style="text-decoration:none; padding:10px 24px; font-weight:700;">
+            ← Volver al Portal de Contenidos
+          </a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../../shared/activity-engine.js"></script>
+
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      data() {
+        return {
+          a: {
+            umlPairs: {
+              instruction: "Conecta cada clase del modelo con su rol y comportamiento en el catálogo:",
+              level: "base",
+              pairs: [
+                { term: "Material (abstracta)", definition: "Define la estructura común y el método abstracto calcularDiasPrestamo()." },
+                { term: "Libro (concreta)", definition: "Tiene numPaginas y sobrescribe calcularDiasPrestamo() retornando 14 días." },
+                { term: "Revista (concreta)", definition: "Tiene mesPublicacion y sobrescribe calcularDiasPrestamo() retornando 3 días." },
+                { term: "CatalogoJson (molde)", definition: "Estructura que refleja el archivo JSON con arreglos separados de libros y revistas." }
+              ]
+            },
+            prestamoSteps: {
+              instruction: "Ordena los pasos que ocurren en el sistema al presionar 'Prestar seleccionado':",
+              level: "avanzado",
+              explanation: "El evento viaja de la Vista al Controlador, el Controlador valida y consulta al Modelo, el Modelo descuenta el stock y la Vista refresca la tabla y muestra la alerta.",
+              steps: [
+                { text: "CatalogoView obtiene el material seleccionado de la tabla y el RUT escrito.", correctOrder: 1 },
+                { text: "CatalogoController limpia el RUT y consulta al UserManager si el usuario existe.", correctOrder: 2 },
+                { text: "Material.prestarEjemplar() descuenta el stock o lanza PrestamoException si es 0.", correctOrder: 3 },
+                { text: "Se crea la instancia Prestamo calculando la fecha límite polimórficamente.", correctOrder: 4 },
+                { text: "CatalogoView refresca la tabla con refresh() y abre la alerta informativa.", correctOrder: 5 }
+              ]
+            }
+          }
+        };
+      }
+    });
+
+    // COMPONENTE: SIMULADOR BIBLIOTECH PARTE 2
+    app.component('bibliotech-sim-v2', {
+      data() {
+        return {
+          tabActiva: 'catalogo',
+          xrayMode: true,
+          xrayStep: 0,
+          rutInput: '12345678-9',
+          userResultado: {
+            rut: '12345678-9',
+            nombre: 'Juan Pérez',
+            correo: 'juan.perez@example.com'
+          },
+          msgUserError: '',
+          materiales: [
+            { tipo: 'Libro', titulo: 'Clean Code', autor: 'Robert C. Martin', detalle: '464 páginas', dias: 14, stock: 3 },
+            { tipo: 'Libro', titulo: 'Cien años de soledad', autor: 'Gabriel García Márquez', detalle: '471 páginas', dias: 14, stock: 2 },
+            { tipo: 'Libro', titulo: 'El Principito', autor: 'Antoine de Saint-Exupéry', detalle: '96 páginas', dias: 14, stock: 1 },
+            { tipo: 'Revista', titulo: 'National Geographic', autor: 'National Geographic Society', detalle: 'Edición Septiembre 2026', dias: 3, stock: 2 },
+            { tipo: 'Revista', titulo: 'Muy Interesante', autor: 'Editorial Televisa', detalle: 'Edición Octubre 2026', dias: 3, stock: 1 }
+          ],
+          seleccionado: null,
+          rutPrestamoInput: '12345678-9',
+          alerta: {
+            visible: false,
+            tipo: 'INFO',
+            titulo: '',
+            mensaje: ''
+          }
+        };
+      },
+      mounted() {
+        this.seleccionado = this.materiales[0];
+      },
+      methods: {
+        buscarUsuario() {
+          const r = this.rutInput.trim();
+          const usuariosBase = [
+            { rut: '12345678-9', nombre: 'Juan Pérez', correo: 'juan.perez@example.com' },
+            { rut: '98765432-1', nombre: 'María López', correo: 'maria.lopez@example.com' }
+          ];
+
+          const encontrado = usuariosBase.find(u => u.rut === r);
+          if (encontrado) {
+            this.userResultado = { ...encontrado };
+            this.msgUserError = '';
+          } else {
+            this.userResultado = { rut: '—', nombre: '—', correo: '—' };
+            this.msgUserError = 'Usuario no encontrado.';
+          }
+        },
+        seleccionar(m) {
+          this.seleccionado = m;
+        },
+        realizarPrestamo() {
+          this.xrayStep = 1;
+
+          if (!this.seleccionado) {
+            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'Selecciona un material en la tabla.');
+            this.xrayStep = 0;
+            return;
+          }
+
+          const rut = this.rutPrestamoInput.trim();
+          if (!rut) {
+            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'Escribe el RUT de quien pide el préstamo.');
+            this.xrayStep = 0;
+            return;
+          }
+
+          this.xrayStep = 2; // Controlador validando
+          const usuariosBase = {
+            '12345678-9': 'Juan Pérez',
+            '98765432-1': 'María López'
+          };
+
+          const nombre = usuariosBase[rut];
+          if (!nombre) {
+            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'No existe un usuario con RUT ' + rut + '.');
+            this.xrayStep = 0;
+            return;
+          }
+
+          this.xrayStep = 3; // Modelo descontando
+          if (this.seleccionado.stock <= 0) {
+            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'No quedan ejemplares disponibles de "' + this.seleccionado.titulo + '".');
+            this.xrayStep = 0;
+            return;
+          }
+
+          // Éxito: descontar stock
+          this.seleccionado.stock--;
+          this.xrayStep = 4; // Prestamo creado
+
+          const hoy = new Date();
+          const limite = new Date();
+          limite.setDate(hoy.getDate() + this.seleccionado.dias);
+          const fechaStr = limite.toLocaleDateString('es-CL');
+
+          this.mostrarAlerta(
+            'INFO',
+            'Préstamo registrado',
+            nombre + ' se lleva "' + this.seleccionado.titulo + '".\n' +
+            'Plazo: ' + this.seleccionado.dias + ' días.\n' +
+            'Devolver el: ' + fechaStr
+          );
+        },
+        mostrarAlerta(tipo, titulo, mensaje) {
+          this.alerta = { visible: true, tipo, titulo, mensaje };
+        },
+        cerrarAlerta() {
+          this.alerta.visible = false;
+          this.xrayStep = 0;
+        }
+      },
+      template: `
+        <div>
+          <div class="fx-window">
+            <div class="fx-titlebar">
+              <span>BiblioTech · Sistema de Gestión</span>
+              <span class="fx-ctrls">― □ ✕</span>
+            </div>
+
+            <!-- PESTAÑAS -->
+            <div class="fx-tabs">
+              <div class="fx-tab" :class="{ active: tabActiva === 'usuarios' }" @click="tabActiva = 'usuarios'">
+                Usuarios
+              </div>
+              <div class="fx-tab" :class="{ active: tabActiva === 'catalogo' }" @click="tabActiva = 'catalogo'">
+                Catálogo y préstamos
+              </div>
+            </div>
+
+            <div class="fx-body">
+              <!-- TAB 1: USUARIOS -->
+              <div v-if="tabActiva === 'usuarios'">
+                <p style="margin:0 0 12px; font-size:13.5px; color:#475569;">
+                  Búsqueda de usuarios (código construido en la Parte 1):
+                </p>
+                <div class="fx-row">
+                  <label style="font-size:13px; font-weight:600;">RUT del usuario:</label>
+                  <input class="fx-input" v-model="rutInput" placeholder="Ej: 12345678-9" @keyup.enter="buscarUsuario" style="max-width:240px;" />
+                  <button class="fx-btn" @click="buscarUsuario">Buscar</button>
+                </div>
+
+                <div v-if="msgUserError" style="font-size:13px; color:#dc2626; margin:8px 0; font-weight:600;">
+                  {{ msgUserError }}
+                </div>
+
+                <div style="margin-top:16px; padding:14px; background:white; border-radius:6px; border:1px solid #e2e8f0; font-family:var(--font-mono); font-size:13px; line-height:1.8;">
+                  <div>RUT: {{ userResultado.rut }}</div>
+                  <div>Nombre: {{ userResultado.nombre }}</div>
+                  <div>Correo: {{ userResultado.correo }}</div>
+                </div>
+              </div>
+
+              <!-- TAB 2: CATÁLOGO Y PRÉSTAMOS -->
+              <div v-if="tabActiva === 'catalogo'">
+                <table class="fx-table">
+                  <thead>
+                    <tr>
+                      <th style="width:75px;">Tipo</th>
+                      <th>Título</th>
+                      <th>Autor</th>
+                      <th>Detalle</th>
+                      <th style="width:55px;">Días</th>
+                      <th style="width:85px;">Disponibles</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="m in materiales" :key="m.titulo"
+                        :class="{ selected: seleccionado && seleccionado.titulo === m.titulo }"
+                        @click="seleccionar(m)">
+                      <td><span class="ly" :class="m.tipo === 'Libro' ? 'ly-c' : 'ly-m'">{{ m.tipo }}</span></td>
+                      <td><strong>{{ m.titulo }}</strong></td>
+                      <td>{{ m.autor }}</td>
+                      <td>{{ m.detalle }}</td>
+                      <td><span style="font-weight:700;">{{ m.dias }}</span></td>
+                      <td>
+                        <span :style="{ color: m.stock > 0 ? '#16a34a' : '#dc2626', fontWeight: '700' }">
+                          {{ m.stock }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!-- FILA DE PRÉSTAMO -->
+                <div style="margin-top:18px; padding:14px; background:#f1f5f9; border-radius:6px; border:1px solid #e2e8f0;">
+                  <div class="fx-row" style="margin-bottom:0;">
+                    <label style="font-size:13px; font-weight:600;">RUT del usuario:</label>
+                    <input class="fx-input" v-model="rutPrestamoInput" placeholder="Ej: 12345678-9" style="max-width:200px;" />
+                    <button class="fx-btn" @click="realizarPrestamo">Prestar seleccionado</button>
+                    <span style="font-size:12.5px; color:#64748b; margin-left:auto;">
+                      Seleccionado: <strong>{{ seleccionado ? seleccionado.titulo : 'Ninguno' }}</strong>
+                    </span>
+                  </div>
+                </div>
+
+                <!-- MODO RAYOS X -->
+                <div class="xray-tracker">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+                    <span style="color:#94a3b8; text-transform:uppercase; font-size:11px; letter-spacing:0.06em;">⚡ Modo Rayos X · Trazador MVC</span>
+                    <span style="font-size:11px; color:#38bdf8;">Pruébalo prestando un libro</span>
+                  </div>
+                  <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                    <span class="xray-step" :class="{ active: xrayStep >= 1 }">1. Vista (captura clic)</span>
+                    <span class="xray-step" :class="{ active: xrayStep >= 2 }">2. Controller (valida RUT)</span>
+                    <span class="xray-step" :class="{ active: xrayStep >= 3 }">3. Model (stock y días)</span>
+                    <span class="xray-step" :class="{ active: xrayStep >= 4 }">4. Vista (refresh y alert)</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- MODAL DE ALERTA JAVAFX -->
+          <div v-if="alerta.visible" class="fx-alert-modal" @click.self="cerrarAlerta">
+            <div class="fx-alert-box">
+              <div class="fx-alert-header">
+                <span v-if="alerta.tipo === 'INFO'">ℹ️</span>
+                <span v-else>⚠️</span>
+                <span>{{ alerta.titulo }}</span>
+              </div>
+              <div class="fx-alert-content">
+                <div style="white-space:pre-line;">{{ alerta.mensaje }}</div>
+              </div>
+              <div class="fx-alert-actions">
+                <button class="fx-btn" @click="cerrarAlerta">Aceptar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    });
+
+    ActivityEngine.register(app);
+    app.mount('#app');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+      }
+    });
+  </script>
+</body>
+
+</html>
