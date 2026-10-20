@@ -144,7 +144,7 @@
       line-height: 1.6;
     }
 
-    /* Meta-bloque LEGO */
+    /* Tarjetas de código y pasos */
     .lego-step {
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
@@ -875,1223 +875,255 @@
 
       <!-- ÍNDICE -->
       <div class="card" style="margin-top:24px;">
-        <strong>Ruta de aprendizaje modular</strong>
+        <strong>Ruta de aprendizaje 100% progresiva (Construcción iterativa real)</strong>
         <ul class="toc">
-          <li><a href="#fase-0"><span>0</span>El encargo y simulador interactivo</a></li>
-          <li><a href="#fase-1"><span>1</span>Diseño del catálogo: Material, Libro y Revista</a></li>
-          <li><a href="#fase-2"><span>2</span>Implementación del modelo polimórfico</a></li>
-          <li><a href="#fase-3"><span>3</span>El reto del JSON compuesto con Gson</a></li>
-          <li><a href="#fase-4"><span>4</span>Reglas de negocio: PrestamoException y Controller</a></li>
-          <li><a href="#fase-5"><span>5</span>La vista del catálogo con TableView</a></li>
-          <li><a href="#fase-6"><span>6</span>Navegación con TabPane en HomeView</a></li>
-          <li><a href="#fase-7"><span>7</span>Ejecutar, probar y resiliencia</a></li>
-          <li><a href="#fase-8"><span>8</span>Recorrido completo del clic</a></li>
-          <li><a href="#referencia-final"><span>★</span>Código de referencia completo (16 archivos)</a></li>
+          <li><a href="#fase-0"><span>0</span>El requerimiento y la meta interactiva</a></li>
+          <li><a href="#fase-1"><span>1</span>Pestañas y cascarón inicial (TabPane)</a></li>
+          <li><a href="#fase-2"><span>2</span>El origen de los datos y el modelo POO</a></li>
+          <li><a href="#fase-3"><span>3</span>Cargar el JSON con Gson (MaterialManager)</a></li>
+          <li><a href="#fase-4"><span>4</span>Volver a la Vista: Tu primera TableView</a></li>
+          <li><a href="#fase-5"><span>5</span>El cerebro: CatalogoController y el botón Prestar</a></li>
+          <li><a href="#fase-6"><span>6</span>Pruebas en vivo y verificación del clic</a></li>
+          <li><a href="#referencia-final"><span>★</span>Código de referencia completo y limpio</a></li>
         </ul>
       </div>
 
       <!-- ============================================================ -->
       <!-- FASE 0 -->
       <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-0">Fase 0 — El encargo y la metodología de trabajo
-        <small>Qué vamos a construir y cómo navegar la guía sin perderse</small></h2>
+      <h2 class="phase-title" id="fase-0">Fase 0 — El requerimiento y la meta interactiva
+        <small>Comprender qué necesita la biblioteca antes de tocar el teclado</small></h2>
 
-      <h3 class="sub">El encargo de negocio</h3>
-      <p>La biblioteca municipal <strong>BiblioTech</strong> amplía su sistema. Ahora necesita:</p>
-      <ol style="line-height:1.7; padding-left:22px;">
-        <li>Una pestaña con el <strong>Catálogo de Materiales</strong> en una tabla interactiva: Libros y Revistas mezclados, mostrando autor, título, tipo, detalle, días de préstamo y stock.</li>
-        <li>Un formulario inferior para <strong>prestar el material seleccionado</strong> a un usuario ingresando su RUT.</li>
-        <li><strong>Control estricto de stock:</strong> si un material no tiene unidades disponibles, no se puede prestar.</li>
-        <li><strong>Cálculo polimórfico de devolución:</strong> los libros se prestan por <strong>14 días</strong> y las revistas por <strong>3 días</strong>, calculando la fecha exacta con <code>LocalDate</code>.</li>
-      </ol>
+      <p>En la <strong>Parte 1</strong> construimos el buscador de usuarios por RUT. Ahora, la encargada de la biblioteca municipal <strong>BiblioTech</strong> nos plantea una necesidad muy concreta:</p>
 
-      <div class="callout callout-lavanda" style="margin:20px 0;">
-        <h4 style="margin:0 0 6px;">📍 Navegación por puntos de referencia semánticos (sin números de línea rígidos)</h4>
-        <p style="margin:0; font-size:14.5px; line-height:1.6;">
-          Cada desarrollador tiene su propio espaciado, comentarios o imports distintos, por lo que <strong>los números de línea nunca coinciden entre compañeros</strong>.
-          En esta guía <strong>jamás te diremos "ve a la línea 40" o "en la línea 75"</strong>. Cada bloque tendrá una etiqueta clara con:
+      <div class="callout callout-celeste" style="margin:20px 0;">
+        <h4 style="margin:0 0 8px;">📋 El encargo de la biblioteca</h4>
+        <p style="margin:0; line-height:1.7;">
+          <em>"Hola equipo. Ya podemos buscar a nuestros socios por RUT, pero ahora necesitamos gestionar el catálogo. En la biblioteca tenemos <strong>Libros</strong> y <strong>Revistas</strong>. Queremos verlos juntos en una tabla indicando su tipo, título, días de préstamo y cuántos ejemplares quedan.
+          Cuando un socio pida un material, queremos seleccionarlo en la tabla, escribir su RUT y pulsar un botón para prestarlo. Si no quedan ejemplares, el sistema debe avisarnos. Y recuerden: los libros se prestan por <strong>14 días</strong> y las revistas por <strong>3 días</strong>."</em>
         </p>
-        <div style="margin-top:8px; font-family:var(--font-mono); font-size:13px; background:var(--bg); padding:6px 10px; border-radius:4px; display:inline-block; border:1px solid var(--line);">
-          📄 Archivo: CatalogoView.java · 📍 Ubicación: dentro de catalogo(), después de crear la tabla
-        </div>
       </div>
 
-      <h3 class="sub">Simulador en vivo de la aplicación terminada</h3>
-      <p>Prueba la aplicación final aquí mismo en el navegador. Cambia de pestaña, selecciona una fila, escribe el RUT <code>12345678-9</code> y pulsa <strong>Prestar seleccionado</strong>. Activa el <strong>Modo Rayos X</strong> para ver cómo viajan los datos entre capas:</p>
+      <h3 class="sub">Prueba el resultado final aquí mismo</h3>
+      <p>Interactúa con la aplicación terminada en este simulador. Selecciona un libro o revista en la tabla, escribe el RUT <code>12345678-9</code> y pulsa <strong>Prestar seleccionado</strong>:</p>
 
-      <!-- SIMULADOR V2 -->
+      <!-- SIMULADOR V2 EN FASE 0 -->
       <bibliotech-sim-v2></bibliotech-sim-v2>
+
+      <p style="font-size:14px; color:var(--ink-soft); margin-top:12px;">
+        💡 <em>Fíjate en la meta: la tabla tiene solo 4 columnas esenciales (Tipo, Título, Días y Disponibles). Al prestar, el stock disminuye en 1 y un mensaje confirma la fecha límite. Vamos a construir esto de forma progresiva, donde en cada paso el proyecto compila y funciona.</em>
+      </p>
 
       <!-- ============================================================ -->
       <!-- FASE 1 -->
       <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-1">Fase 1 — El diseño del catálogo (Herencia y Polimorfismo)
-        <small>Conectando la Evaluación Parcial 1 con la arquitectura MVC</small></h2>
+      <h2 class="phase-title" id="fase-1">Fase 1 — Pestañas y cascarón inicial (TabPane)
+        <small>Crear la estructura visual que compila de inmediato antes de meterle lógica compleja</small></h2>
 
-      <p>Si rendiste la Evaluación Parcial 1 (o revisaste el caso de la Biblioteca Municipal), esta estructura te resultará familiar:
-        <strong>esto ya lo diseñaste en la Unidad 1</strong>. La diferencia es que ahora vivirá dentro de una interfaz JavaFX conectada a JSON.</p>
+      <p>¿Cómo trabajamos los programadores humanos? No intentamos escribir todo el sistema de golpe. Primero creamos un <strong>cascarón visual compilable</strong> para ver que la ventana abra con dos pestañas (la de usuarios que ya teníamos y la nueva de catálogo).</p>
 
-      <div class="tbl-wrap">
-        <table class="tbl">
-          <thead>
-            <tr>
-              <th>Concepto</th>
-              <th>En la clase abstracta Material</th>
-              <th>En Libro (hija)</th>
-              <th>En Revista (hija)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>Atributos comunes</strong></td>
-              <td><code>titulo</code>, <code>autor</code>, <code>cantidadDisponible</code></td>
-              <td>Heredados con <code>super()</code></td>
-              <td>Heredados con <code>super()</code></td>
-            </tr>
-            <tr>
-              <td><strong>Atributo exclusivo</strong></td>
-              <td><em>(ninguno)</em></td>
-              <td><code>numPaginas</code> (int)</td>
-              <td><code>mesPublicacion</code> (String)</td>
-            </tr>
-            <tr>
-              <td><strong>Polimorfismo: días</strong></td>
-              <td><code>abstract int calcularDiasPrestamo()</code></td>
-              <td>Retorna <code>14</code></td>
-              <td>Retorna <code>3</code></td>
-            </tr>
-            <tr>
-              <td><strong>Polimorfismo: etiquetas</strong></td>
-              <td><code>abstract String getTipo()</code> y <code>getDetalle()</code></td>
-              <td><code>"Libro"</code> y <code>"464 páginas"</code></td>
-              <td><code>"Revista"</code> y <code>"Edición Octubre"</code></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <h3 class="sub">Paso 1.1 — Cascarón inicial de CatalogoView.java</h3>
+      <p>Dentro de <code>src/main/java/com/hachimakidev/bibliotech/view/</code> crea el archivo <code>CatalogoView.java</code>.
+      Por ahora solo contendrá el formulario inferior (el RUT y el botón de préstamo) y un mensaje provisional donde luego pondremos la tabla:</p>
 
-      <div class="activity-zone">
-        <h4>Verifica tu comprensión · Relaciones POO</h4>
-        <matching-pairs v-bind="a.umlPairs"></matching-pairs>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- FASE 2 -->
-      <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-2">Fase 2 — Implementación del modelo polimórfico
-        <small>Escribir Material, Libro y Revista en el paquete model</small></h2>
-
-      <!-- BLOQUE 2.1: Material.java -->
       <div class="lego-step">
         <div class="lego-step-header">
           <div class="meta-left">
-            <span class="lego-badge ly-m">Modelo · Nuevo</span>
-            <span class="lego-file-loc">📄 model/Material.java · 📍 Archivo completo</span>
+            <span class="lego-badge ly-v">Vista · Cascarón inicial</span>
+            <span class="lego-file-loc">📄 view/CatalogoView.java</span>
           </div>
         </div>
         <div class="lego-step-body">
-          <div class="purpose-banner">
-            <strong>¿Por qué existe esta clase?</strong>
-            Define el contrato base para cualquier lectura de la biblioteca. Es <code>abstract</code> porque en la realidad no existe un "material genérico": nadie pide prestado "un material", piden un <em>Libro</em> o una <em>Revista</em>.
-          </div>
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.view;
 
-          <div class="lbl">
-            <div class="lbl-head">
-              <div>Bloque de código</div>
-              <div>¿Por qué está y qué resuelve?</div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-public abstract class Material {
-
-    private String titulo;
-    private String autor;
-    private int cantidadDisponible;</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Atributos protegidos:</strong> Son comunes a todo material. Encapsulados como privados para evitar que la vista u otra clase altere el stock directamente.</p>
-              </div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">    public Material() {}
-
-    public Material(String titulo, String autor, int cantidadDisponible) {
-        this.titulo = titulo;
-        this.autor = autor;
-        this.cantidadDisponible = cantidadDisponible;
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Constructor vacío:</strong> Requerido por Gson para crear objetos mediante reflexión.</p>
-                <p><strong>Constructor con parámetros:</strong> Reutilizado por las subclases usando <code>super()</code>.</p>
-              </div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">    public abstract int calcularDiasPrestamo();
-    public abstract String getTipo();
-    public abstract String getDetalle();
-
-    public int getDiasPrestamo() {
-        return calcularDiasPrestamo();
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>El contrato polimórfico:</strong> Obliga a que cada hijo defina cuántos días se presta y cómo se describe.</p>
-                <p><strong>El puente con TableView:</strong> La tabla JavaFX buscará un getter con convención JavaBean. <code>getDiasPrestamo()</code> llama internamente al método abstracto <code>calcularDiasPrestamo()</code>.</p>
-                <details class="whatif">
-                  <summary>¿Qué pasa si borro getDiasPrestamo()?</summary>
-                  <p>La columna "Días" de la <code>TableView</code> saldrá en blanco, porque <code>PropertyValueFactory("diasPrestamo")</code> busca exactamente un método llamado <code>getDiasPrestamo()</code>.</p>
-                </details>
-              </div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">    public void prestarEjemplar() throws PrestamoException {
-        if (cantidadDisponible <= 0) {
-            throw new PrestamoException("No quedan ejemplares disponibles de \"" + titulo + "\".");
-        }
-        cantidadDisponible--;
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Regla de negocio en el Modelo:</strong> Si no queda stock, el objeto <em>se defiende</em> lanzando una excepción propia. No dejamos que el stock quede en números negativos.</p>
-              </div>
-            </div>
-          </div>
-
-          <details class="filesync">
-            <summary>Ver el archivo model/Material.java completo con sus getters</summary>
-            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-public abstract class Material {
-
-    private String titulo;
-    private String autor;
-    private int cantidadDisponible;
-
-    public Material() {}
-
-    public Material(String titulo, String autor, int cantidadDisponible) {
-        this.titulo = titulo;
-        this.autor = autor;
-        this.cantidadDisponible = cantidadDisponible;
-    }
-
-    public String getTitulo() { return titulo; }
-    public String getAutor() { return autor; }
-    public int getCantidadDisponible() { return cantidadDisponible; }
-
-    public abstract int calcularDiasPrestamo();
-    public abstract String getTipo();
-    public abstract String getDetalle();
-
-    public int getDiasPrestamo() {
-        return calcularDiasPrestamo();
-    }
-
-    public void prestarEjemplar() throws PrestamoException {
-        if (cantidadDisponible <= 0) {
-            throw new PrestamoException("No quedan ejemplares disponibles de \"" + titulo + "\".");
-        }
-        cantidadDisponible--;
-    }
-}</code></pre>
-          </details>
-        </div>
-      </div>
-
-      <!-- BLOQUE 2.2: Libro.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-m">Modelo · Nuevo</span>
-            <span class="lego-file-loc">📄 model/Libro.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <div class="purpose-banner">
-            <strong>Especialización Libro:</strong> Hereda de <code>Material</code>, agrega <code>numPaginas</code> y define 14 días de préstamo.
-          </div>
-
-          <div class="lbl">
-            <div class="lbl-head">
-              <div>Bloque de código</div>
-              <div>Explicación</div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-public class Libro extends Material {
-
-    private int numPaginas;
-
-    public Libro() {}
-
-    public Libro(String titulo, String autor, int cantidadDisponible, int numPaginas) {
-        super(titulo, autor, cantidadDisponible);
-        this.numPaginas = numPaginas;
-    }
-
-    public int getNumPaginas() { return numPaginas; }
-
-    @Override
-    public int calcularDiasPrestamo() { return 14; }
-
-    @Override
-    public String getTipo() { return "Libro"; }
-
-    @Override
-    public String getDetalle() { return numPaginas + " páginas"; }
-}</code></pre>
-              <div class="lbl-exp">
-                <p><strong>super():</strong> Reutiliza la inicialización de los tres atributos del padre.</p>
-                <p><strong>@Override:</strong> Cumple con los tres métodos abstractos. Un libro siempre otorga 14 días.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- BLOQUE 2.3: Revista.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-m">Modelo · Nuevo</span>
-            <span class="lego-file-loc">📄 model/Revista.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <div class="purpose-banner">
-            <strong>Especialización Revista:</strong> Hereda de <code>Material</code>, agrega <code>mesPublicacion</code> y define solo 3 días de préstamo.
-          </div>
-
-          <div class="lbl">
-            <div class="lbl-head">
-              <div>Bloque de código</div>
-              <div>Explicación</div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-public class Revista extends Material {
-
-    private String mesPublicacion;
-
-    public Revista() {}
-
-    public Revista(String titulo, String autor, int cantidadDisponible, String mesPublicacion) {
-        super(titulo, autor, cantidadDisponible);
-        this.mesPublicacion = mesPublicacion;
-    }
-
-    public String getMesPublicacion() { return mesPublicacion; }
-
-    @Override
-    public int calcularDiasPrestamo() { return 3; }
-
-    @Override
-    public String getTipo() { return "Revista"; }
-
-    @Override
-    public String getDetalle() { return "Edición " + mesPublicacion; }
-}</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Mismo contrato, distinto comportamiento:</strong> La vista tratará a libros y revistas como simples <code>Material</code>, pero al pedir los días, cada uno responderá lo suyo (14 o 3).</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- FASE 3 -->
-      <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-3">Fase 3 — El reto del JSON compuesto con Gson
-        <small>Por qué Gson no puede instanciar clases abstractas y cómo resolverlo elegantemente</small></h2>
-
-      <div class="reflection-box">
-        <p><strong>Pregunta trampa:</strong> En la Parte 1 hicimos <code>gson.fromJson(reader, User[].class)</code>.
-        ¿Podríamos hacer ahora <code>gson.fromJson(reader, Material[].class)</code>?</p>
-        <p><strong>¡NO!</strong> Si lo intentas, Gson arrojará una excepción en tiempo de ejecución:
-        <code>java.lang.InstantiationException: Material is abstract</code>. Como <code>Material</code> es abstracto,
-        Java no puede hacer <code>new Material()</code> para llenarlo con los datos del archivo.</p>
-      </div>
-
-      <p>La solución limpia y profesional para este nivel es estructurar <code>catalogo.json</code> como un <strong>objeto compuesto</strong> con dos listas tipadas, y crear una pequeña clase molde llamada <code>CatalogoJson</code>:</p>
-
-      <!-- BLOQUE 3.1: catalogo.json -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-d">Datos · Nuevo</span>
-            <span class="lego-file-loc">📄 src/main/resources/catalogo.json</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <p>Clic derecho sobre <code>src/main/resources</code> → <strong>New File</strong> → <code>catalogo.json</code>:</p>
-          <pre v-pre class="code-block"><code class="language-json">{
-  "libros": [
-    {
-      "titulo": "Clean Code",
-      "autor": "Robert C. Martin",
-      "cantidadDisponible": 3,
-      "numPaginas": 464
-    },
-    {
-      "titulo": "Cien años de soledad",
-      "autor": "Gabriel García Márquez",
-      "cantidadDisponible": 2,
-      "numPaginas": 471
-    },
-    {
-      "titulo": "El Principito",
-      "autor": "Antoine de Saint-Exupéry",
-      "cantidadDisponible": 1,
-      "numPaginas": 96
-    }
-  ],
-  "revistas": [
-    {
-      "titulo": "National Geographic",
-      "autor": "National Geographic Society",
-      "cantidadDisponible": 2,
-      "mesPublicacion": "Septiembre 2026"
-    },
-    {
-      "titulo": "Muy Interesante",
-      "autor": "Editorial Televisa",
-      "cantidadDisponible": 1,
-      "mesPublicacion": "Octubre 2026"
-    }
-  ]
-}</code></pre>
-          <p style="font-size:13.5px; color:var(--ink-soft);">
-            <em>Nota didáctica:</em> Observa que <code>El Principito</code> y <code>Muy Interesante</code> tienen solo <strong>1 ejemplar</strong> disponible. Esto te permitirá probar el caso de "stock agotado" con un solo préstamo durante tus pruebas.
-          </p>
-        </div>
-      </div>
-
-      <!-- BLOQUE 3.2: CatalogoJson.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-m">Modelo · Nuevo</span>
-            <span class="lego-file-loc">📄 model/CatalogoJson.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <div class="purpose-banner">
-            <strong>La clase molde:</strong> Copia la forma exacta de la raíz del JSON: una clave <code>libros</code> y una clave <code>revistas</code>.
-          </div>
-
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-public class CatalogoJson {
-
-    private Libro[] libros;
-    private Revista[] revistas;
-
-    public Libro[] getLibros() { return libros; }
-    public Revista[] getRevistas() { return revistas; }
-}</code></pre>
-        </div>
-      </div>
-
-      <!-- BLOQUE 3.3: MaterialManager.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-m">Modelo · Nuevo</span>
-            <span class="lego-file-loc">📄 model/MaterialManager.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <div class="imports-box">
-            <strong>Imports necesarios:</strong>
-            <code>java.io.InputStream</code>, <code>java.io.InputStreamReader</code>, <code>java.util.ArrayList</code>, <code>com.google.gson.Gson</code>
-          </div>
-
-          <div class="lbl">
-            <div class="lbl-head">
-              <div>Bloque de código</div>
-              <div>Explicación</div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">public class MaterialManager {
-
-    private ArrayList&lt;Material&gt; lista_materiales = new ArrayList&lt;&gt;();
-    private boolean datos_cargados = false;
-
-    public MaterialManager() {
-        cargarDatos();
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Colección polimórfica:</strong> La lista almacena <code>Material</code> (el tipo padre). Tanto los libros como las revistas convivirán juntos en la misma colección.</p>
-              </div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">    private void cargarDatos() {
-        try {
-            InputStream stream = getClass().getResourceAsStream("/catalogo.json");
-            InputStreamReader reader = new InputStreamReader(stream);
-
-            Gson gson = new Gson();
-            CatalogoJson catalogo = gson.fromJson(reader, CatalogoJson.class);
-
-            for (Libro libro : catalogo.getLibros()) {
-                lista_materiales.add(libro);
-            }
-            for (Revista revista : catalogo.getRevistas()) {
-                lista_materiales.add(revista);
-            }
-
-            datos_cargados = true;
-        } catch (Exception e) {
-            System.out.println("Error al cargar catalogo.json: " + e);
-        }
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Lectura limpia:</strong> Gson lee primero el contenedor compuesto <code>CatalogoJson</code>. Luego vertemos ambos arreglos al <code>ArrayList&lt;Material&gt;</code> unificado.</p>
-              </div>
-            </div>
-          </div>
-
-          <details class="filesync">
-            <summary>Ver el archivo model/MaterialManager.java completo</summary>
-            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-
-import com.google.gson.Gson;
-
-public class MaterialManager {
-
-    private ArrayList&lt;Material&gt; lista_materiales = new ArrayList&lt;&gt;();
-    private boolean datos_cargados = false;
-
-    public MaterialManager() {
-        cargarDatos();
-    }
-
-    private void cargarDatos() {
-        try {
-            InputStream stream = getClass().getResourceAsStream("/catalogo.json");
-
-            InputStreamReader reader = new InputStreamReader(stream);
-
-            Gson gson = new Gson();
-            CatalogoJson catalogo = gson.fromJson(reader, CatalogoJson.class);
-
-            for (Libro libro : catalogo.getLibros()) {
-                lista_materiales.add(libro);
-            }
-            for (Revista revista : catalogo.getRevistas()) {
-                lista_materiales.add(revista);
-            }
-
-            datos_cargados = true;
-
-        } catch (Exception e) {
-            System.out.println("Error al cargar catalogo.json: " + e);
-        }
-    }
-
-    public boolean isDatosCargados() {
-        return datos_cargados;
-    }
-
-    public ArrayList&lt;Material&gt; obtenerCatalogo() {
-        return lista_materiales;
-    }
-}</code></pre>
-          </details>
-        </div>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- FASE 4 -->
-      <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-4">Fase 4 — Reglas de negocio: PrestamoException, Prestamo y CatalogoController
-        <small>El controlador como orquestador y mediador entre capas</small></h2>
-
-      <!-- BLOQUE 4.1: PrestamoException.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-m">Modelo · Nuevo</span>
-            <span class="lego-file-loc">📄 model/PrestamoException.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <div class="purpose-banner">
-            <strong>Excepción personalizada (repaso Unidad 1.4):</strong>
-            En vez de retornar cadenas extrañas como <code>"ERROR"</code> o <code>"FAIL"</code>, creamos un tipo propio de excepción que represente un fallo en el negocio de préstamos.
-          </div>
-
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-public class PrestamoException extends Exception {
-
-    public PrestamoException(String mensaje) {
-        super(mensaje);
-    }
-}</code></pre>
-        </div>
-      </div>
-
-      <!-- BLOQUE 4.2: Prestamo.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-m">Modelo · Nuevo</span>
-            <span class="lego-file-loc">📄 model/Prestamo.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <div class="imports-box">
-            <strong>Imports necesarios:</strong> <code>java.time.LocalDate</code>
-          </div>
-
-          <div class="lbl">
-            <div class="lbl-head">
-              <div>Bloque de código</div>
-              <div>Explicación</div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-import java.time.LocalDate;
-
-public class Prestamo {
-
-    private User usuario;
-    private Material material;
-    private LocalDate fechaPrestamo;
-    private LocalDate fechaDevolucion;
-
-    public Prestamo(User usuario, Material material) {
-        this.usuario = usuario;
-        this.material = material;
-        this.fechaPrestamo = LocalDate.now();
-        this.fechaDevolucion = fechaPrestamo.plusDays(material.calcularDiasPrestamo());
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Unión de los dos mundos:</strong> Relaciona un <code>User</code> con un <code>Material</code>.</p>
-                <p><strong>Polimorfismo en fechas:</strong> <code>material.calcularDiasPrestamo()</code> sumará 14 días si es un libro, o 3 días si es una revista, usando el API moderna <code>java.time.LocalDate</code>.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- BLOQUE 4.3: CatalogoController.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-c">Controlador · Nuevo</span>
-            <span class="lego-file-loc">📄 controller/CatalogoController.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <div class="imports-box">
-            <strong>Imports necesarios:</strong>
-            <code>java.util.ArrayList</code>, <code>com.hachimakidev.bibliotech.model.*</code>
-          </div>
-
-          <div class="lbl">
-            <div class="lbl-head">
-              <div>Bloque de código</div>
-              <div>Responsabilidad</div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">public class CatalogoController {
-
-    private MaterialManager manager_materiales;
-    private UserManager manager_usuarios;
-    private ArrayList&lt;Prestamo&gt; lista_prestamos = new ArrayList&lt;&gt;();
-
-    public CatalogoController() {
-        manager_materiales = new MaterialManager();
-        manager_usuarios = new UserManager();
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>El orquestador de MVC:</strong> El controlador es el único que conoce a ambos managers (usuarios y materiales). La vista jamás toca los managers directamente.</p>
-              </div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">    public Prestamo prestar(String rut_ingresado, Material material) throws PrestamoException {
-
-        if (material == null) {
-            throw new PrestamoException("Selecciona un material en la tabla.");
-        }
-
-        String rut_limpio = rut_ingresado.trim();
-        if (rut_limpio.isEmpty()) {
-            throw new PrestamoException("Escribe el RUT de quien pide el préstamo.");
-        }
-
-        User usuario = manager_usuarios.buscarPorRut(rut_limpio);
-        if (usuario == null) {
-            throw new PrestamoException("No existe un usuario con RUT " + rut_limpio + ".");
-        }
-
-        material.prestarEjemplar();
-
-        Prestamo prestamo = new Prestamo(usuario, material);
-        lista_prestamos.add(prestamo);
-        return prestamo;
-    }</code></pre>
-              <div class="lbl-exp">
-                <p><strong>Validaciones escalonadas:</strong></p>
-                <p>1. ¿Hay material seleccionado?<br>
-                   2. ¿El RUT está en blanco?<br>
-                   3. ¿El usuario existe en la biblioteca?<br>
-                   4. Si todo es válido, <code>material.prestarEjemplar()</code> descuenta el stock.<br>
-                   5. Retorna el nuevo <code>Prestamo</code> creado.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- FASE 5 -->
-      <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-5">Fase 5 — La vista del catálogo con TableView
-        <small>Construir la pantalla con columnas enlazadas y diálogo de confirmación</small></h2>
-
-      <!-- BLOQUE 5.1: CatalogoView.java -->
-      <div class="lego-step">
-        <div class="lego-step-header">
-          <div class="meta-left">
-            <span class="lego-badge ly-v">Vista · Nueva</span>
-            <span class="lego-file-loc">📄 view/CatalogoView.java · 📍 Archivo completo</span>
-          </div>
-        </div>
-        <div class="lego-step-body">
-          <p>Dentro de <code>src/main/java/com/hachimakidev/bibliotech/view/</code> crea <code>CatalogoView.java</code>.
-          Construiremos el método <code>catalogo()</code> en 4 bloques claramente identificables:</p>
-
-          <div class="lbl">
-            <div class="lbl-head">
-              <div>Parte del código</div>
-              <div>Propósito</div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">TableView&lt;Material&gt; tbl_catalogo = new TableView&lt;&gt;();
-tbl_catalogo.setPlaceholder(new Label("No hay materiales para mostrar."));
-
-TableColumn&lt;Material, String&gt; col_tipo = new TableColumn&lt;&gt;("Tipo");
-col_tipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
-
-TableColumn&lt;Material, String&gt; col_titulo = new TableColumn&lt;&gt;("Título");
-col_titulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
-col_titulo.setPrefWidth(220);
-
-TableColumn&lt;Material, Integer&gt; col_stock = new TableColumn&lt;&gt;("Disponibles");
-col_stock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
-
-tbl_catalogo.getColumns().addAll(col_tipo, col_titulo, ...);
-tbl_catalogo.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));</code></pre>
-              <div class="lbl-exp">
-                <p><strong>1. Configurar la tabla:</strong> Cada columna usa <code>PropertyValueFactory</code> con el nombre de la propiedad. Por ejemplo, <code>"cantidadDisponible"</code> invoca automáticamente a <code>getCantidadDisponible()</code>.</p>
-                <p><strong>FXCollections.observableArrayList:</strong> Envuelve la lista en una colección observable que JavaFX sabe pintar y monitorear.</p>
-              </div>
-            </div>
-            <div class="lbl-row">
-              <pre v-pre><code class="language-java">btn_prestar.setOnAction(evento -> {
-    Material seleccionado = tbl_catalogo.getSelectionModel().getSelectedItem();
-
-    try {
-        Prestamo prestamo = controller.prestar(txf_rut.getText(), seleccionado);
-
-        tbl_catalogo.refresh();
-
-        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-        String mensaje = prestamo.getUsuario().getNombre()
-                + " se lleva \"" + seleccionado.getTitulo() + "\".\n"
-                + "Plazo: " + seleccionado.calcularDiasPrestamo() + " días.\n"
-                + "Devolver el: " + prestamo.getFechaDevolucion().format(formato);
-
-        mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo registrado", mensaje);
-
-    } catch (PrestamoException e) {
-        mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", e.getMessage());
-    }
-});</code></pre>
-              <div class="lbl-exp">
-                <p><strong>2. El evento de préstamo:</strong></p>
-                <p>• <code>tbl_catalogo.refresh()</code>: Como <code>Material</code> modificó su stock en memoria, forzamos a la tabla a repintar el número.</p>
-                <p>• <strong>Manejo de excepciones:</strong> Si el controlador lanzó <code>PrestamoException</code>, el bloque <code>catch</code> captura el mensaje exacto y abre una alerta de tipo <code>WARNING</code>.</p>
-              </div>
-            </div>
-          </div>
-
-          <details class="troubleshoot">
-            <summary>¿Tu tabla aparece con columnas vacías?</summary>
-            <p>Revisa la palabra exacta dentro de <code>new PropertyValueFactory&lt;&gt;("...")</code>. Debe coincidir exactamente con el getter: si en la clase dice <code>getTitulo()</code>, la propiedad debe decir <code>"titulo"</code> en minúscula. Si escribes <code>"Titulo"</code> con mayúscula, JavaFX no encontrará el método y dejará la celda vacía.</p>
-          </details>
-
-          <details class="filesync">
-            <summary>Ver el archivo view/CatalogoView.java completo</summary>
-            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.view;
-
-import java.time.format.DateTimeFormatter;
-
-import com.hachimakidev.bibliotech.controller.CatalogoController;
-import com.hachimakidev.bibliotech.model.Material;
-import com.hachimakidev.bibliotech.model.Prestamo;
-import com.hachimakidev.bibliotech.model.PrestamoException;
-
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 public class CatalogoView {
 
     public VBox catalogo() {
+        // 1. Espacio reservado para la tabla (la construiremos en cuanto tengamos el modelo)
+        Label lblPlaceholder = new Label("Aquí irá nuestra tabla de materiales...");
+        lblPlaceholder.setStyle("-fx-font-style: italic; -fx-text-fill: #64748b; -fx-padding: 30 0;");
 
-        CatalogoController controller = new CatalogoController();
+        // 2. Formulario inferior de préstamo
+        Label lblRut = new Label("RUT solicitante:");
+        TextField txtRut = new TextField();
+        txtRut.setPromptText("Ej: 12345678-9");
 
-        // ---------- 1. La tabla ----------
-        TableView&lt;Material&gt; tbl_catalogo = new TableView&lt;&gt;();
-        tbl_catalogo.setPlaceholder(new Label("No hay materiales para mostrar."));
+        Button btnPrestar = new Button("Prestar seleccionado");
 
-        TableColumn&lt;Material, String&gt; col_tipo = new TableColumn&lt;&gt;("Tipo");
-        col_tipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+        HBox panelAcciones = new HBox(10, lblRut, txtRut, btnPrestar);
+        panelAcciones.setPadding(new Insets(10, 0, 0, 0));
 
-        TableColumn&lt;Material, String&gt; col_titulo = new TableColumn&lt;&gt;("Título");
-        col_titulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
-        col_titulo.setPrefWidth(220);
-
-        TableColumn&lt;Material, String&gt; col_autor = new TableColumn&lt;&gt;("Autor");
-        col_autor.setCellValueFactory(new PropertyValueFactory&lt;&gt;("autor"));
-        col_autor.setPrefWidth(170);
-
-        TableColumn&lt;Material, String&gt; col_detalle = new TableColumn&lt;&gt;("Detalle");
-        col_detalle.setCellValueFactory(new PropertyValueFactory&lt;&gt;("detalle"));
-        col_detalle.setPrefWidth(150);
-
-        TableColumn&lt;Material, Integer&gt; col_dias = new TableColumn&lt;&gt;("Días");
-        col_dias.setCellValueFactory(new PropertyValueFactory&lt;&gt;("diasPrestamo"));
-
-        TableColumn&lt;Material, Integer&gt; col_stock = new TableColumn&lt;&gt;("Disponibles");
-        col_stock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
-
-        tbl_catalogo.getColumns().add(col_tipo);
-        tbl_catalogo.getColumns().add(col_titulo);
-        tbl_catalogo.getColumns().add(col_autor);
-        tbl_catalogo.getColumns().add(col_detalle);
-        tbl_catalogo.getColumns().add(col_dias);
-        tbl_catalogo.getColumns().add(col_stock);
-
-        tbl_catalogo.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));
-
-        // ---------- 2. El formulario de préstamo ----------
-        Label lbl_rut = new Label("RUT del usuario:");
-        TextField txf_rut = new TextField();
-        txf_rut.setPromptText("Ej: 12345678-9");
-        Button btn_prestar = new Button("Prestar seleccionado");
-
-        Label lbl_estado = new Label();
-
-        if (!controller.datosDisponibles()) {
-            lbl_estado.setText("Error: no se pudieron cargar el catálogo o los usuarios.");
-            btn_prestar.setDisable(true);
-        }
-
-        // ---------- 3. El evento del botón ----------
-        btn_prestar.setOnAction(evento -> {
-
-            Material seleccionado = tbl_catalogo.getSelectionModel().getSelectedItem();
-
-            try {
-                Prestamo prestamo = controller.prestar(txf_rut.getText(), seleccionado);
-
-                tbl_catalogo.refresh();
-
-                DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                String mensaje = prestamo.getUsuario().getNombre()
-                        + " se lleva \"" + seleccionado.getTitulo() + "\".\n"
-                        + "Plazo: " + seleccionado.calcularDiasPrestamo() + " días.\n"
-                        + "Devolver el: " + prestamo.getFechaDevolucion().format(formato);
-
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo registrado", mensaje);
-
-            } catch (PrestamoException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", e.getMessage());
-            }
-        });
-
-        // ---------- 4. Armar la pantalla ----------
-        HBox fila_prestamo = new HBox(10, lbl_rut, txf_rut, btn_prestar);
-        VBox box = new VBox(10, tbl_catalogo, fila_prestamo, lbl_estado);
-        box.setPadding(new Insets(20));
-
-        return box;
-    }
-
-    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
+        // 3. Contenedor vertical
+        VBox layout = new VBox(12, lblPlaceholder, panelAcciones);
+        layout.setPadding(new Insets(16));
+        return layout;
     }
 }</code></pre>
-          </details>
         </div>
       </div>
 
-      <!-- ============================================================ -->
-      <!-- FASE 6 -->
-      <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-6">Fase 6 — Navegación con TabPane en HomeView
-        <small>Integrar las dos pantallas en una sola ventana sin romper lo anterior</small></h2>
-
-      <p>Abre <code>src/main/java/com/hachimakidev/bibliotech/view/HomeView.java</code>.
-      En la Parte 1 este archivo solo creaba <code>UserDataView</code>. Ahora lo actualizaremos para crear un contenedor con dos pestañas:</p>
+      <h3 class="sub">Paso 1.2 — Pestañas en HomeView.java con TabPane</h3>
+      <p>Ahora actualizamos <code>view/HomeView.java</code>. Usaremos <strong>TabPane</strong> (que funciona como las pestañas de tu navegador) para alojar la vista de usuarios en la Pestaña 1 y nuestro cascarón de catálogo en la Pestaña 2:</p>
 
       <div class="lego-step">
         <div class="lego-step-header">
           <div class="meta-left">
-            <span class="lego-badge ly-v">Vista · Modificación</span>
-            <span class="lego-file-loc">📄 view/HomeView.java · 📍 Reemplazo completo</span>
+            <span class="lego-badge ly-v">Vista · Navegación con pestañas</span>
+            <span class="lego-file-loc">📄 view/HomeView.java</span>
           </div>
         </div>
         <div class="lego-step-body">
-          <div class="imports-box">
-            <strong>Imports necesarios:</strong>
-            <code>javafx.scene.Scene</code>, <code>javafx.scene.control.Tab</code>, <code>javafx.scene.control.TabPane</code>
-          </div>
-
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.view;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.stage.Stage;
 
 public class HomeView {
 
-    public Scene homeScene() {
+    public void home(Stage stage) {
+        TabPane tabPane = new TabPane();
 
-        UserDataView user_data = new UserDataView();
-        CatalogoView catalogo_view = new CatalogoView();
+        // Pestaña 1: El buscador de usuarios que construiste en la Parte 1
+        Tab tabUsuarios = new Tab("Usuarios", new UserDataView().userData());
+        tabUsuarios.setClosable(false);
 
-        Tab tab_usuarios = new Tab("Usuarios", user_data.userData());
-        Tab tab_catalogo = new Tab("Catálogo y préstamos", catalogo_view.catalogo());
+        // Pestaña 2: La nueva pantalla del catálogo
+        Tab tabCatalogo = new Tab("Catálogo y Préstamos", new CatalogoView().catalogo());
+        tabCatalogo.setClosable(false);
 
-        TabPane tab_pane = new TabPane(tab_usuarios, tab_catalogo);
-        tab_pane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        tabPane.getTabs().addAll(tabUsuarios, tabCatalogo);
 
-        Scene home_scene = new Scene(tab_pane, 820, 520);
-
-        return home_scene;
+        Scene scene = new Scene(tabPane, 750, 460);
+        stage.setTitle("BiblioTech — Sistema de Gestión");
+        stage.setScene(scene);
+        stage.show();
     }
-
 }</code></pre>
-
-          <details class="whatif">
-            <summary>¿Qué hace setTabClosingPolicy(UNAVAILABLE)?</summary>
-            <p>Por defecto JavaFX permite que el usuario cierre pestañas con una cruz ('x'). Como esta es una app de gestión, no queremos que el operador cierre accidentalmente la pantalla de catálogo.</p>
-          </details>
         </div>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- FASE 7 -->
-      <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-7">Fase 7 — Ejecutar, probar y resiliencia
-        <small>La batería completa de pruebas para verificar que tu código es robusto</small></h2>
-
-      <p>Ejecuta la aplicación abriendo <code>Main.java</code> y haciendo clic en <strong>Run</strong> (o en la terminal con <code>mvn clean compile exec:java</code>).
-      Realiza las siguientes 6 pruebas en orden para verificar cada regla de negocio:</p>
-
-      <div class="tbl-wrap">
-        <table class="tbl">
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>Prueba</th>
-              <th>Acción en la pantalla</th>
-              <th>Resultado esperado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Préstamo de Libro</td>
-              <td>Selecciona <em>Clean Code</em>, escribe <code>12345678-9</code> y pulsa <em>Prestar</em></td>
-              <td>Alerta de información: préstamo por <strong>14 días</strong>. El stock baja de 3 a 2.</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Préstamo de Revista</td>
-              <td>Selecciona <em>National Geographic</em>, escribe <code>98765432-1</code> y pulsa <em>Prestar</em></td>
-              <td>Alerta de información: préstamo por <strong>3 días</strong>. El stock baja de 2 a 1.</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Agotamiento de stock</td>
-              <td>Selecciona <em>El Principito</em> (stock 1), presta una vez y vuelve a prestarlo</td>
-              <td>En el segundo intento salta Alerta Warning: <em>"No quedan ejemplares disponibles..."</em>.</td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>Usuario no registrado</td>
-              <td>Selecciona cualquier libro y escribe <code>11111111-1</code></td>
-              <td>Alerta Warning: <em>"No existe un usuario con RUT 11111111-1."</em>. El stock no cambia.</td>
-            </tr>
-            <tr>
-              <td>5</td>
-              <td>Sin selección de fila</td>
-              <td>Haz clic en un espacio vacío fuera de la tabla y pulsa <em>Prestar</em></td>
-              <td>Alerta Warning: <em>"Selecciona un material en la tabla."</em>.</td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td>RUT en blanco</td>
-              <td>Selecciona un libro, borra el campo de texto y pulsa <em>Prestar</em></td>
-              <td>Alerta Warning: <em>"Escribe el RUT de quien pide el préstamo."</em>.</td>
-            </tr>
-          </tbody>
-        </table>
       </div>
 
       <div class="checkpoint">
-        <strong>Prueba de fuego (Resiliencia ante archivos faltantes)</strong>
-        <p>Renombra temporalmente <code>catalogo.json</code> a <code>catalogo_backup.json</code> y ejecuta la aplicación.
-        Observa cómo la interfaz no colapsa: el botón <em>Prestar</em> se deshabilita automáticamente y muestra
-        <em>"Error: no se pudieron cargar el catálogo o los usuarios"</em>. Tu aplicación maneja los errores con elegancia y no se cae.
-        Vuelve a dejar el archivo con su nombre original para continuar.</p>
+        <strong>🟢 Hito 1 de Verificación — ¡Todo compila y abre!</strong>
+        <p>Abre la terminal y ejecuta <code>mvn clean compile javafx:run</code>.
+        Verás la ventana abrirse con sus dos pestañas operativas: el buscador de usuarios funciona intacto y la segunda pestaña muestra el cascarón de catálogo sin un solo error de compilación.</p>
       </div>
 
       <!-- ============================================================ -->
-      <!-- FASE 8 -->
+      <!-- FASE 2 -->
       <!-- ============================================================ -->
-      <h2 class="phase-title" id="fase-8">Fase 8 — Recorrido completo del clic
-        <small>El viaje de un préstamo a través de las capas MVC</small></h2>
+      <h2 class="phase-title" id="fase-2">Fase 2 — El origen de los datos y el modelo POO
+        <small>"Profe, ¿y qué clase va a mostrar la tabla?": Diseñar Material, Libro y Revista</small></h2>
 
-      <div class="flow">
-        <div class="flow-node fn-v">
-          <div class="fn-title">1. Vista</div>
-          <div class="fn-sub">CatalogoView</div>
-          <div class="fn-desc">El operador presiona el botón "Prestar seleccionado"</div>
+      <p>En JavaFX, para crear una tabla interactiva usamos <code>TableView&lt;T&gt;</code>, donde <code>T</code> es el tipo de dato que representará cada fila.
+      Pero aquí surge la pregunta lógica: <em>¿Qué es <code>T</code> en nuestro proyecto? ¿Qué datos tenemos?</em></p>
+
+      <p>Para responderlo, abrimos el archivo <code>src/main/resources/catalogo.json</code> que nos entregó la biblioteca:</p>
+
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-d">Datos · Archivo JSON</span>
+            <span class="lego-file-loc">📄 src/main/resources/catalogo.json</span>
+          </div>
         </div>
-        <div class="flow-arrow">
-          <div class="arr">→</div>
-          <div>prestar(rut, mat)</div>
-        </div>
-        <div class="flow-node fn-c">
-          <div class="fn-title">2. Controlador</div>
-          <div class="fn-sub">CatalogoController</div>
-          <div class="fn-desc">Limpia el RUT, consulta al UserManager y coordina</div>
-        </div>
-        <div class="flow-arrow">
-          <div class="arr">→</div>
-          <div>prestarEjemplar()</div>
-        </div>
-        <div class="flow-node fn-m">
-          <div class="fn-title">3. Modelo</div>
-          <div class="fn-sub">Material / Libro</div>
-          <div class="fn-desc">Verifica stock > 0, descuenta 1 y calcula días (14 o 3)</div>
-        </div>
-      </div>
-
-      <ul class="trace">
-        <li>
-          <div>
-            <strong>1. Evento en la Vista (<span class="ly ly-v">CatalogoView</span>):</strong>
-            <code>btn_prestar.setOnAction()</code> extrae el objeto seleccionado de la <code>TableView</code> y el texto del <code>TextField</code>.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>2. Petición al Controlador (<span class="ly ly-c">CatalogoController</span>):</strong>
-            La vista llama a <code>controller.prestar(rut, material)</code>.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>3. Validación y Búsqueda (<span class="ly ly-c">CatalogoController</span>):</strong>
-            El controlador limpia el RUT con <code>.trim()</code> y consulta a <code>manager_usuarios.buscarPorRut()</code>. Si no existe, lanza <code>PrestamoException</code>.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>4. Regla de negocio en el Modelo (<span class="ly ly-m">Material</span>):</strong>
-            Se invoca <code>material.prestarEjemplar()</code>. Si <code>cantidadDisponible <= 0</code>, el modelo se defiende lanzando una excepción. Si hay stock, decrementa en 1.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>5. Instanciación Polimórfica (<span class="ly ly-m">Prestamo</span>):</strong>
-            El constructor de <code>Prestamo</code> invoca <code>material.calcularDiasPrestamo()</code>. Según sea <code>Libro</code> o <code>Revista</code>, Java ejecuta dinámicamente la versión que corresponde.
-          </div>
-        </li>
-        <li>
-          <div>
-            <strong>6. Respuesta a la Vista (<span class="ly ly-v">CatalogoView</span>):</strong>
-            La vista recibe el objeto <code>Prestamo</code>, refresca la tabla con <code>tbl_catalogo.refresh()</code> y despliega la alerta de confirmación con la fecha calculada.
-          </div>
-        </li>
-      </ul>
-
-      <div class="activity-zone">
-        <h4>Verifica tu comprensión · Orden del flujo de ejecución</h4>
-        <order-steps v-bind="a.prestamoSteps"></order-steps>
-      </div>
-
-      <!-- ============================================================ -->
-      <!-- REFERENCIA FINAL -->
-      <!-- ============================================================ -->
-      <div class="section-divider"></div>
-
-      <h2 class="phase-title" id="referencia-final">★ Código de referencia completo (16 archivos)
-        <small>Todos los archivos del proyecto final verificados y compilados con Maven</small></h2>
-
-      <p>Usa esta sección si necesitas comparar tu proyecto contra la versión final oficial. Cada archivo se puede desplegar para revisar su contenido exacto:</p>
-
-      <div style="display:flex; flex-direction:column; gap:8px; margin:20px 0;">
-        <details class="filesync">
-          <summary><strong>pom.xml</strong> (Configuración de dependencias Maven)</summary>
-          <pre v-pre class="code-block"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
-&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
-    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
-
-    &lt;groupId&gt;com.hachimakidev.bibliotech&lt;/groupId&gt;
-    &lt;artifactId&gt;bibliotech&lt;/artifactId&gt;
-    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
-
-    &lt;properties&gt;
-        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
-        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
-        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
-    &lt;/properties&gt;
-
-    &lt;dependencies&gt;
-        &lt;dependency&gt;
-            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
-            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
-            &lt;version&gt;21.0.1&lt;/version&gt;
-        &lt;/dependency&gt;
-
-        &lt;dependency&gt;
-            &lt;groupId&gt;com.google.code.gson&lt;/groupId&gt;
-            &lt;artifactId&gt;gson&lt;/artifactId&gt;
-            &lt;version&gt;2.14.0&lt;/version&gt;
-        &lt;/dependency&gt;
-    &lt;/dependencies&gt;
-&lt;/project&gt;</code></pre>
-        </details>
-
-        <details class="filesync">
-          <summary><strong>src/main/resources/catalogo.json</strong> (Datos de libros y revistas)</summary>
-          <pre v-pre class="code-block"><code class="language-json">{
+        <div class="lego-step-body">
+          <pre v-pre><code class="language-json">{
   "libros": [
-    {
-      "titulo": "Clean Code",
-      "autor": "Robert C. Martin",
-      "cantidadDisponible": 3,
-      "numPaginas": 464
-    },
-    {
-      "titulo": "Cien años de soledad",
-      "autor": "Gabriel García Márquez",
-      "cantidadDisponible": 2,
-      "numPaginas": 471
-    },
-    {
-      "titulo": "El Principito",
-      "autor": "Antoine de Saint-Exupéry",
-      "cantidadDisponible": 1,
-      "numPaginas": 96
-    }
+    { "titulo": "Clean Code", "cantidadDisponible": 3 },
+    { "titulo": "Cien años de soledad", "cantidadDisponible": 2 },
+    { "titulo": "El Principito", "cantidadDisponible": 1 }
   ],
   "revistas": [
-    {
-      "titulo": "National Geographic",
-      "autor": "National Geographic Society",
-      "cantidadDisponible": 2,
-      "mesPublicacion": "Septiembre 2026"
-    },
-    {
-      "titulo": "Muy Interesante",
-      "autor": "Editorial Televisa",
-      "cantidadDisponible": 1,
-      "mesPublicacion": "Octubre 2026"
-    }
+    { "titulo": "National Geographic", "cantidadDisponible": 2 },
+    { "titulo": "Muy Interesante", "cantidadDisponible": 1 }
   ]
 }</code></pre>
-        </details>
+        </div>
+      </div>
 
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Material.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+      <h3 class="sub">El razonamiento orientado a objetos</h3>
+      <p>Al analizar los datos y el encargo notamos tres cosas:</p>
+      <ul style="line-height:1.7; padding-left:22px;">
+        <li>Tanto libros como revistas tienen <code>titulo</code> y <code>cantidadDisponible</code>.</li>
+        <li>Los libros se prestan por <strong>14 días</strong> y las revistas por <strong>3 días</strong>.</li>
+        <li>Nadie va a la biblioteca a pedir "un material genérico": siempre piden un <em>Libro</em> o una <em>Revista</em>. Por eso la clase padre debe ser <strong>abstracta</strong>.</li>
+      </ul>
+
+      <!-- 2.1 Material.java -->
+      <h3 class="sub">Paso 2.1 — Clase padre abstracta: Material.java</h3>
+      <p>Crea <code>src/main/java/com/hachimakidev/bibliotech/model/Material.java</code>:</p>
+
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-m">Modelo · Clase base abstracta</span>
+            <span class="lego-file-loc">📄 model/Material.java</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
 
 public abstract class Material {
 
     private String titulo;
-    private String autor;
     private int cantidadDisponible;
 
     public Material() {}
 
-    public Material(String titulo, String autor, int cantidadDisponible) {
+    public Material(String titulo, int cantidadDisponible) {
         this.titulo = titulo;
-        this.autor = autor;
         this.cantidadDisponible = cantidadDisponible;
     }
 
-    public String getTitulo() { return titulo; }
-    public String getAutor() { return autor; }
-    public int getCantidadDisponible() { return cantidadDisponible; }
-
-    public abstract int calcularDiasPrestamo();
+    // Métodos polimórficos: cada subclase define su tipo y sus días de préstamo
     public abstract String getTipo();
-    public abstract String getDetalle();
+    public abstract int getDiasPrestamo();
 
-    public int getDiasPrestamo() {
-        return calcularDiasPrestamo();
-    }
-
-    public void prestarEjemplar() throws PrestamoException {
-        if (cantidadDisponible <= 0) {
-            throw new PrestamoException("No quedan ejemplares disponibles de \"" + titulo + "\".");
+    // Regla de negocio: descuenta un ejemplar si queda stock disponible
+    public boolean prestar() {
+        if (cantidadDisponible > 0) {
+            cantidadDisponible--;
+            return true;
         }
-        cantidadDisponible--;
+        return false;
     }
-}</code></pre>
-        </details>
 
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Libro.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+
+    public int getCantidadDisponible() { return cantidadDisponible; }
+    public void setCantidadDisponible(int cantidadDisponible) { this.cantidadDisponible = cantidadDisponible; }
+}</code></pre>
+        </div>
+      </div>
+
+      <!-- 2.2 Libro.java y Revista.java -->
+      <h3 class="sub">Paso 2.2 — Subclases Libro.java y Revista.java</h3>
+      <p>Fíjate en lo limpias y simétricas que son las subclases. Cada una hereda de <code>Material</code> y resuelve su propio cálculo de días:</p>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="lego-step" style="margin:0;">
+          <div class="lego-step-header">
+            <span class="lego-file-loc">📄 model/Libro.java</span>
+          </div>
+          <div class="lego-step-body">
+            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
 
 public class Libro extends Material {
 
-    private int numPaginas;
-
     public Libro() {}
 
-    public Libro(String titulo, String autor, int cantidadDisponible, int numPaginas) {
-        super(titulo, autor, cantidadDisponible);
-        this.numPaginas = numPaginas;
-    }
-
-    public int getNumPaginas() { return numPaginas; }
-
-    @Override
-    public int calcularDiasPrestamo() {
-        return 14;
+    public Libro(String titulo, int stock) {
+        super(titulo, stock);
     }
 
     @Override
@@ -2100,32 +1132,26 @@ public class Libro extends Material {
     }
 
     @Override
-    public String getDetalle() {
-        return numPaginas + " páginas";
+    public int getDiasPrestamo() {
+        return 14; // Libros: 14 días
     }
 }</code></pre>
-        </details>
+          </div>
+        </div>
 
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Revista.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+        <div class="lego-step" style="margin:0;">
+          <div class="lego-step-header">
+            <span class="lego-file-loc">📄 model/Revista.java</span>
+          </div>
+          <div class="lego-step-body">
+            <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
 
 public class Revista extends Material {
 
-    private String mesPublicacion;
-
     public Revista() {}
 
-    public Revista(String titulo, String autor, int cantidadDisponible, String mesPublicacion) {
-        super(titulo, autor, cantidadDisponible);
-        this.mesPublicacion = mesPublicacion;
-    }
-
-    public String getMesPublicacion() { return mesPublicacion; }
-
-    @Override
-    public int calcularDiasPrestamo() {
-        return 3;
+    public Revista(String titulo, int stock) {
+        super(titulo, stock);
     }
 
     @Override
@@ -2134,184 +1160,298 @@ public class Revista extends Material {
     }
 
     @Override
-    public String getDetalle() {
-        return "Edición " + mesPublicacion;
+    public int getDiasPrestamo() {
+        return 3; // Revistas: 3 días
     }
 }</code></pre>
-        </details>
+          </div>
+        </div>
+      </div>
 
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/CatalogoJson.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+      <div class="checkpoint">
+        <strong>🟢 Hito 2 de Verificación — El Modelo compila</strong>
+        <p>Ejecuta <code>mvn compile</code>. Todo compila con éxito. Ya tenemos la clase <code>Material</code> lista para alimentar la tabla.</p>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión · Relaciones POO</h4>
+        <matching-pairs v-bind="a.umlPairs"></matching-pairs>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 3 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-3">Fase 3 — Cargar el JSON con Gson (MaterialManager)
+        <small>El puente entre el archivo en disco y los objetos en memoria</small></h2>
+
+      <p>Ahora que tenemos las clases <code>Libro</code> y <code>Revista</code>, ¿cómo leemos <code>catalogo.json</code> para crear los objetos? Usamos la librería <strong>Gson</strong>.</p>
+
+      <h3 class="sub">Paso 3.1 — El molde auxiliar DTO: CatalogoJson.java</h3>
+      <p>Como <code>catalogo.json</code> tiene dos arreglos (<code>"libros"</code> y <code>"revistas"</code>), creamos una pequeña clase auxiliar cuyos atributos coincidan con esas claves:</p>
+
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <span class="lego-file-loc">📄 model/CatalogoJson.java</span>
+        </div>
+        <div class="lego-step-body">
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.util.List;
 
 public class CatalogoJson {
+    private List&lt;Libro&gt; libros;
+    private List&lt;Revista&gt; revistas;
 
-    private Libro[] libros;
-    private Revista[] revistas;
+    public CatalogoJson() {}
 
-    public Libro[] getLibros() { return libros; }
-    public Revista[] getRevistas() { return revistas; }
+    public List&lt;Libro&gt; getLibros() { return libros; }
+    public List&lt;Revista&gt; getRevistas() { return revistas; }
 }</code></pre>
-        </details>
+        </div>
+      </div>
 
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/MaterialManager.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+      <h3 class="sub">Paso 3.2 — El gestor de carga: MaterialManager.java</h3>
+      <p>Crea <code>model/MaterialManager.java</code>. Lee el JSON con Gson y añade tanto los libros como las revistas a una única lista polimórfica <code>List&lt;Material&gt;</code>:</p>
+
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <span class="lego-file-loc">📄 model/MaterialManager.java</span>
+        </div>
+        <div class="lego-step-body">
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.model;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gson.Gson;
 
 public class MaterialManager {
 
-    private ArrayList&lt;Material&gt; lista_materiales = new ArrayList&lt;&gt;();
-    private boolean datos_cargados = false;
+    private List&lt;Material&gt; catalogo = new ArrayList&lt;&gt;();
 
     public MaterialManager() {
-        cargarDatos();
+        cargarDesdeJson();
     }
 
-    private void cargarDatos() {
+    private void cargarDesdeJson() {
         try {
-            InputStream stream = getClass().getResourceAsStream("/catalogo.json");
+            // 1. Abrimos el archivo en resources
+            InputStream is = getClass().getResourceAsStream("/catalogo.json");
+            InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
 
-            InputStreamReader reader = new InputStreamReader(stream);
+            // 2. Gson deserializa a nuestro molde CatalogoJson
+            CatalogoJson datos = new Gson().fromJson(reader, CatalogoJson.class);
 
-            Gson gson = new Gson();
-            CatalogoJson catalogo = gson.fromJson(reader, CatalogoJson.class);
-
-            for (Libro libro : catalogo.getLibros()) {
-                lista_materiales.add(libro);
+            // 3. Polimorfismo: guardamos libros y revistas juntos en la lista de Material
+            if (datos != null) {
+                if (datos.getLibros() != null) catalogo.addAll(datos.getLibros());
+                if (datos.getRevistas() != null) catalogo.addAll(datos.getRevistas());
             }
-            for (Revista revista : catalogo.getRevistas()) {
-                lista_materiales.add(revista);
-            }
 
-            datos_cargados = true;
+            System.out.println("Materiales cargados: " + catalogo.size());
 
         } catch (Exception e) {
-            System.out.println("Error al cargar catalogo.json: " + e);
+            e.printStackTrace();
         }
     }
 
-    public boolean isDatosCargados() {
-        return datos_cargados;
-    }
-
-    public ArrayList&lt;Material&gt; obtenerCatalogo() {
-        return lista_materiales;
+    public List&lt;Material&gt; getCatalogo() {
+        return catalogo;
     }
 }</code></pre>
-        </details>
+        </div>
+      </div>
 
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/Prestamo.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+      <div class="checkpoint">
+        <strong>🟢 Hito 3 de Verificación — Datos listos en memoria</strong>
+        <p>Ejecuta <code>mvn compile</code>. Los datos se pueden deserializar y tenemos una lista <code>List&lt;Material&gt;</code> esperando ser mostrada.</p>
+      </div>
 
-import java.time.LocalDate;
+      <!-- ============================================================ -->
+      <!-- FASE 4 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-4">Fase 4 — Volver a la Vista: Tu primera TableView
+        <small>Ahora que Material existe, tipamos la tabla y la poblamos con los datos reales</small></h2>
 
-public class Prestamo {
+      <p>¡Llegó el momento! Ahora que <code>Material.java</code> existe en nuestro proyecto, podemos reemplazar el mensaje temporal de <code>CatalogoView.java</code> con una auténtica <strong>TableView&lt;Material&gt;</strong>.</p>
 
-    private User usuario;
-    private Material material;
-    private LocalDate fechaPrestamo;
-    private LocalDate fechaDevolucion;
+      <p>Fíjate en cómo funciona <code>PropertyValueFactory</code> con los getters que escribimos en el paso 2:</p>
+      <ul style="line-height:1.7; padding-left:22px;">
+        <li><code>"tipo"</code> llama a <code>getTipo()</code> (muestra "Libro" o "Revista").</li>
+        <li><code>"titulo"</code> llama a <code>getTitulo()</code>.</li>
+        <li><code>"diasPrestamo"</code> llama a <code>getDiasPrestamo()</code> (muestra 14 o 3 días según el polimorfismo).</li>
+        <li><code>"cantidadDisponible"</code> llama a <code>getCantidadDisponible()</code> (muestra el stock).</li>
+      </ul>
 
-    public Prestamo(User usuario, Material material) {
-        this.usuario = usuario;
-        this.material = material;
-        this.fechaPrestamo = LocalDate.now();
-        this.fechaDevolucion = fechaPrestamo.plusDays(material.calcularDiasPrestamo());
-    }
-
-    public User getUsuario() { return usuario; }
-    public Material getMaterial() { return material; }
-    public LocalDate getFechaPrestamo() { return fechaPrestamo; }
-    public LocalDate getFechaDevolucion() { return fechaDevolucion; }
-}</code></pre>
-        </details>
-
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/model/PrestamoException.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
-
-public class PrestamoException extends Exception {
-
-    public PrestamoException(String mensaje) {
-        super(mensaje);
-    }
-}</code></pre>
-        </details>
-
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/controller/CatalogoController.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.controller;
-
-import java.util.ArrayList;
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-v">Vista · Agregando la TableView</span>
+            <span class="lego-file-loc">📄 view/CatalogoView.java (Actualizado con la tabla)</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.view;
 
 import com.hachimakidev.bibliotech.model.Material;
 import com.hachimakidev.bibliotech.model.MaterialManager;
-import com.hachimakidev.bibliotech.model.Prestamo;
-import com.hachimakidev.bibliotech.model.PrestamoException;
+
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+public class CatalogoView {
+
+    // Instanciamos el manager para obtener la lista de materiales
+    private MaterialManager manager = new MaterialManager();
+
+    public VBox catalogo() {
+
+        // 1. Instanciamos la tabla tipada con Material
+        TableView&lt;Material&gt; tabla = new TableView&lt;&gt;();
+        tabla.setPlaceholder(new Label("No hay materiales en el catálogo."));
+
+        // 2. Definimos las 4 columnas esenciales
+        TableColumn&lt;Material, String&gt; colTipo = new TableColumn&lt;&gt;("Tipo");
+        colTipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+        colTipo.setPrefWidth(90);
+
+        TableColumn&lt;Material, String&gt; colTitulo = new TableColumn&lt;&gt;("Título");
+        colTitulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
+        colTitulo.setPrefWidth(260);
+
+        TableColumn&lt;Material, Integer&gt; colDias = new TableColumn&lt;&gt;("Días de Préstamo");
+        colDias.setCellValueFactory(new PropertyValueFactory&lt;&gt;("diasPrestamo"));
+        colDias.setPrefWidth(130);
+
+        TableColumn&lt;Material, Integer&gt; colStock = new TableColumn&lt;&gt;("Disponibles");
+        colStock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
+        colStock.setPrefWidth(110);
+
+        tabla.getColumns().addAll(colTipo, colTitulo, colDias, colStock);
+
+        // 3. ¡EL MOMENTO MÁGICO! Poblamos la tabla con los datos del manager
+        tabla.setItems(FXCollections.observableArrayList(manager.getCatalogo()));
+
+        // 4. Panel inferior de préstamo
+        Label lblRut = new Label("RUT solicitante:");
+        TextField txtRut = new TextField();
+        txtRut.setPromptText("Ej: 12345678-9");
+
+        Button btnPrestar = new Button("Prestar seleccionado");
+
+        HBox panelAcciones = new HBox(10, lblRut, txtRut, btnPrestar);
+        panelAcciones.setPadding(new Insets(10, 0, 0, 0));
+
+        VBox layout = new VBox(12, tabla, panelAcciones);
+        layout.setPadding(new Insets(16));
+        return layout;
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="checkpoint">
+        <strong>🟢 Hito 4 de Verificación — ¡La tabla cobra vida!</strong>
+        <p>Ejecuta <code>mvn clean compile javafx:run</code>.
+        Pasa a la pestaña "Catálogo y Préstamos". ¡Boom! Ahí tienes tu tabla llena de libros y revistas reales leídos desde el JSON. Puedes hacer clic en las filas para seleccionarlas.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 5 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-5">Fase 5 — El cerebro: CatalogoController y el botón Prestar
+        <small>Separar la lógica de negocio y conectar la acción en la pantalla</small></h2>
+
+      <p>La tabla se ve impecable, pero si pulsas el botón "Prestar", aún no ocurre nada.
+      ¿Deberíamos meter las validaciones de RUT y stock adentro de la vista? <strong>No</strong>: eso rompería el patrón MVC.
+      Creamos un <strong>Controlador</strong> que actúe de intermediario.</p>
+
+      <h3 class="sub">Paso 5.1 — El controlador: CatalogoController.java</h3>
+      <p>Crea <code>src/main/java/com/hachimakidev/bibliotech/controller/CatalogoController.java</code>:</p>
+
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-c">Controlador · Coordinador de reglas</span>
+            <span class="lego-file-loc">📄 controller/CatalogoController.java</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.controller;
+
+import java.util.List;
+
+import com.hachimakidev.bibliotech.model.Material;
+import com.hachimakidev.bibliotech.model.MaterialManager;
 import com.hachimakidev.bibliotech.model.User;
 import com.hachimakidev.bibliotech.model.UserManager;
 
 public class CatalogoController {
 
-    private MaterialManager manager_materiales;
-    private UserManager manager_usuarios;
-    private ArrayList&lt;Prestamo&gt; lista_prestamos = new ArrayList&lt;&gt;();
+    private MaterialManager materialManager = new MaterialManager();
+    // Reutilizamos el UserManager que construimos en la Parte 1
+    private UserManager userManager = new UserManager();
 
-    public CatalogoController() {
-        manager_materiales = new MaterialManager();
-        manager_usuarios = new UserManager();
+    public List&lt;Material&gt; obtenerCatalogo() {
+        return materialManager.getCatalogo();
     }
 
-    public boolean datosDisponibles() {
-        return manager_materiales.isDatosCargados() && manager_usuarios.isDatosCargados();
-    }
-
-    public ArrayList&lt;Material&gt; obtenerCatalogo() {
-        return manager_materiales.obtenerCatalogo();
-    }
-
-    public Prestamo prestar(String rut_ingresado, Material material) throws PrestamoException {
+    public String prestar(String rut, Material material) throws Exception {
 
         if (material == null) {
-            throw new PrestamoException("Selecciona un material en la tabla.");
+            throw new Exception("Debes seleccionar un material en la tabla.");
         }
 
-        String rut_limpio = rut_ingresado.trim();
-        if (rut_limpio.isEmpty()) {
-            throw new PrestamoException("Escribe el RUT de quien pide el préstamo.");
+        if (rut == null || rut.trim().isEmpty()) {
+            throw new Exception("Escribe el RUT de quien solicita el material.");
         }
 
-        User usuario = manager_usuarios.buscarPorRut(rut_limpio);
-        if (usuario == null) {
-            throw new PrestamoException("No existe un usuario con RUT " + rut_limpio + ".");
+        User socio = userManager.buscarPorRut(rut.trim());
+        if (socio == null) {
+            throw new Exception("No existe ningún socio registrado con el RUT " + rut.trim());
         }
 
-        material.prestarEjemplar();
+        if (material.getCantidadDisponible() <= 0) {
+            throw new Exception("No quedan ejemplares disponibles de '" + material.getTitulo() + "'.");
+        }
 
-        Prestamo prestamo = new Prestamo(usuario, material);
-        lista_prestamos.add(prestamo);
-        return prestamo;
+        // Descontamos 1 unidad del inventario
+        material.prestar();
+
+        // Devolvemos el mensaje de confirmación con el método polimórfico getDiasPrestamo()
+        return socio.getNombre() + " se lleva '" + material.getTitulo() + "'.\n"
+             + "Plazo de devolución: " + material.getDiasPrestamo() + " días.";
     }
 }</code></pre>
-        </details>
+        </div>
+      </div>
 
-        <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/view/CatalogoView.java</strong></summary>
-          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+      <h3 class="sub">Paso 5.2 — Conectar el controlador y el botón en CatalogoView.java</h3>
+      <p>Ahora actualizamos <code>CatalogoView.java</code> para cambiar la instancia directa de <code>MaterialManager</code> por <code>CatalogoController</code> y programar el clic del botón:</p>
 
-import java.time.format.DateTimeFormatter;
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-v">Vista · Conectando el evento</span>
+            <span class="lego-file-loc">📄 view/CatalogoView.java (Versión final completa)</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <pre v-pre><code class="language-java">package com.hachimakidev.bibliotech.view;
 
 import com.hachimakidev.bibliotech.controller.CatalogoController;
 import com.hachimakidev.bibliotech.model.Material;
-import com.hachimakidev.bibliotech.model.Prestamo;
-import com.hachimakidev.bibliotech.model.PrestamoException;
 
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
@@ -2327,135 +1467,458 @@ import javafx.scene.layout.VBox;
 
 public class CatalogoView {
 
+    private CatalogoController controller = new CatalogoController();
+
     public VBox catalogo() {
 
-        CatalogoController controller = new CatalogoController();
+        TableView&lt;Material&gt; tabla = new TableView&lt;&gt;();
+        tabla.setPlaceholder(new Label("No hay materiales en el catálogo."));
 
-        // ---------- 1. La tabla ----------
-        TableView&lt;Material&gt; tbl_catalogo = new TableView&lt;&gt;();
-        tbl_catalogo.setPlaceholder(new Label("No hay materiales para mostrar."));
+        TableColumn&lt;Material, String&gt; colTipo = new TableColumn&lt;&gt;("Tipo");
+        colTipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+        colTipo.setPrefWidth(90);
 
-        TableColumn&lt;Material, String&gt; col_tipo = new TableColumn&lt;&gt;("Tipo");
-        col_tipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+        TableColumn&lt;Material, String&gt; colTitulo = new TableColumn&lt;&gt;("Título");
+        colTitulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
+        colTitulo.setPrefWidth(260);
 
-        TableColumn&lt;Material, String&gt; col_titulo = new TableColumn&lt;&gt;("Título");
-        col_titulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
-        col_titulo.setPrefWidth(220);
+        TableColumn&lt;Material, Integer&gt; colDias = new TableColumn&lt;&gt;("Días de Préstamo");
+        colDias.setCellValueFactory(new PropertyValueFactory&lt;&gt;("diasPrestamo"));
+        colDias.setPrefWidth(130);
 
-        TableColumn&lt;Material, String&gt; col_autor = new TableColumn&lt;&gt;("Autor");
-        col_autor.setCellValueFactory(new PropertyValueFactory&lt;&gt;("autor"));
-        col_autor.setPrefWidth(170);
+        TableColumn&lt;Material, Integer&gt; colStock = new TableColumn&lt;&gt;("Disponibles");
+        colStock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
+        colStock.setPrefWidth(110);
 
-        TableColumn&lt;Material, String&gt; col_detalle = new TableColumn&lt;&gt;("Detalle");
-        col_detalle.setCellValueFactory(new PropertyValueFactory&lt;&gt;("detalle"));
-        col_detalle.setPrefWidth(150);
+        tabla.getColumns().addAll(colTipo, colTitulo, colDias, colStock);
+        tabla.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));
 
-        TableColumn&lt;Material, Integer&gt; col_dias = new TableColumn&lt;&gt;("Días");
-        col_dias.setCellValueFactory(new PropertyValueFactory&lt;&gt;("diasPrestamo"));
+        Label lblRut = new Label("RUT solicitante:");
+        TextField txtRut = new TextField();
+        txtRut.setPromptText("Ej: 12345678-9");
 
-        TableColumn&lt;Material, Integer&gt; col_stock = new TableColumn&lt;&gt;("Disponibles");
-        col_stock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
+        Button btnPrestar = new Button("Prestar seleccionado");
 
-        tbl_catalogo.getColumns().add(col_tipo);
-        tbl_catalogo.getColumns().add(col_titulo);
-        tbl_catalogo.getColumns().add(col_autor);
-        tbl_catalogo.getColumns().add(col_detalle);
-        tbl_catalogo.getColumns().add(col_dias);
-        tbl_catalogo.getColumns().add(col_stock);
-
-        tbl_catalogo.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));
-
-        // ---------- 2. El formulario de préstamo ----------
-        Label lbl_rut = new Label("RUT del usuario:");
-        TextField txf_rut = new TextField();
-        txf_rut.setPromptText("Ej: 12345678-9");
-        Button btn_prestar = new Button("Prestar seleccionado");
-
-        Label lbl_estado = new Label();
-
-        if (!controller.datosDisponibles()) {
-            lbl_estado.setText("Error: no se pudieron cargar el catálogo o los usuarios.");
-            btn_prestar.setDisable(true);
-        }
-
-        // ---------- 3. El evento del botón ----------
-        btn_prestar.setOnAction(evento -> {
-
-            Material seleccionado = tbl_catalogo.getSelectionModel().getSelectedItem();
+        // Evento de clic: coordinado con el Controlador
+        btnPrestar.setOnAction(e -> {
+            Material seleccionado = tabla.getSelectionModel().getSelectedItem();
 
             try {
-                Prestamo prestamo = controller.prestar(txf_rut.getText(), seleccionado);
+                String confirmacion = controller.prestar(txtRut.getText(), seleccionado);
+                tabla.refresh(); // ¡Repinta la tabla para que el nuevo stock aparezca de inmediato!
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo exitoso", confirmacion);
 
-                tbl_catalogo.refresh();
-
-                DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd-MM-yyyy");
-                String mensaje = prestamo.getUsuario().getNombre()
-                        + " se lleva \"" + seleccionado.getTitulo() + "\".\n"
-                        + "Plazo: " + seleccionado.calcularDiasPrestamo() + " días.\n"
-                        + "Devolver el: " + prestamo.getFechaDevolucion().format(formato);
-
-                mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo registrado", mensaje);
-
-            } catch (PrestamoException e) {
-                mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", e.getMessage());
+            } catch (Exception ex) {
+                mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", ex.getMessage());
             }
         });
 
-        // ---------- 4. Armar la pantalla ----------
-        HBox fila_prestamo = new HBox(10, lbl_rut, txf_rut, btn_prestar);
-        VBox box = new VBox(10, tbl_catalogo, fila_prestamo, lbl_estado);
-        box.setPadding(new Insets(20));
+        HBox panelAcciones = new HBox(10, lblRut, txtRut, btnPrestar);
+        panelAcciones.setPadding(new Insets(10, 0, 0, 0));
 
-        return box;
+        VBox layout = new VBox(12, tabla, panelAcciones);
+        layout.setPadding(new Insets(16));
+        return layout;
     }
 
     private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
-        Alert alerta = new Alert(tipo);
-        alerta.setTitle(titulo);
-        alerta.setHeaderText(null);
-        alerta.setContentText(mensaje);
-        alerta.showAndWait();
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+}</code></pre>
+        </div>
+      </div>
+
+      <div class="checkpoint">
+        <strong>🟢 Hito 5 de Verificación — Sistema completo y conectado</strong>
+        <p>Ejecuta <code>mvn clean compile javafx:run</code>.
+        Selecciona un libro, escribe el RUT <code>12345678-9</code> y presiona <strong>Prestar seleccionado</strong>. Verás la alerta de éxito y el stock de la tabla bajará en 1 automáticamente.</p>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 6 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-6">Fase 6 — Pruebas en vivo y verificación del clic
+        <small>Comprobar los casos de negocio y seguir el viaje del dato entre capas</small></h2>
+
+      <h3 class="sub">Matriz de pruebas esenciales</h3>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead>
+            <tr>
+              <th>Escenario</th>
+              <th>Acción en la pantalla</th>
+              <th>Resultado esperado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Préstamo de Libro</strong></td>
+              <td>Seleccionar <em>Clean Code</em>, RUT <code>12345678-9</code> y pulsar Prestar.</td>
+              <td>Alerta de éxito informando <strong>14 días</strong> de plazo. El stock baja de 3 a 2.</td>
+            </tr>
+            <tr>
+              <td><strong>2. Préstamo de Revista</strong></td>
+              <td>Seleccionar <em>National Geographic</em>, RUT <code>12345678-9</code> y pulsar Prestar.</td>
+              <td>Alerta de éxito informando <strong>3 días</strong> de plazo. El stock baja de 2 a 1.</td>
+            </tr>
+            <tr>
+              <td><strong>3. Validación sin selección</strong></td>
+              <td>Escribir RUT sin marcar ninguna fila y pulsar Prestar.</td>
+              <td>Alerta <code>WARNING</code>: <em>"Debes seleccionar un material en la tabla."</em></td>
+            </tr>
+            <tr>
+              <td><strong>4. Stock agotado</strong></td>
+              <td>Prestar <em>El Principito</em> (stock 1) y luego intentar prestarlo de nuevo.</td>
+              <td>Alerta <code>WARNING</code>: <em>"No quedan ejemplares disponibles..."</em></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 class="sub">Simulador interactivo con Modo Rayos X</h3>
+      <p>Prueba nuevamente el simulador y fíjate en el indicador inferior: verás cómo cada clic viaja de la Vista al Controlador, el Controlador consulta al Modelo y la Vista refresca la pantalla:</p>
+
+      <!-- SIMULADOR V2 EN FASE 6 -->
+      <bibliotech-sim-v2></bibliotech-sim-v2>
+
+      <div class="activity-zone">
+        <h4>Verifica tu comprensión · Orden del flujo MVC</h4>
+        <order-steps v-bind="a.prestamoSteps"></order-steps>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- REFERENCIA FINAL -->
+      <!-- ============================================================ -->
+      <div class="section-divider"></div>
+
+      <h2 class="phase-title" id="referencia-final">★ Código de referencia completo y limpio
+        <small>Todos los archivos del proyecto compilados y verificados</small></h2>
+
+      <p>Despliega cada archivo para revisar el código limpio de la solución final:</p>
+
+      <div style="display:flex; flex-direction:column; gap:8px; margin:20px 0;">
+        <details class="filesync">
+          <summary><strong>src/main/resources/catalogo.json</strong></summary>
+          <pre v-pre class="code-block"><code class="language-json">{
+  "libros": [
+    { "titulo": "Clean Code", "cantidadDisponible": 3 },
+    { "titulo": "Cien años de soledad", "cantidadDisponible": 2 },
+    { "titulo": "El Principito", "cantidadDisponible": 1 }
+  ],
+  "revistas": [
+    { "titulo": "National Geographic", "cantidadDisponible": 2 },
+    { "titulo": "Muy Interesante", "cantidadDisponible": 1 }
+  ]
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>model/Material.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public abstract class Material {
+
+    private String titulo;
+    private int cantidadDisponible;
+
+    public Material() {}
+
+    public Material(String titulo, int cantidadDisponible) {
+        this.titulo = titulo;
+        this.cantidadDisponible = cantidadDisponible;
+    }
+
+    public abstract String getTipo();
+    public abstract int getDiasPrestamo();
+
+    public boolean prestar() {
+        if (cantidadDisponible > 0) {
+            cantidadDisponible--;
+            return true;
+        }
+        return false;
+    }
+
+    public String getTitulo() { return titulo; }
+    public void setTitulo(String titulo) { this.titulo = titulo; }
+
+    public int getCantidadDisponible() { return cantidadDisponible; }
+    public void setCantidadDisponible(int cantidadDisponible) { this.cantidadDisponible = cantidadDisponible; }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>model/Libro.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class Libro extends Material {
+
+    public Libro() {}
+
+    public Libro(String titulo, int stock) {
+        super(titulo, stock);
+    }
+
+    @Override
+    public String getTipo() {
+        return "Libro";
+    }
+
+    @Override
+    public int getDiasPrestamo() {
+        return 14;
     }
 }</code></pre>
         </details>
 
         <details class="filesync">
-          <summary><strong>src/main/java/com/hachimakidev/bibliotech/view/HomeView.java</strong></summary>
+          <summary><strong>model/Revista.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+public class Revista extends Material {
+
+    public Revista() {}
+
+    public Revista(String titulo, int stock) {
+        super(titulo, stock);
+    }
+
+    @Override
+    public String getTipo() {
+        return "Revista";
+    }
+
+    @Override
+    public int getDiasPrestamo() {
+        return 3;
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>model/CatalogoJson.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.util.List;
+
+public class CatalogoJson {
+    private List&lt;Libro&gt; libros;
+    private List&lt;Revista&gt; revistas;
+
+    public CatalogoJson() {}
+
+    public List&lt;Libro&gt; getLibros() { return libros; }
+    public List&lt;Revista&gt; getRevistas() { return revistas; }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>model/MaterialManager.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.model;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import com.google.gson.Gson;
+
+public class MaterialManager {
+
+    private List&lt;Material&gt; catalogo = new ArrayList&lt;&gt;();
+
+    public MaterialManager() {
+        cargarDesdeJson();
+    }
+
+    private void cargarDesdeJson() {
+        try {
+            InputStream is = getClass().getResourceAsStream("/catalogo.json");
+            InputStreamReader reader = new InputStreamReader(is, StandardCharsets.UTF_8);
+
+            CatalogoJson datos = new Gson().fromJson(reader, CatalogoJson.class);
+            if (datos != null) {
+                if (datos.getLibros() != null) catalogo.addAll(datos.getLibros());
+                if (datos.getRevistas() != null) catalogo.addAll(datos.getRevistas());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List&lt;Material&gt; getCatalogo() {
+        return catalogo;
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>controller/CatalogoController.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.controller;
+
+import java.util.List;
+import com.hachimakidev.bibliotech.model.Material;
+import com.hachimakidev.bibliotech.model.MaterialManager;
+import com.hachimakidev.bibliotech.model.User;
+import com.hachimakidev.bibliotech.model.UserManager;
+
+public class CatalogoController {
+
+    private MaterialManager materialManager = new MaterialManager();
+    private UserManager userManager = new UserManager();
+
+    public List&lt;Material&gt; obtenerCatalogo() {
+        return materialManager.getCatalogo();
+    }
+
+    public String prestar(String rut, Material material) throws Exception {
+        if (material == null) {
+            throw new Exception("Debes seleccionar un material en la tabla.");
+        }
+
+        if (rut == null || rut.trim().isEmpty()) {
+            throw new Exception("Escribe el RUT de quien solicita el material.");
+        }
+
+        User socio = userManager.buscarPorRut(rut.trim());
+        if (socio == null) {
+            throw new Exception("No existe ningún socio registrado con el RUT " + rut.trim());
+        }
+
+        if (material.getCantidadDisponible() <= 0) {
+            throw new Exception("No quedan ejemplares disponibles de '" + material.getTitulo() + "'.");
+        }
+
+        material.prestar();
+
+        return socio.getNombre() + " se lleva '" + material.getTitulo() + "'.\n"
+             + "Plazo de devolución: " + material.getDiasPrestamo() + " días.";
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>view/CatalogoView.java</strong></summary>
+          <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
+
+import com.hachimakidev.bibliotech.controller.CatalogoController;
+import com.hachimakidev.bibliotech.model.Material;
+
+import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+public class CatalogoView {
+
+    private CatalogoController controller = new CatalogoController();
+
+    public VBox catalogo() {
+        TableView&lt;Material&gt; tabla = new TableView&lt;&gt;();
+        tabla.setPlaceholder(new Label("No hay materiales disponibles."));
+
+        TableColumn&lt;Material, String&gt; colTipo = new TableColumn&lt;&gt;("Tipo");
+        colTipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+        colTipo.setPrefWidth(90);
+
+        TableColumn&lt;Material, String&gt; colTitulo = new TableColumn&lt;&gt;("Título");
+        colTitulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));
+        colTitulo.setPrefWidth(260);
+
+        TableColumn&lt;Material, Integer&gt; colDias = new TableColumn&lt;&gt;("Días de Préstamo");
+        colDias.setCellValueFactory(new PropertyValueFactory&lt;&gt;("diasPrestamo"));
+        colDias.setPrefWidth(130);
+
+        TableColumn&lt;Material, Integer&gt; colStock = new TableColumn&lt;&gt;("Disponibles");
+        colStock.setCellValueFactory(new PropertyValueFactory&lt;&gt;("cantidadDisponible"));
+        colStock.setPrefWidth(110);
+
+        tabla.getColumns().addAll(colTipo, colTitulo, colDias, colStock);
+        tabla.setItems(FXCollections.observableArrayList(controller.obtenerCatalogo()));
+
+        Label lblRut = new Label("RUT solicitante:");
+        TextField txtRut = new TextField();
+        txtRut.setPromptText("Ej: 12345678-9");
+
+        Button btnPrestar = new Button("Prestar seleccionado");
+
+        btnPrestar.setOnAction(e -> {
+            Material seleccionado = tabla.getSelectionModel().getSelectedItem();
+            try {
+                String confirmacion = controller.prestar(txtRut.getText(), seleccionado);
+                tabla.refresh();
+                mostrarAlerta(Alert.AlertType.INFORMATION, "Préstamo exitoso", confirmacion);
+            } catch (Exception ex) {
+                mostrarAlerta(Alert.AlertType.WARNING, "No se pudo prestar", ex.getMessage());
+            }
+        });
+
+        HBox panelAcciones = new HBox(10, lblRut, txtRut, btnPrestar);
+        panelAcciones.setPadding(new Insets(10, 0, 0, 0));
+
+        VBox layout = new VBox(12, tabla, panelAcciones);
+        layout.setPadding(new Insets(16));
+        return layout;
+    }
+
+    private void mostrarAlerta(Alert.AlertType tipo, String titulo, String mensaje) {
+        Alert alert = new Alert(tipo);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensaje);
+        alert.showAndWait();
+    }
+}</code></pre>
+        </details>
+
+        <details class="filesync">
+          <summary><strong>view/HomeView.java</strong></summary>
           <pre v-pre class="code-block"><code class="language-java">package com.hachimakidev.bibliotech.view;
 
 import javafx.scene.Scene;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.stage.Stage;
 
 public class HomeView {
 
-    public Scene homeScene() {
+    public void home(Stage stage) {
+        TabPane tabPane = new TabPane();
 
-        UserDataView user_data = new UserDataView();
-        CatalogoView catalogo_view = new CatalogoView();
+        Tab tabUsuarios = new Tab("Usuarios", new UserDataView().userData());
+        tabUsuarios.setClosable(false);
 
-        Tab tab_usuarios = new Tab("Usuarios", user_data.userData());
-        Tab tab_catalogo = new Tab("Catálogo y préstamos", catalogo_view.catalogo());
+        Tab tabCatalogo = new Tab("Catálogo y Préstamos", new CatalogoView().catalogo());
+        tabCatalogo.setClosable(false);
 
-        TabPane tab_pane = new TabPane(tab_usuarios, tab_catalogo);
-        tab_pane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+        tabPane.getTabs().addAll(tabUsuarios, tabCatalogo);
 
-        Scene home_scene = new Scene(tab_pane, 820, 520);
-
-        return home_scene;
+        Scene scene = new Scene(tabPane, 750, 460);
+        stage.setTitle("BiblioTech — Sistema de Gestión");
+        stage.setScene(scene);
+        stage.show();
     }
-
 }</code></pre>
         </details>
       </div>
 
-      <!-- CIERRE -->
-      <div style="margin-top:64px; text-align:center; padding:32px 0; border-top:2px solid var(--line);">
-        <div style="font-size:42px; margin-bottom:12px;">🎉</div>
+      <div class="card" style="margin-top:40px; text-align:center; padding:32px 24px;">
+        <div style="font-size:36px; margin-bottom:8px;">🚀</div>
         <h3>¡Felicitaciones! Has completado BiblioTech Parte 2</h3>
         <p class="lead" style="margin:0 auto; max-width:640px;">
-          Tu aplicación integra todos los pilares vistos en la asignatura: clases abstractas, polimorfismo dinámico,
-          excepciones defensivas, persistencia en JSON y una interfaz JavaFX completa con navegación por pestañas y tablas interactivas.
+          Aprendiste a armar pestañas con <code>TabPane</code>, construiste tu primera <code>TableView</code> de 4 columnas,
+          modelaste una jerarquía polimórfica (<code>Material</code>, <code>Libro</code> y <code>Revista</code>) y leíste un JSON con Gson siguiendo el patrón MVC de forma progresiva.
         </p>
         <div style="margin-top:24px;">
           <a href="../../index.html" class="btn" style="text-decoration:none; padding:10px 24px; font-weight:700;">
@@ -2477,25 +1940,24 @@ public class HomeView {
         return {
           a: {
             umlPairs: {
-              instruction: "Conecta cada clase del modelo con su rol y comportamiento en el catálogo:",
+              instruction: "Conecta cada clase del modelo con su rol en la aplicación:",
               level: "base",
               pairs: [
-                { term: "Material (abstracta)", definition: "Define la estructura común y el método abstracto calcularDiasPrestamo()." },
-                { term: "Libro (concreta)", definition: "Tiene numPaginas y sobrescribe calcularDiasPrestamo() retornando 14 días." },
-                { term: "Revista (concreta)", definition: "Tiene mesPublicacion y sobrescribe calcularDiasPrestamo() retornando 3 días." },
-                { term: "CatalogoJson (molde)", definition: "Estructura que refleja el archivo JSON con arreglos separados de libros y revistas." }
+                { term: "Material (abstracta)", definition: "Define titulo, stock y el método abstracto getDiasPrestamo()." },
+                { term: "Libro (concreta)", definition: "Hereda de Material y retorna 14 días de préstamo." },
+                { term: "Revista (concreta)", definition: "Hereda de Material y retorna 3 días de préstamo." },
+                { term: "CatalogoJson (DTO)", definition: "Refleja el JSON con listas separadas de libros y revistas para Gson." }
               ]
             },
             prestamoSteps: {
-              instruction: "Ordena los pasos que ocurren en el sistema al presionar 'Prestar seleccionado':",
+              instruction: "Ordena los pasos que ocurren al hacer clic en 'Prestar seleccionado':",
               level: "avanzado",
-              explanation: "El evento viaja de la Vista al Controlador, el Controlador valida y consulta al Modelo, el Modelo descuenta el stock y la Vista refresca la tabla y muestra la alerta.",
+              explanation: "El clic va de la Vista al Controlador, el Controlador valida y pide al Modelo descontar, y la Vista repinta la tabla.",
               steps: [
                 { text: "CatalogoView obtiene el material seleccionado de la tabla y el RUT escrito.", correctOrder: 1 },
-                { text: "CatalogoController limpia el RUT y consulta al UserManager si el usuario existe.", correctOrder: 2 },
-                { text: "Material.prestarEjemplar() descuenta el stock o lanza PrestamoException si es 0.", correctOrder: 3 },
-                { text: "Se crea la instancia Prestamo calculando la fecha límite polimórficamente.", correctOrder: 4 },
-                { text: "CatalogoView refresca la tabla con refresh() y abre la alerta informativa.", correctOrder: 5 }
+                { text: "CatalogoController valida el RUT y verifica que el socio exista en UserManager.", correctOrder: 2 },
+                { text: "El modelo descuenta una unidad de stock en memoria con material.prestar().", correctOrder: 3 },
+                { text: "CatalogoView refresca la tabla con refresh() y abre la alerta informativa.", correctOrder: 4 }
               ]
             }
           }
@@ -2518,11 +1980,11 @@ public class HomeView {
           },
           msgUserError: '',
           materiales: [
-            { tipo: 'Libro', titulo: 'Clean Code', autor: 'Robert C. Martin', detalle: '464 páginas', dias: 14, stock: 3 },
-            { tipo: 'Libro', titulo: 'Cien años de soledad', autor: 'Gabriel García Márquez', detalle: '471 páginas', dias: 14, stock: 2 },
-            { tipo: 'Libro', titulo: 'El Principito', autor: 'Antoine de Saint-Exupéry', detalle: '96 páginas', dias: 14, stock: 1 },
-            { tipo: 'Revista', titulo: 'National Geographic', autor: 'National Geographic Society', detalle: 'Edición Septiembre 2026', dias: 3, stock: 2 },
-            { tipo: 'Revista', titulo: 'Muy Interesante', autor: 'Editorial Televisa', detalle: 'Edición Octubre 2026', dias: 3, stock: 1 }
+            { tipo: 'Libro', titulo: 'Clean Code', dias: 14, stock: 3 },
+            { tipo: 'Libro', titulo: 'Cien años de soledad', dias: 14, stock: 2 },
+            { tipo: 'Libro', titulo: 'El Principito', dias: 14, stock: 1 },
+            { tipo: 'Revista', titulo: 'National Geographic', dias: 3, stock: 2 },
+            { tipo: 'Revista', titulo: 'Muy Interesante', dias: 3, stock: 1 }
           ],
           seleccionado: null,
           rutPrestamoInput: '12345678-9',
@@ -2561,14 +2023,14 @@ public class HomeView {
           this.xrayStep = 1;
 
           if (!this.seleccionado) {
-            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'Selecciona un material en la tabla.');
+            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'Debes seleccionar un material en la tabla.');
             this.xrayStep = 0;
             return;
           }
 
           const rut = this.rutPrestamoInput.trim();
           if (!rut) {
-            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'Escribe el RUT de quien pide el préstamo.');
+            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'Escribe el RUT de quien solicita el material.');
             this.xrayStep = 0;
             return;
           }
@@ -2581,7 +2043,7 @@ public class HomeView {
 
           const nombre = usuariosBase[rut];
           if (!nombre) {
-            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'No existe un usuario con RUT ' + rut + '.');
+            this.mostrarAlerta('WARNING', 'No se pudo prestar', 'No existe ningún socio registrado con el RUT ' + rut + '.');
             this.xrayStep = 0;
             return;
           }
@@ -2595,19 +2057,13 @@ public class HomeView {
 
           // Éxito: descontar stock
           this.seleccionado.stock--;
-          this.xrayStep = 4; // Prestamo creado
-
-          const hoy = new Date();
-          const limite = new Date();
-          limite.setDate(hoy.getDate() + this.seleccionado.dias);
-          const fechaStr = limite.toLocaleDateString('es-CL');
+          this.xrayStep = 4; // Refresco en vista
 
           this.mostrarAlerta(
             'INFO',
-            'Préstamo registrado',
-            nombre + ' se lleva "' + this.seleccionado.titulo + '".\n' +
-            'Plazo: ' + this.seleccionado.dias + ' días.\n' +
-            'Devolver el: ' + fechaStr
+            'Préstamo exitoso',
+            nombre + ' se lleva "' + this.seleccionado.titulo + '".\n\n' +
+            'Plazo de devolución: ' + this.seleccionado.dias + ' días.'
           );
         },
         mostrarAlerta(tipo, titulo, mensaje) {
@@ -2664,12 +2120,10 @@ public class HomeView {
                 <table class="fx-table">
                   <thead>
                     <tr>
-                      <th style="width:75px;">Tipo</th>
+                      <th style="width:85px;">Tipo</th>
                       <th>Título</th>
-                      <th>Autor</th>
-                      <th>Detalle</th>
-                      <th style="width:55px;">Días</th>
-                      <th style="width:85px;">Disponibles</th>
+                      <th style="width:120px;">Días de Préstamo</th>
+                      <th style="width:100px;">Disponibles</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2678,9 +2132,7 @@ public class HomeView {
                         @click="seleccionar(m)">
                       <td><span class="ly" :class="m.tipo === 'Libro' ? 'ly-c' : 'ly-m'">{{ m.tipo }}</span></td>
                       <td><strong>{{ m.titulo }}</strong></td>
-                      <td>{{ m.autor }}</td>
-                      <td>{{ m.detalle }}</td>
-                      <td><span style="font-weight:700;">{{ m.dias }}</span></td>
+                      <td><span style="font-weight:700;">{{ m.dias }} días</span></td>
                       <td>
                         <span :style="{ color: m.stock > 0 ? '#16a34a' : '#dc2626', fontWeight: '700' }">
                           {{ m.stock }}
@@ -2693,7 +2145,7 @@ public class HomeView {
                 <!-- FILA DE PRÉSTAMO -->
                 <div style="margin-top:18px; padding:14px; background:#f1f5f9; border-radius:6px; border:1px solid #e2e8f0;">
                   <div class="fx-row" style="margin-bottom:0;">
-                    <label style="font-size:13px; font-weight:600;">RUT del usuario:</label>
+                    <label style="font-size:13px; font-weight:600;">RUT solicitante:</label>
                     <input class="fx-input" v-model="rutPrestamoInput" placeholder="Ej: 12345678-9" style="max-width:200px;" />
                     <button class="fx-btn" @click="realizarPrestamo">Prestar seleccionado</button>
                     <span style="font-size:12.5px; color:#64748b; margin-left:auto;">
@@ -2711,8 +2163,8 @@ public class HomeView {
                   <div style="display:flex; gap:12px; flex-wrap:wrap;">
                     <span class="xray-step" :class="{ active: xrayStep >= 1 }">1. Vista (captura clic)</span>
                     <span class="xray-step" :class="{ active: xrayStep >= 2 }">2. Controller (valida RUT)</span>
-                    <span class="xray-step" :class="{ active: xrayStep >= 3 }">3. Model (stock y días)</span>
-                    <span class="xray-step" :class="{ active: xrayStep >= 4 }">4. Vista (refresh y alert)</span>
+                    <span class="xray-step" :class="{ active: xrayStep >= 3 }">3. Model (descuenta stock)</span>
+                    <span class="xray-step" :class="{ active: xrayStep >= 4 }">4. Vista (refresh y alerta)</span>
                   </div>
                 </div>
               </div>
