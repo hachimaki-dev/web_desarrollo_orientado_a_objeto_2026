@@ -1,0 +1,2158 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía 2.2.3 — BiblioApp: MVC, TableView y Portadas Reales · Profe Carlitos</title>
+  <meta name="description"
+    content="Tutorial pedagógico paso a paso para construir BiblioApp en JavaFX con Maven: arquitectura MVC pura, herencia polimórfica (Material, Libro, Revista), lectura JSON con Gson y switch discriminador, TableView con CellFactory asíncrono y desacoplamiento hacia DAO Repository.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .guide-container {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .guide-header {
+      margin-bottom: 36px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .action-bar-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-nav-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+
+    .btn-nav-top:hover {
+      color: var(--ink);
+      border-color: var(--ink-muted);
+      background: var(--bg-muted);
+    }
+
+    .phase-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin: 64px 0 20px;
+      padding: 14px 18px;
+      background: var(--pastel-lavanda);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--ink);
+      scroll-margin-top: 60px;
+    }
+
+    .phase-title small {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+
+    h3.sub {
+      font-size: 19px;
+      margin: 32px 0 12px;
+      font-weight: 700;
+    }
+
+    /* ---------- Vista de Árbol ---------- */
+    pre.tree,
+    .tree {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.8;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      white-space: pre !important;
+      overflow-x: auto;
+      margin: 18px 0;
+      border: 1px solid #313244;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .tree .folder {
+      color: #89b4fa;
+      font-weight: 700;
+    }
+
+    .tree .file {
+      color: #a6e3a1;
+    }
+
+    .tree .new {
+      color: #f38ba8;
+      font-weight: 700;
+    }
+
+    .tree .note {
+      color: #a6adc8;
+      font-family: var(--font-body);
+      font-size: 12.5px;
+    }
+
+    /* ---------- Diagramas de Arquitectura ---------- */
+    pre.arch-diagram {
+      background: #11111b;
+      color: #cdd6f4;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      padding: 20px 24px;
+      border-radius: var(--radius-md);
+      white-space: pre !important;
+      overflow-x: auto;
+      margin: 18px 0 24px;
+      border: 1px solid #313244;
+    }
+
+    /* ---------- Bloques de Código ---------- */
+    pre.code-block {
+      display: block;
+      margin: 16px 0;
+      background: #1e1e2e !important;
+      color: #cdd6f4 !important;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre !important;
+      overflow-x: auto;
+      tab-size: 4;
+      border: 1px solid #313244;
+    }
+
+    pre.code-block code,
+    pre.code-block code.hljs {
+      background: transparent !important;
+      padding: 0 !important;
+      font-family: inherit !important;
+      font-size: inherit !important;
+      color: inherit;
+    }
+
+    /* ---------- Desglose Línea por Línea (.lbl) ---------- */
+    .lbl {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      margin: 20px 0 30px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .lbl-head {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      background: var(--bg-muted);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .lbl-head div {
+      padding: 10px 16px;
+    }
+
+    .lbl-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      border-top: 1px solid var(--line);
+    }
+
+    .lbl-row pre {
+      margin: 0;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      padding: 14px 16px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.55;
+      overflow-x: auto;
+      white-space: pre !important;
+    }
+
+    .lbl-row pre code,
+    .lbl-row pre code.hljs {
+      background: transparent !important;
+      padding: 0 !important;
+      font-family: inherit;
+      color: inherit;
+    }
+
+    .lbl-exp {
+      padding: 14px 16px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    .lbl-exp p {
+      margin: 0 0 8px;
+    }
+
+    .lbl-exp p:last-child {
+      margin-bottom: 0;
+    }
+
+    /* ---------- ¿Qué pasa si borro? ---------- */
+    details.whatif {
+      background: var(--pastel-rosa);
+      color: var(--accent-rosa);
+      border-radius: var(--radius-sm);
+      padding: 9px 12px;
+      margin: 10px 0 0;
+      font-size: 13.5px;
+      border: 1px solid rgba(160, 65, 93, 0.2);
+    }
+
+    details.whatif summary {
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+
+    details.whatif summary::before {
+      content: "+ ";
+      font-family: var(--font-mono);
+      font-weight: 800;
+    }
+
+    details.whatif[open] summary::before {
+      content: "− ";
+    }
+
+    details.whatif[open] summary {
+      margin-bottom: 6px;
+    }
+
+    details.whatif p {
+      margin: 0;
+      color: var(--ink);
+    }
+
+    /* ---------- Tarjetas de Pasos LEGO ---------- */
+    .lego-step {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      margin: 24px 0 36px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .lego-step-header {
+      background: var(--bg-muted);
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .lego-step-header .meta-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lego-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .ly-m { background: var(--pastel-menta); color: var(--accent-menta); }
+    .ly-v { background: var(--pastel-celeste); color: var(--accent-celeste); }
+    .ly-c { background: var(--pastel-lavanda); color: var(--accent-lavanda); }
+    .ly-d { background: var(--pastel-durazno); color: var(--accent-durazno); }
+
+    .lego-file-loc {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    .lego-step-body {
+      padding: 22px;
+    }
+
+    .imports-box {
+      background: #f8fafc;
+      border: 1px dashed #94a3b8;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: #334155;
+    }
+
+    .imports-box strong {
+      color: #0f172a;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .purpose-banner {
+      background: #eff6ff;
+      border-left: 4px solid #3b82f6;
+      border-radius: 4px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      font-size: 14.5px;
+      color: #1e3a8a;
+      line-height: 1.6;
+    }
+
+    .purpose-banner strong {
+      color: #1d4ed8;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .checkpoint {
+      background: var(--pastel-menta);
+      border: 2px solid #40a02b;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin: 28px 0;
+    }
+
+    .checkpoint strong {
+      color: #2d6a1f;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .checkpoint p {
+      margin: 6px 0 0;
+      line-height: 1.6;
+    }
+
+    .reflection-box {
+      background: var(--pastel-amarillo);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      margin: 20px 0;
+      border-left: 4px solid #d97706;
+    }
+
+    .reflection-box p {
+      margin: 0;
+      color: #92400e;
+      font-size: 14.5px;
+      line-height: 1.6;
+    }
+
+    .dao-box {
+      background: #f5f3ff;
+      border: 2px solid #8b5cf6;
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin: 32px 0;
+    }
+
+    .dao-box h3 {
+      color: #5b21b6;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 24px 0;
+      font-size: 14px;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      border: 1px solid var(--line);
+      padding: 12px 16px;
+      text-align: left;
+    }
+
+    .compare-table th {
+      background: var(--bg-muted);
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .compare-table tr:nth-child(even) {
+      background: #fafafa;
+    }
+
+    /* ---------- Simulador Interactivo ---------- */
+    .simulator-window {
+      border: 2px solid #cbd5e1;
+      border-radius: var(--radius-lg);
+      background: #f8fafc;
+      overflow: hidden;
+      margin: 28px 0;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    }
+
+    .sim-titlebar {
+      background: #e2e8f0;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #cbd5e1;
+    }
+
+    .sim-window-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .sim-dot {
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+    }
+
+    .sim-dot-red { background: #ef4444; }
+    .sim-dot-yellow { background: #f59e0b; }
+    .sim-dot-green { background: #10b981; }
+
+    .sim-title-text {
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+      font-family: var(--font-mono);
+    }
+
+    .sim-stage-content {
+      padding: 24px;
+      min-height: 360px;
+      background: white;
+    }
+
+    .sim-control-panel {
+      background: #f1f5f9;
+      padding: 12px 20px;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .sim-table {
+      width: 100%;
+      border-collapse: collapse;
+      border: 1px solid #e2e8f0;
+      font-size: 14px;
+    }
+
+    .sim-table th {
+      background: #f8fafc;
+      padding: 10px 14px;
+      border-bottom: 2px solid #cbd5e1;
+      text-align: left;
+      font-weight: 700;
+      color: #334155;
+    }
+
+    .sim-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e2e8f0;
+      vertical-align: middle;
+    }
+
+    .sim-cover-thumb {
+      width: 65px;
+      height: 90px;
+      object-fit: cover;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      background: #e2e8f0;
+      display: block;
+    }
+
+    .btn-sim-switch {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      border: 1px solid #cbd5e1;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-sim-switch:hover {
+      background: #e2e8f0;
+    }
+
+    .btn-sim-switch.active {
+      background: #2563eb;
+      color: white;
+      border-color: #1d4ed8;
+    }
+
+    .xray-bar {
+      padding: 10px 14px;
+      background: #0f172a;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: #38bdf8;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .xray-node {
+      padding: 4px 8px;
+      border-radius: 4px;
+      background: #1e293b;
+      color: #94a3b8;
+    }
+
+    .xray-node.active {
+      background: #0284c7;
+      color: white;
+      font-weight: 700;
+    }
+
+    @media (max-width: 768px) {
+      .lbl-head,
+      .lbl-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- BARRA DE ACCIÓN SUPERIOR FIJA -->
+  <aside class="top-action-bar">
+    <div class="action-bar-inner">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="../../index.html#unidad-2-mvc" class="btn-nav-top">
+          ← Volver al Portal
+        </a>
+        <span style="font-size:13px; font-weight:700; color:var(--ink-soft);">
+          👽 Unidad 2 · Arquitectura MVC & TableView
+        </span>
+      </div>
+      <div style="display:flex; gap:8px; font-size:13px;">
+        <a href="#fase-0" class="btn-nav-top" style="padding:4px 10px;">MVC</a>
+        <a href="#fase-2" class="btn-nav-top" style="padding:4px 10px;">Gson & Manager</a>
+        <a href="#fase-4" class="btn-nav-top" style="padding:4px 10px;">TableView</a>
+        <a href="#fase-5" class="btn-nav-top" style="padding:4px 10px;">Portadas</a>
+        <a href="#fase-7" class="btn-nav-top" style="padding:4px 10px; background:var(--pastel-lavanda); color:var(--accent-lavanda); font-weight:700;">Hacia DAO Repository</a>
+        <a href="#referencia-final" class="btn-nav-top" style="padding:4px 10px;">Código Completo</a>
+      </div>
+    </div>
+  </aside>
+
+  <div id="app" class="guide-container">
+
+    <!-- ENCABEZADO DE LA GUÍA -->
+    <header class="guide-header">
+      <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+        <span class="tag tag-inter">🔵 Nivel Progresivo · Paso a Paso</span>
+        <span class="tag tag-base">Proyecto: BiblioApp</span>
+        <span class="tag tag-avanzado">Patrón: MVC + Preparación DAO</span>
+      </div>
+      <h1>BiblioApp: De un Archivo JSON a una Biblioteca con Portadas Reales</h1>
+      <p class="lead">
+        Domina la arquitectura <strong>Modelo-Vista-Controlador (MVC)</strong> en JavaFX y Maven: carga polimórfica desde JSON con Gson, comprensión profunda del componente <code>TableView</code>, renderizado de imágenes reales con <code>TableCell</code> asíncrono y desacoplamiento limpio preparado para el patrón <strong>DAO / Repository</strong>.
+      </p>
+
+      <div class="card" style="margin-top:20px; background:var(--bg-soft); border-left:4px solid var(--ink);">
+        <h4 style="margin-bottom:8px;">Metas de Aprendizaje y Criterios de Logro</h4>
+        <ul style="margin:0; padding-left:20px; font-size:14.5px; line-height:1.7;">
+          <li><strong>Comprensión de MVC:</strong> Explicar por qué aislamos la vista de los datos y cómo el controlador actúa como orquestador.</li>
+          <li><strong>Modelo Polimórfico:</strong> Implementar <code>Material</code> (padre) y sus subclases <code>Libro</code> y <code>Revista</code> invocando <code>super(...)</code>.</li>
+          <li><strong>Persistencia con Gson:</strong> Desglosar cómo <code>MaterialManager</code> lee recursos del classpath, parsea <code>JsonObject[]</code> y resuelve tipos heterogéneos con <code>switch</code>.</li>
+          <li><strong>Dominio de TableView:</strong> Entender qué es una tabla genérica <code>TableView&lt;Material&gt;</code>, columnas tipadas, <code>PropertyValueFactory</code> y <code>ObservableList</code>.</li>
+          <li><strong>Celdas Gráficas con Portadas:</strong> Diferenciar <code>setCellValueFactory</code> de <code>setCellFactory</code>, usar <code>ImageView</code> y activar descarga asíncrona con <code>new Image(url, true)</code> sin congelar la ventana.</li>
+          <li><strong>Preparación a DAO / Repository:</strong> Demostrar cómo esta separación garantiza que en la siguiente unidad podamos cambiar el archivo JSON por SQLite sin alterar la interfaz gráfica.</li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- SIMULADOR INTERACTIVO JAVAFX -->
+    <section id="simulador">
+      <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:12px;">
+        <h2 style="font-size:22px; font-weight:800; margin:0;">🧪 Simulador Interactivo de la Aplicación (JavaFX Preview)</h2>
+        <span style="font-size:13px; color:var(--ink-muted);">Interactúa con la aplicación antes de programarla</span>
+      </div>
+
+      <div class="simulator-window">
+        <div class="sim-titlebar">
+          <div class="sim-window-dots">
+            <span class="sim-dot sim-dot-red"></span>
+            <span class="sim-dot sim-dot-yellow"></span>
+            <span class="sim-dot sim-dot-green"></span>
+          </div>
+          <div class="sim-title-text">{{ simVistaActual === 'home' ? 'BiblioApp - HomeView (Consulta de Usuarios)' : 'BiblioApp - MaterialView (Catálogo TableView)' }}</div>
+          <div style="font-size:11px; color:#64748b; font-family:var(--font-mono);">OpenJFX 25 Stage</div>
+        </div>
+
+        <div class="sim-stage-content">
+          <!-- VISTA 1: HOMEVIEW -->
+          <div v-if="simVistaActual === 'home'" style="max-width:540px; margin:20px auto;">
+            <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; padding:20px;">
+              <h3 style="font-size:18px; margin-top:0; margin-bottom:12px;">Buscar Usuario en Biblioteca</h3>
+              <div style="display:flex; gap:10px; margin-bottom:16px;">
+                <input type="text" v-model="simRutInput" placeholder="Ej: 11.111.111-1" style="flex:1; padding:8px 12px; border:1px solid #cbd5e1; border-radius:4px; font-family:var(--font-mono);" />
+                <button @click="simularBuscarRut" class="btn" style="background:#0f172a; color:white; border:none; padding:8px 16px;">Buscar por RUT</button>
+              </div>
+
+              <div style="background:white; border:1px solid #e2e8f0; border-radius:6px; padding:12px; font-family:var(--font-mono); font-size:13px; line-height:1.7;">
+                <div>RUT: <strong>{{ simUser.rut }}</strong></div>
+                <div>Nombre: <strong>{{ simUser.nombre }}</strong></div>
+                <div>Email: <strong>{{ simUser.email }}</strong></div>
+              </div>
+
+              <div style="margin-top:24px; padding-top:16px; border-top:1px dashed #cbd5e1; text-align:right;">
+                <button @click="navegarA('materiales')" class="btn" style="background:#2563eb; color:white; border:none; padding:10px 20px; font-weight:700; display:inline-flex; align-items:center; gap:8px;">
+                  <span>Ver materiales</span> →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTA 2: MATERIALVIEW -->
+          <div v-else>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+              <div>
+                <h3 style="margin:0; font-size:18px;">Catálogo General de Materiales (TableView)</h3>
+                <span style="font-size:13px; color:#64748b;">4 elementos polimórficos cargados desde <code>biblioteca.json</code></span>
+              </div>
+              <button @click="navegarA('home')" class="btn" style="font-size:12.5px; padding:6px 12px;">
+                ← Volver a HomeView
+              </button>
+            </div>
+
+            <!-- TABLA SIMULADA -->
+            <table class="sim-table">
+              <thead>
+                <tr>
+                  <th style="width:110px;">Tipo</th>
+                  <th>Título</th>
+                  <th>Detalle Específico</th>
+                  <th style="width:140px; text-align:center;">
+                    Portada
+                    <small style="display:block; font-weight:400; font-size:11px; color:#64748b;">
+                      {{ simModoCelda === 'portadas' ? '(ImageView)' : '(Texto URL)' }}
+                    </small>
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="mat in simMateriales" :key="mat.titulo">
+                  <td>
+                    <span class="lego-badge" :class="mat.tipo === 'Libro' ? 'ly-c' : 'ly-m'">
+                      {{ mat.tipo }}
+                    </span>
+                  </td>
+                  <td>
+                    <div style="font-weight:700; font-size:14.5px;">{{ mat.titulo }}</div>
+                  </td>
+                  <td style="font-size:13px; color:#475569;">
+                    <div v-if="mat.tipo === 'Libro'">
+                      Autor: <strong>{{ mat.autor }}</strong> · {{ mat.paginas }} págs.
+                    </div>
+                    <div v-else>
+                      Editorial: <strong>{{ mat.editorial }}</strong> · {{ mat.periodicidad }}
+                    </div>
+                  </td>
+                  <td style="text-align:center;">
+                    <!-- MODO PORTADA REAL CON IMAGEVIEW -->
+                    <div v-if="simModoCelda === 'portadas'" style="display:flex; justify-content:center;">
+                      <img :src="mat.imagen" :alt="mat.titulo" class="sim-cover-thumb" />
+                    </div>
+                    <!-- MODO URL TEXTO PLANO -->
+                    <div v-else style="font-family:var(--font-mono); font-size:11px; color:#64748b; word-break:break-all; max-width:140px;">
+                      {{ mat.imagen }}
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- PANEL DE CONTROL DEL SIMULADOR -->
+        <div class="sim-control-panel">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <span style="font-size:13px; font-weight:700; color:#334155;">Demostración Pedagógica:</span>
+            <button @click="simModoCelda = 'portadas'" class="btn-sim-switch" :class="{ active: simModoCelda === 'portadas' }">
+              🖼️ Con CellFactory (Portadas Reales)
+            </button>
+            <button @click="simModoCelda = 'texto'" class="btn-sim-switch" :class="{ active: simModoCelda === 'texto' }">
+              📄 Sin CellFactory (Solo URLs como texto)
+            </button>
+          </div>
+          <div style="font-size:12px; color:#64748b;">
+            Observa cómo <code>setCellFactory</code> transforma el texto plano en un nodo gráfico vivo.
+          </div>
+        </div>
+
+        <!-- MODO RAYOS X: TRAZADOR MVC EN TIEMPO REAL -->
+        <div class="xray-bar">
+          <span style="color:#f8fafc; font-weight:700;">⚡ Trazador MVC en Vivo:</span>
+          <span class="xray-node" :class="{ active: simPasoMvc >= 1 }">1. Vista (HomeView clic)</span>
+          <span>→</span>
+          <span class="xray-node" :class="{ active: simPasoMvc >= 2 }">2. MaterialView (Crea vista)</span>
+          <span>→</span>
+          <span class="xray-node" :class="{ active: simPasoMvc >= 3 }">3. MaterialController</span>
+          <span>→</span>
+          <span class="xray-node" :class="{ active: simPasoMvc >= 4 }">4. MaterialManager (Gson)</span>
+          <span>→</span>
+          <span class="xray-node" :class="{ active: simPasoMvc >= 5 }">5. TableView (Render celdas)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ÍNDICE MODULAR -->
+    <div class="card" style="margin:36px 0 20px;">
+      <h3 style="margin-top:0; font-size:18px;">Ruta de Aprendizaje Modular y Progresiva</h3>
+      <ul class="toc" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:10px; margin:16px 0 0; padding:0; list-style:none;">
+        <li><a href="#fase-0" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>0</span> El Patrón MVC: Propósito y Diseño</a></li>
+        <li><a href="#fase-1" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>1</span> El Modelo POO: Material, Libro y Revista</a></li>
+        <li><a href="#fase-2" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>2</span> Datos JSON y MaterialManager con Gson</a></li>
+        <li><a href="#fase-3" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>3</span> El Intermediario: MaterialController</a></li>
+        <li><a href="#fase-4" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>4</span> La Vista: Dominando el nodo TableView</a></li>
+        <li><a href="#fase-5" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>5</span> Portadas Reales: TableCell e ImageView</a></li>
+        <li><a href="#fase-6" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>6</span> Navegación de Escenas desde HomeView</a></li>
+        <li><a href="#fase-7" class="btn" style="width:100%; text-align:left; font-size:13.5px; background:var(--pastel-lavanda); font-weight:700;"><span>7</span> Hacia DAO / Repository: Diseñando a futuro</a></li>
+        <li><a href="#fase-8" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>8</span> Diagnóstico y Errores Frecuentes</a></li>
+        <li><a href="#fase-9" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>9</span> Verificación Interactiva (DUA 🟢🔵🟣)</a></li>
+        <li><a href="#referencia-final" class="btn" style="width:100%; text-align:left; font-size:13.5px;"><span>★</span> Código de Referencia Completo</a></li>
+      </ul>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 0: FUNDAMENTACIÓN MVC -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-0">
+      Fase 0 — ¿Por qué MVC? Fundamentación, Propósito y Arquitectura
+      <small>Por qué nunca debemos programar todo en una única clase y cómo pensar en capas</small>
+    </h2>
+
+    <p>
+      Cuando los estudiantes comienzan a programar interfaces gráficas, el impulso natural es escribir todo en un solo archivo: crear la ventana, colocar el botón, abrir el archivo JSON dentro del evento <code>setOnAction</code>, leer los datos y pintar la tabla ahí mismo.
+    </p>
+
+    <div class="reflection-box">
+      <p>
+        <strong>El peligro del código espagueti:</strong> Si juntas la lectura del archivo, la lógica de decisión y la interfaz en el mismo archivo, cualquier cambio visual (por ejemplo, cambiar un botón por un menú) puede romper la carga de datos. Y peor aún: el día que los datos vengan de una base de datos SQL en vez de un JSON, tendrás que reescribir toda la pantalla desde cero.
+      </p>
+    </div>
+
+    <h3 class="sub">La Analogía del Restaurante para entender MVC</h3>
+    <p>
+      Para visualizar claramente las tres responsabilidades, piensa en cómo opera un restaurante profesional:
+    </p>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Capa</th>
+          <th>Equivalente en el Restaurante</th>
+          <th>Responsabilidad en Software</th>
+          <th>Lo que NUNCA debe hacer</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong style="color:var(--accent-celeste);">VISTA (View)</strong></td>
+          <td>El Mozo y la Carta del Menú</td>
+          <td>Muestra la información al usuario en pantalla de forma atractiva y detecta clics o pulsaciones de teclas.</td>
+          <td>Cocinar los platos o comprar carne (no debe leer archivos JSON ni calcular lógica).</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent-lavanda);">CONTROLADOR (Controller)</strong></td>
+          <td>El Administrador / Despachador</td>
+          <td>Recibe la orden del mozo, valida lo que se pidió y le solicita el trabajo a la cocina. Devuelve el resultado a la vista.</td>
+          <td>Dibujar botones en pantalla ni manipular directamente las conexiones a bajo nivel.</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent-menta);">MODELO (Model)</strong></td>
+          <td>La Cocina y la Despensa</td>
+          <td>Guarda los datos del negocio (Libros, Revistas) y administra de dónde se leen o guardan (persistencia).</td>
+          <td>Saber cómo se llama el botón o qué color tiene la ventana.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub">Estructura de Carpetas del Proyecto</h3>
+    <p>
+      En nuestro proyecto <strong>BiblioApp</strong> dividiremos las responsabilidades en paquetes estrictamente separados:
+    </p>
+
+    <pre class="tree"><span class="folder">com.hachimakidev.biblioapp</span>
+├── <span class="folder">model</span>/             <span class="note">← Capa de Datos y Negocio (POO puro)</span>
+│   ├── <span class="file">Material.java</span>        <span class="note">Clase base con título e imagen</span>
+│   ├── <span class="file">Libro.java</span>           <span class="note">Subclase con autor y páginas</span>
+│   ├── <span class="file">Revista.java</span>         <span class="note">Subclase con editorial y periodicidad</span>
+│   └── <span class="file">MaterialManager.java</span> <span class="note">Lector y gestor de persistencia JSON</span>
+├── <span class="folder">controller</span>/        <span class="note">← Capa Intermediaria de Orquestación</span>
+│   └── <span class="file">MaterialController.java</span>
+└── <span class="folder">view</span>/              <span class="note">← Capa de Interfaz Gráfica JavaFX</span>
+    ├── <span class="file">HomeView.java</span>        <span class="note">Pantalla inicial de búsqueda por RUT</span>
+    └── <span class="file">MaterialView.java</span>    <span class="note">Pantalla de catálogo con TableView</span></pre>
+
+    <h3 class="sub">Diagrama de Flujo de Comunicación</h3>
+    <p>Observa cómo viaja la información: la vista solo se comunica con el controlador, y el controlador con el modelo.</p>
+
+    <pre class="arch-diagram">┌─────────────────────────────────────────────────────────────────────────────┐
+│                            FLUJO DE COMUNICACIÓN                            │
+│                                                                             │
+│  [ HomeView ] ──(clic)──> [ MaterialView ]                                 │
+│                                   │                                         │
+│                       pide datos  │  entrega ObservableList                 │
+│                                   ▼                                         │
+│                         [ MaterialController ]                              │
+│                                   │                                         │
+│                          consulta │  retorna ArrayList                      │
+│                                   ▼                                         │
+│                          [ MaterialManager ]                                │
+│                                   │                                         │
+│                           parsea  │  lee stream                             │
+│                                   ▼                                         │
+│                         [ biblioteca.json ]                                 │
+└─────────────────────────────────────────────────────────────────────────────┘</pre>
+
+    <!-- ============================================================ -->
+    <!-- FASE 1: MODELO POO -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-1">
+      Fase 1 — El Modelo POO con Herencia: Material, Libro y Revista
+      <small>Construcción progresiva de la jerarquía de clases con explicación línea por línea</small>
+    </h2>
+
+    <p>
+      Tanto los libros como las revistas comparten características comunes: ambos tienen un título y una imagen de portada. En lugar de duplicar estos atributos en dos clases separadas, aplicamos el principio de <strong>herencia</strong>.
+    </p>
+
+    <!-- PASO 1.1: MATERIAL -->
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-m">Modelo · Clase Base</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/model/Material.java</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <div class="purpose-banner">
+          <strong>Propósito de la clase:</strong>
+          Representar la abstracción general de cualquier material bibliográfico. Contiene los atributos universales (<code>titulo</code> e <code>imagen</code>) que compartirán todos los elementos del catálogo.
+        </div>
+
+        <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.model;
+
+public class Material {
+
+    String titulo;
+    String imagen;
+
+    public Material(String titulo, String imagen) {
+        this.titulo = titulo;
+        this.imagen = imagen;
+    }
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
+
+    public String getImagen() {
+        return imagen;
+    }
+
+    public void setImagen(String imagen) {
+        this.imagen = imagen;
+    }
+}</code></pre>
+
+        <!-- LBL DESGLOSE MATERIAL -->
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Línea de Código</div>
+            <div>Análisis Pedagógico y Propósito</div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">String titulo;
+String imagen;</code></pre>
+            <div class="lbl-exp">
+              <p>Atributos comunes a todo material. <code>titulo</code> guarda el texto del nombre y <code>imagen</code> almacena la dirección URL donde está alojada la portada en internet.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">public Material(String titulo, String imagen) {
+    this.titulo = titulo;
+    this.imagen = imagen;
+}</code></pre>
+            <div class="lbl-exp">
+              <p>Constructor de la clase base. Obliga a que cualquier material nazca con un título y una portada definidos.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">public String getTitulo() { return titulo; }
+public String getImagen() { return imagen; }</code></pre>
+            <div class="lbl-exp">
+              <p><strong>¡Punto crucial para JavaFX!</strong> La tabla <code>TableView</code> requiere métodos que comiencen con <code>get</code> seguidos del nombre del atributo con mayúscula (<code>getTitulo</code>, <code>getImagen</code>) para poder leer los valores automáticamente mediante reflexión.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si borro getTitulo() o lo renombro a dameTitulo()?</summary>
+                <p>La tabla JavaFX no sabrá cómo obtener el valor y la columna "Título" aparecerá completamente vacía en blanco, sin dar error de compilación explícito.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 1.2: LIBRO -->
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-m">Modelo · Subclase Especializada</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/model/Libro.java</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <div class="purpose-banner">
+          <strong>Propósito de la clase:</strong>
+          Especializar <code>Material</code> para libros, agregando los atributos exclusivos <code>autor</code> y <code>paginas</code>, reutilizando lo que ya existe en el padre.
+        </div>
+
+        <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.model;
+
+public class Libro extends Material {
+
+    String autor;
+    int paginas;
+
+    public Libro(
+            String titulo,
+            String imagen,
+            String autor,
+            int paginas) {
+
+        super(titulo, imagen);
+
+        this.autor = autor;
+        this.paginas = paginas;
+    }
+
+    public String getAutor() {
+        return autor;
+    }
+
+    public int getPaginas() {
+        return paginas;
+    }
+}</code></pre>
+
+        <!-- LBL DESGLOSE LIBRO -->
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Línea de Código</div>
+            <div>Análisis Pedagógico y Propósito</div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">public class Libro extends Material {</code></pre>
+            <div class="lbl-exp">
+              <p>La palabra clave <code>extends</code> establece la relación de herencia («un Libro es un Material»). Automáticamente hereda los atributos y métodos de <code>Material</code>.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">super(titulo, imagen);</code></pre>
+            <div class="lbl-exp">
+              <p>Invoca al constructor de la clase padre <code>Material</code>. La clase padre es quien debe inicializar <code>titulo</code> e <code>imagen</code>. Luego, el constructor de <code>Libro</code> se encarga de sus propios atributos (<code>autor</code> y <code>paginas</code>).</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si no pongo super(titulo, imagen)?</summary>
+                <p>Java intentará llamar a un constructor sin parámetros <code>super()</code> en Material. Como Material solo tiene un constructor con parámetros, el código no compilará arrojando el error: <em>«Implicit super constructor Material() is undefined»</em>.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PASO 1.3: REVISTA -->
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-m">Modelo · Subclase Especializada</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/model/Revista.java</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <div class="purpose-banner">
+          <strong>Propósito de la clase:</strong>
+          Especializar <code>Material</code> para revistas, incorporando <code>editorial</code> y <code>periodicidad</code>.
+        </div>
+
+        <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.model;
+
+public class Revista extends Material {
+
+    String editorial;
+    String periodicidad;
+
+    public Revista(
+            String titulo,
+            String imagen,
+            String editorial,
+            String periodicidad) {
+
+        super(titulo, imagen);
+
+        this.editorial = editorial;
+        this.periodicidad = periodicidad;
+    }
+
+    public String getEditorial() {
+        return editorial;
+    }
+
+    public String getPeriodicidad() {
+        return periodicidad;
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 2: GSON Y MATERIALMANAGER -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-2">
+      Fase 2 — El Origen de Datos y MaterialManager con Gson
+      <small>Desglose paso a paso: ¿Por qué necesitamos JsonObject y switch-case?</small>
+    </h2>
+
+    <p>
+      Aquí es donde muchos estudiantes se confunden: ¿Por qué no leemos el archivo con un simple <code>new Gson().fromJson(...)</code> directamente a <code>Material[]</code>?
+    </p>
+
+    <div class="purpose-banner">
+      <strong>El Gran Dilema Pedagógico:</strong>
+      En el archivo JSON tenemos elementos heterogéneos: unos son <strong>libros</strong> (con autor y páginas) y otros son <strong>revistas</strong> (con editorial y periodicidad). Si le pidiéramos a Gson que cree objetos <code>Material</code> directamente, Gson no sabría qué clase hija construir y se perderían los datos específicos.<br><br>
+      <strong>La Solución Profesional:</strong> Leemos cada elemento primero como un objeto JSON genérico (<code>JsonObject</code>). Luego leemos su campo discriminador <code>"tipo"</code> y mediante un <code>switch-case</code> decidimos si construimos un <code>Libro</code> o una <code>Revista</code>.
+    </div>
+
+    <!-- ARCHIVO JSON -->
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-d">Recurso de Datos · JSON</span>
+          <span class="lego-file-loc">📄 src/main/resources/biblioteca.json</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <pre class="code-block"><code class="language-json">[
+  {
+    "tipo": "libro",
+    "titulo": "El Hobbit",
+    "autor": "J. R. R. Tolkien",
+    "paginas": 282,
+    "imagen": "https://m.media-amazon.com/images/I/710+bqAxbNL._AC_UF1000,1000_QL80_.jpg"
+  },
+  {
+    "tipo": "revista",
+    "titulo": "National Geographic",
+    "editorial": "RBA Revistas",
+    "periodicidad": "Mensual",
+    "imagen": "https://static.wikia.nocookie.net/disney/images/e/e0/National_Geographic_Magazine_Cover.jpg"
+  },
+  {
+    "tipo": "libro",
+    "titulo": "Cien años de soledad",
+    "autor": "Gabriel García Márquez",
+    "paginas": 471,
+    "imagen": "https://images.cdn1.buscalibre.com/fit-in/360x360/61/8d/618d227e8967274093da711e614fba25.jpg"
+  },
+  {
+    "tipo": "revista",
+    "titulo": "Wired",
+    "editorial": "Condé Nast",
+    "periodicidad": "Bimestral",
+    "imagen": "https://media.wired.com/photos/5932576b58b0d64bb35d14cd/master/w_2560%2Cc_limit/wired_cover_sept_2016.jpg"
+  }
+]</code></pre>
+      </div>
+    </div>
+
+    <!-- MATERIALMANAGER -->
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-m">Modelo · Gestor de Persistencia</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/model/MaterialManager.java</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <div class="imports-box">
+          <strong>Imports requeridos:</strong>
+          <code>java.io.InputStream</code>, <code>java.io.InputStreamReader</code>, <code>java.util.ArrayList</code>, <code>com.google.gson.Gson</code>, <code>com.google.gson.JsonObject</code>
+        </div>
+
+        <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.model;
+
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+public class MaterialManager {
+
+    ArrayList&lt;Material&gt; material_arraylist = new ArrayList&lt;&gt;();
+
+    public MaterialManager() {
+        loadMaterial();
+    }
+
+    public void loadMaterial() {
+
+        InputStream stream =
+                getClass().getResourceAsStream("/biblioteca.json");
+
+        if (stream == null) {
+            throw new IllegalStateException(
+                    "No se encontró biblioteca.json en resources");
+        }
+
+        try (InputStreamReader reader = new InputStreamReader(stream)) {
+
+            Gson gson = new Gson();
+
+            JsonObject[] materiales =
+                    gson.fromJson(reader, JsonObject[].class);
+
+            for (JsonObject material : materiales) {
+
+                String tipo = material.get("tipo").getAsString();
+
+                switch (tipo) {
+
+                    case "libro":
+
+                        String titulo =
+                                material.get("titulo").getAsString();
+
+                        String autor =
+                                material.get("autor").getAsString();
+
+                        int paginas =
+                                material.get("paginas").getAsInt();
+
+                        String imagen =
+                                material.get("imagen").getAsString();
+
+                        Libro libro =
+                                new Libro(titulo, imagen, autor, paginas);
+
+                        material_arraylist.add(libro);
+
+                        break;
+
+                    case "revista":
+
+                        String tituloRevista =
+                                material.get("titulo").getAsString();
+
+                        String editorial =
+                                material.get("editorial").getAsString();
+
+                        String imagenRevista =
+                                material.get("imagen").getAsString();
+
+                        String periodicidad =
+                                material.get("periodicidad").getAsString();
+
+                        Revista revista = new Revista(
+                                tituloRevista,
+                                imagenRevista,
+                                editorial,
+                                periodicidad
+                        );
+
+                        material_arraylist.add(revista);
+
+                        break;
+
+                    default:
+                        System.out.println(
+                                "Tipo de material desconocido: " + tipo);
+                        break;
+                }
+            }
+
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException(
+                    "No se pudo leer biblioteca.json", e);
+        }
+    }
+
+    public ArrayList&lt;Material&gt; getMateriales() {
+        return material_arraylist;
+    }
+
+    public void mostrarMateriales() {
+        for (Material material : material_arraylist) {
+            System.out.println(material.getTitulo());
+        }
+    }
+}</code></pre>
+
+        <!-- LBL DESGLOSE MATERIALMANAGER -->
+        <h3 class="sub">Desglose Minucioso Línea por Línea de MaterialManager</h3>
+
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Línea de Código</div>
+            <div>Análisis Pedagógico, Propósito y Resolución</div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">ArrayList&lt;Material&gt; material_arraylist = new ArrayList&lt;&gt;();</code></pre>
+            <div class="lbl-exp">
+              <p><strong>Polimorfismo puro:</strong> La lista almacena referencias de tipo <code>Material</code>. Esto nos permite guardar tanto objetos <code>Libro</code> como objetos <code>Revista</code> en la misma colección sin necesidad de crear dos listas separadas.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">InputStream stream = getClass().getResourceAsStream("/biblioteca.json");</code></pre>
+            <div class="lbl-exp">
+              <p>Busca el archivo dentro de <code>src/main/resources</code> a través del Classpath. La barra inicial <code>"/"</code> indica que la búsqueda parte desde la raíz de los recursos compilados.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">if (stream == null) {
+    throw new IllegalStateException("No se encontró biblioteca.json en resources");
+}</code></pre>
+            <div class="lbl-exp">
+              <p><strong>Programación defensiva:</strong> Si el archivo no está en la carpeta correcta o el nombre está mal escrito, <code>stream</code> vale <code>null</code>. Lanzamos una excepción clara de inmediato para avisarle al programador exactamente qué ocurrió.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">try (InputStreamReader reader = new InputStreamReader(stream))</code></pre>
+            <div class="lbl-exp">
+              <p><strong>Try-with-resources:</strong> Convierte los bytes binarios del stream en caracteres de texto legibles. Al declararse entre los paréntesis del <code>try</code>, Java garantiza que el archivo se cerrará automáticamente al finalizar, evitando fugas de memoria.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si no usamos try-with-resources?</summary>
+                <p>El archivo podría quedar abierto y bloqueado en el sistema operativo, consumiendo recursos de memoria innecesarios.</p>
+              </details>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">JsonObject[] materiales = gson.fromJson(reader, JsonObject[].class);</code></pre>
+            <div class="lbl-exp">
+              <p><strong>El núcleo de la solución Gson:</strong> Transforma el arreglo JSON en un arreglo de objetos genéricos <code>JsonObject[]</code>. En este punto no hemos creado libros ni revistas todavía: solo tenemos cajas genéricas de datos.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">for (JsonObject material : materiales) {
+    String tipo = material.get("tipo").getAsString();</code></pre>
+            <div class="lbl-exp">
+              <p>Iteramos cada objeto y consultamos el valor del campo <code>"tipo"</code>. Este valor actúa como discriminador (nos dice si es <code>"libro"</code> o <code>"revista"</code>).</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">switch (tipo) {
+    case "libro":
+        // ...
+        Libro libro = new Libro(titulo, imagen, autor, paginas);
+        material_arraylist.add(libro);
+        break;</code></pre>
+            <div class="lbl-exp">
+              <p>Según el tipo, extraemos los atributos específicos (usando <code>getAsInt()</code> para números y <code>getAsString()</code> para texto), construimos la instancia concreta de <code>Libro</code> y la agregamos a la lista polimórfica.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 3: EL CONTROLADOR -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-3">
+      Fase 3 — El Intermediario: MaterialController
+      <small>El cerebro que orquesta y protege a la vista de la persistencia</small>
+    </h2>
+
+    <p>
+      ¿Por qué no llamamos a <code>MaterialManager</code> directamente desde la vista? Porque si la clase de la pantalla conoce los detalles de lectura de archivos, se produce un <strong>acoplamiento indebido</strong>.
+    </p>
+
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-c">Controlador · Desacoplador</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/controller/MaterialController.java</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <div class="purpose-banner">
+          <strong>Propósito de la clase:</strong>
+          Actuar como único punto de contacto para la vista. La vista le solicita materiales al controlador mediante <code>getMateriales()</code>, sin saber si vienen de un archivo JSON, de una lista en memoria o de una base de datos.
+        </div>
+
+        <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.controller;
+
+import java.util.ArrayList;
+
+import com.hachimakidev.biblioapp.model.Material;
+import com.hachimakidev.biblioapp.model.MaterialManager;
+
+public class MaterialController {
+
+    private MaterialManager materialManager;
+
+    public MaterialController() {
+        materialManager = new MaterialManager();
+    }
+
+    public ArrayList&lt;Material&gt; getMateriales() {
+        return materialManager.getMateriales();
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 4: TABLEVIEW COMO NODO NUEVO -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-4">
+      Fase 4 — La Vista Gráfica: Dominando el Nodo TableView
+      <small>¿Qué es una TableView, qué significa su tipado genérico y cómo funciona PropertyValueFactory?</small>
+    </h2>
+
+    <div class="purpose-banner">
+      <strong>¿Qué es una TableView en JavaFX?</strong>
+      Es un componente visual de alto nivel diseñado para mostrar colecciones de objetos en formato de filas y columnas. A diferencia de crear decenas de etiquetas <code>Label</code> a mano, la <code>TableView</code> se encarga automáticamente de los encabezados, la selección de filas y la barra de desplazamiento (scroll).
+    </div>
+
+    <h3 class="sub">Los Tres Conceptos Fundamentales de TableView</h3>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Concepto</th>
+          <th>Sintaxis en Código</th>
+          <th>Explicación Pedagógica</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Tipado de la Tabla</strong></td>
+          <td><code>TableView&lt;Material&gt;</code></td>
+          <td>El tipo entre diamantes indica qué objeto representa <strong>cada fila</strong> de la tabla.</td>
+        </tr>
+        <tr>
+          <td><strong>Columna Tipada</strong></td>
+          <td><code>TableColumn&lt;Material, String&gt;</code></td>
+          <td>Tiene dos tipos: el primero (<code>Material</code>) es el objeto de la fila; el segundo (<code>String</code>) es el tipo de dato que contiene esa celda.</td>
+        </tr>
+        <tr>
+          <td><strong>Extracción de Propiedad</strong></td>
+          <td><code>new PropertyValueFactory&lt;&gt;("titulo")</code></td>
+          <td>Usa reflexión en Java: busca en el objeto un método llamado <code>getTitulo()</code> para extraer el valor automáticamente.</td>
+        </tr>
+        <tr>
+          <td><strong>Lista Observable</strong></td>
+          <td><code>ObservableList&lt;Material&gt;</code></td>
+          <td>Una lista especial de JavaFX que avisa a la tabla cada vez que se agrega o quita un elemento para que se repinte sola.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-v">Vista · Interfaz Gráfica</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/view/MaterialView.java (Versión Base)</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.view;
+
+import com.hachimakidev.biblioapp.controller.MaterialController;
+import com.hachimakidev.biblioapp.model.Material;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
+
+public class MaterialView {
+
+    private TableView&lt;Material&gt; tablaMateriales;
+    private MaterialController materialController;
+
+    public MaterialView() {
+        materialController = new MaterialController();
+
+        configurarTabla();
+        cargarMateriales();
+    }
+
+    private void configurarTabla() {
+
+        tablaMateriales = new TableView&lt;&gt;();
+
+        TableColumn&lt;Material, String&gt; columnaTitulo =
+                new TableColumn&lt;&gt;("Título");
+
+        columnaTitulo.setCellValueFactory(
+                new PropertyValueFactory&lt;&gt;("titulo"));
+
+        TableColumn&lt;Material, String&gt; columnaImagen =
+                new TableColumn&lt;&gt;("Portada");
+
+        columnaImagen.setCellValueFactory(
+                new PropertyValueFactory&lt;&gt;("imagen"));
+
+        tablaMateriales.getColumns().add(columnaTitulo);
+        tablaMateriales.getColumns().add(columnaImagen);
+    }
+
+    private void cargarMateriales() {
+
+        ObservableList&lt;Material&gt; materiales =
+                FXCollections.observableArrayList(
+                        materialController.getMateriales());
+
+        tablaMateriales.setItems(materiales);
+    }
+
+    public Scene materialScene() {
+
+        VBox contenedor = new VBox(tablaMateriales);
+
+        Scene escena = new Scene(contenedor, 800, 600);
+
+        return escena;
+    }
+}</code></pre>
+        <!-- LBL DESGLOSE TABLEVIEW BASE -->
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Línea de Código</div>
+            <div>Análisis Pedagógico y Fundamentación</div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">tablaMateriales = new TableView&lt;&gt;();</code></pre>
+            <div class="lbl-exp">
+              <p>Crea el contenedor de la tabla tipado con <code>Material</code>. Cada fila representará una instancia de un libro o revista del modelo.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">TableColumn&lt;Material, String&gt; columnaTitulo = new TableColumn&lt;&gt;("Título");
+columnaTitulo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("titulo"));</code></pre>
+            <div class="lbl-exp">
+              <p><strong>Reflexión e Introspección:</strong> <code>PropertyValueFactory&lt;&gt;("titulo")</code> le indica a JavaFX que llame automáticamente al método <code>getTitulo()</code> en el objeto de esa fila para extraer su valor.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si en Material el método se llama obtenerTitulo() en vez de getTitulo()?</summary>
+                <p>La columna se mostrará vacía. <code>PropertyValueFactory</code> exige estrictamente el estándar JavaBeans: prefijo <code>get</code> + NombreDePropiedad con mayúscula inicial.</p>
+              </details>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">ObservableList&lt;Material&gt; materiales =
+    FXCollections.observableArrayList(materialController.getMateriales());
+tablaMateriales.setItems(materiales);</code></pre>
+            <div class="lbl-exp">
+              <p><strong>El Patrón Observer:</strong> Un simple <code>ArrayList</code> almacena datos en memoria, pero no emite notificaciones. JavaFX exige una <code>ObservableList</code> para que la tabla "escuche" las adiciones o eliminaciones y se refresque sola en pantalla.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si pasamos el ArrayList directo a la tabla?</summary>
+                <p>El método <code>setItems()</code> no compilará porque solo acepta listas que implementen la interfaz <code>ObservableList</code> de JavaFX.</p>
+              </details>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="checkpoint">
+      <strong>🟢 Hito 1 de Verificación:</strong>
+      <p>
+        Si ejecutamos la aplicación aquí, la tabla funciona pero la columna "Portada" muestra el texto plano de la URL (ej: <code>https://.../portada.jpg</code>). La tabla ya recibe los datos del modelo, pero todavía no sabe cómo dibujar una imagen en lugar de letras.
+      </p>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 5: CELLFACTORY Y PORTADAS -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-5">
+      Fase 5 — La Magia Visual: Portadas Reales con CellFactory
+      <small>Diferencia crucial entre setCellValueFactory y setCellFactory, TableCell e ImageView</small>
+    </h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Método</th>
+          <th>Pregunta que responde</th>
+          <th>¿Qué hace exactamente?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>setCellValueFactory(...)</code></td>
+          <td><em>"¿Qué dato extraigo del objeto?"</em></td>
+          <td>Obtiene el String con la ruta o URL leyendo el getter correspondiente (<code>getImagen()</code>).</td>
+        </tr>
+        <tr>
+          <td><code>setCellFactory(...)</code></td>
+          <td><em>"¿Cómo dibujo ese dato visualmente en la pantalla?"</em></td>
+          <td>Construye el nodo gráfico (un <code>ImageView</code>) y lo coloca dentro de la celda con <code>setGraphic()</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3 class="sub">Image vs ImageView: No confundir el dato con el nodo</h3>
+    <ul>
+      <li><code>Image</code>: Es el objeto que contiene los bytes binarios de la imagen en memoria RAM.</li>
+      <li><code>ImageView</code>: Es el componente visual de JavaFX que sabe cómo proyectar esa <code>Image</code> en la escena con un ancho, alto y escala determinados.</li>
+    </ul>
+
+    <!-- IMPLEMENTACIÓN CELLFACTORY -->
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-v">Vista · Renderizado Gráfico</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/view/MaterialView.java (Personalización de Celdas)</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <div class="imports-box">
+          <strong>Imports adicionales requeridos:</strong>
+          <code>javafx.scene.control.TableCell</code>, <code>javafx.scene.image.Image</code>, <code>javafx.scene.image.ImageView</code>
+        </div>
+
+        <pre class="code-block"><code class="language-java">// 1. Configuramos altura fija para que quepan las portadas holgadamente
+tablaMateriales.setFixedCellSize(110);
+
+// 2. Personalizamos la representación gráfica de columnaImagen
+columnaImagen.setCellFactory(columna -> {
+
+    return new TableCell&lt;Material, String&gt;() {
+
+        private final ImageView vistaImagen = new ImageView();
+
+        {
+            vistaImagen.setFitWidth(70);
+            vistaImagen.setFitHeight(100);
+            vistaImagen.setPreserveRatio(true);
+        }
+
+        @Override
+        protected void updateItem(String rutaImagen, boolean vacio) {
+
+            super.updateItem(rutaImagen, vacio);
+
+            if (vacio || rutaImagen == null || rutaImagen.isBlank()) {
+
+                setGraphic(null);
+                setText(null);
+
+            } else {
+
+                // El segundo argumento (true) activa la carga asíncrona en segundo plano
+                Image imagen = new Image(rutaImagen, true);
+
+                vistaImagen.setImage(imagen);
+
+                setGraphic(vistaImagen);
+                setText(null); // Limpia el texto de la URL para que no tape la foto
+            }
+        }
+    };
+});</code></pre>
+
+        <!-- LBL DESGLOSE CELLFACTORY -->
+        <div class="lbl">
+          <div class="lbl-head">
+            <div>Línea de Código</div>
+            <div>Análisis Pedagógico y Fundamentación Técnica</div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">tablaMateriales.setFixedCellSize(110);</code></pre>
+            <div class="lbl-exp">
+              <p>Fija la altura de cada fila en 110 píxeles. Esto evita que las filas se encojan y corten la portada de 100px.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">vistaImagen.setPreserveRatio(true);</code></pre>
+            <div class="lbl-exp">
+              <p>Evita que las portadas se deformen o se vean estiradas si la imagen original tiene una proporción distinta a 70x100.</p>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">Image imagen = new Image(rutaImagen, true);</code></pre>
+            <div class="lbl-exp">
+              <p><strong>¡Punto crítico de rendimiento!</strong> El segundo parámetro <code>true</code> (background loading) descarga la imagen en un hilo secundario. Si fuera <code>false</code>, la ventana se congelaría por completo mientras espera la respuesta de internet.</p>
+              <details class="whatif">
+                <summary>¿Qué pasa si pongo new Image(rutaImagen, false)?</summary>
+                <p>La aplicación sufrirá micro-congelamientos molestos cada vez que abras la tabla o hagas scroll, porque el Application Thread de JavaFX se detendrá esperando la red.</p>
+              </details>
+            </div>
+          </div>
+          <div class="lbl-row">
+            <pre><code class="language-java">if (vacio || rutaImagen == null || rutaImagen.isBlank()) {
+    setGraphic(null);
+    setText(null);
+}</code></pre>
+            <div class="lbl-exp">
+              <p><strong>Virtualización de memoria:</strong> JavaFX recicla las celdas visuales al hacer scroll. Si una celda reciclada queda vacía, debemos limpiarla con <code>setGraphic(null)</code> para que no muestre la imagen de una fila anterior.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 6: NAVEGACIÓN -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-6">
+      Fase 6 — Navegación de Escenas desde HomeView
+      <small>Reutilizar la misma ventana (Stage) para transicionar entre pantallas</small>
+    </h2>
+
+    <div class="lego-step">
+      <div class="lego-step-header">
+        <div class="meta-left">
+          <span class="lego-badge ly-v">Vista · Navegación</span>
+          <span class="lego-file-loc">📄 src/main/java/com/hachimakidev/biblioapp/view/HomeView.java</span>
+        </div>
+      </div>
+      <div class="lego-step-body">
+        <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.view;
+
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
+
+public class HomeView {
+
+    public Scene homeScene() {
+        VBox vbox_home = new VBox(10, homeUserDataSearchComponent());
+        vbox_home.setPadding(new Insets(20));
+        return new Scene(vbox_home, 720, 480);
+    }
+
+    private VBox homeUserDataSearchComponent() {
+
+        Label lbl_user_rut = new Label("Consultar por RUT: ");
+        TextField txf_user_rut = new TextField();
+        txf_user_rut.setPromptText("ej: 11.111.111-1");
+
+        Button btn_buscar_por_rut = new Button("Buscar por rut");
+
+        HBox hbox_user_rut = new HBox(10, lbl_user_rut, txf_user_rut, btn_buscar_por_rut);
+
+        Label lbl_data_user_rut = new Label("Rut: ___________");
+        Label lbl_data_user_name = new Label("Nombre: ___________");
+        Label lbl_data_user_email = new Label("Email: ___________");
+
+        VBox vbox_user_data = new VBox(
+                10,
+                hbox_user_rut,
+                lbl_data_user_rut,
+                lbl_data_user_name,
+                lbl_data_user_email
+        );
+
+        // BOTÓN DE NAVEGACIÓN A MATERIALES
+        Button btn_materiales = new Button("Ver materiales");
+
+        btn_materiales.setOnAction(e -> {
+
+            // 1. Instanciamos la vista de materiales
+            MaterialView materialView = new MaterialView();
+
+            // 2. Obtenemos su escena configurada con la TableView
+            Scene escenaMateriales = materialView.materialScene();
+
+            // 3. Obtenemos el Stage actual a partir del botón presionado
+            Stage ventana = (Stage) btn_materiales
+                    .getScene()
+                    .getWindow();
+
+            // 4. Cambiamos la escena en la misma ventana
+            ventana.setScene(escenaMateriales);
+        });
+
+        VBox vbox = new VBox(14, vbox_user_data, btn_materiales);
+        return vbox;
+    }
+}</code></pre>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 7: DAO / REPOSITORY -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-7" style="background:#ede9fe; border-left-color:#7c3aed;">
+      Fase 7 — Proyección Arquitectónica: De MaterialManager al Patrón DAO / Repository
+      <small>¿Por qué esta separación es crucial para cuando conectemos SQLite o MySQL en la Unidad 3?</small>
+    </h2>
+
+    <div class="dao-box">
+      <h3>🏛️ La Gran Pregunta de Diseño: ¿Por qué no leer el JSON dentro del Controller?</h3>
+      <p style="font-size:15px; line-height:1.7; color:#374151;">
+        Imagina que en las próximas semanas el profesor indique: <em>«Ahora la biblioteca no usará archivos JSON, sino una base de datos relacional SQLite o una API REST remota»</em>.
+      </p>
+      <p style="font-size:15px; line-height:1.7; color:#374151;">
+        Si <code>MaterialView</code> o <code>MaterialController</code> tuvieran código de Gson o leyeran directamente el archivo con <code>getResourceAsStream</code>, tendrías que <strong>reescribir y romper toda la interfaz gráfica</strong>.
+      </p>
+
+      <pre class="arch-diagram" style="background:#2e1065; color:#f3e8ff;">HOY (Unidad 2):
+[ MaterialView ] ──> [ MaterialController ] ──> [ MaterialManager ] ──> [ biblioteca.json ]
+
+MAÑANA (Patrón DAO / Repository en Unidad 3):
+[ MaterialView ] ──> [ MaterialController ] ──> [ MaterialRepository (Interfaz DAO) ]
+                                                         │
+                                    ┌────────────────────┴───────────────────┐
+                                    ▼                                        ▼
+                        [ JsonMaterialDAO ]                      [ SqliteMaterialDAO ]
+                                    │                                        │
+                                    ▼                                        ▼
+                           (biblioteca.json)                         (Base de Datos SQL)</pre>
+
+      <h4 style="color:#5b21b6; margin-top:20px;">El Patrón DAO (Data Access Object) y Repository:</h4>
+      <p style="font-size:14.5px; line-height:1.7; color:#374151;">
+        En la siguiente unidad formalizaremos una interfaz como esta:
+      </p>
+
+      <pre class="code-block"><code class="language-java">// Adelanto conceptual: Interfaz Repository / DAO
+public interface MaterialRepository {
+    ArrayList&lt;Material&gt; obtenerTodos();
+    Material buscarPorTitulo(String titulo);
+    void guardar(Material material);
+}</code></pre>
+
+      <div style="background:white; border-radius:8px; padding:16px; margin-top:16px; border:1px solid #ddd6fe;">
+        <strong style="color:#6d28d9; display:block; margin-bottom:6px;">🌟 El valor inmenso de lo que aprendiste hoy:</strong>
+        <p style="margin:0; font-size:14px; color:#4b5563; line-height:1.6;">
+          Al mantener <code>MaterialManager</code> aislado dentro del paquete <code>model</code> y comunicarte con él a través de <code>MaterialController.getMateriales()</code>, <strong>tu vista MaterialView ya está 100% blindada</strong>. El día que migremos a SQL, la vista no cambiará ni una sola letra. Esa es la verdadera elegancia del desacoplamiento en la Programación Orientada a Objetos.
+        </p>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- FASE 8: ERRORES FRECUENTES -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-8">
+      Fase 8 — Diagnóstico y Errores Frecuentes
+      <small>Guía rápida de resolución de problemas en el laboratorio</small>
+    </h2>
+
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th style="width:28%;">Síntoma del Error</th>
+          <th style="width:36%;">Causa Común</th>
+          <th>Solución Inmediata</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>IllegalStateException: No se encontró biblioteca.json</code></td>
+          <td>El archivo está fuera de <code>src/main/resources</code> o el nombre tiene faltas de ortografía.</td>
+          <td>Verifica que la ruta sea exactamente <code>src/main/resources/biblioteca.json</code> y usa el prefijo <code>"/biblioteca.json"</code>.</td>
+        </tr>
+        <tr>
+          <td>Los títulos aparecen pero la columna de portadas está completamente en blanco.</td>
+          <td>La URL de la imagen no es un enlace directo a un archivo (.jpg, .png) o la máquina no tiene acceso a internet.</td>
+          <td>Abre la URL en el navegador web: debe mostrar únicamente la imagen, no una página web completa de compra.</td>
+        </tr>
+        <tr>
+          <td>Las imágenes se ven aplastadas o deformadas.</td>
+          <td>Falta preservar la proporción original de aspecto.</td>
+          <td>Asegúrate de incluir <code>vistaImagen.setPreserveRatio(true);</code> en la celda.</td>
+        </tr>
+        <tr>
+          <td>Las filas de la tabla se ven muy apretadas y cortan la imagen.</td>
+          <td>No se definió una altura fija para la celda.</td>
+          <td>Agrega <code>tablaMateriales.setFixedCellSize(110);</code> en el método <code>configurarTabla()</code>.</td>
+        </tr>
+        <tr>
+          <td>La ventana se congela durante 2 segundos al abrir la tabla.</td>
+          <td>Las imágenes se están descargando de forma síncrona en el hilo principal de JavaFX.</td>
+          <td>Usa siempre <code>new Image(rutaImagen, true);</code> para que la descarga ocurra en segundo plano.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- ============================================================ -->
+    <!-- FASE 9: DUA ACTIVIDADES -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="fase-9">
+      Fase 9 — Verificación Interactiva de Comprensión
+      <small>Chequea tu aprendizaje con retroalimentación inmediata (DUA)</small>
+    </h2>
+
+    <!-- ACTIVIDAD 1 -->
+    <quiz-question
+      level="base"
+      question="¿Cuál es la diferencia fundamental entre <code>setCellValueFactory</code> y <code>setCellFactory</code> en una columna de TableView?"
+      :options="[
+        { text: '<code>setCellValueFactory</code> extrae el dato del modelo (qué mostrar), mientras que <code>setCellFactory</code> define cómo se dibuja visualmente (un ImageView, un botón, etc.).', correct: true },
+        { text: 'No hay diferencia; son métodos sinónimos que pueden usarse de forma intercambiable.', correct: false },
+        { text: '<code>setCellFactory</code> solo sirve para texto y <code>setCellValueFactory</code> para imágenes.', correct: false },
+        { text: '<code>setCellValueFactory</code> se usa en el Controller y <code>setCellFactory</code> en el Model.', correct: false }
+      ]"
+      explanation="Excelente. setCellValueFactory conecta la columna con la propiedad del POO (vía getter). setCellFactory es el constructor de la fábrica de celdas visuales (TableCell)."
+      hint="Piensa en 'Value' como el dato puro y 'Cell' como la caja visual dibujada en la pantalla.">
+    </quiz-question>
+
+    <!-- ACTIVIDAD 2 -->
+    <quiz-question
+      level="inter"
+      question="¿Por qué se pasa el booleano <code>true</code> en <code>new Image(rutaImagen, true)</code>?"
+      :options="[
+        { text: 'Para que la imagen se descargue en segundo plano (asíncrona) evitando congelar la interfaz gráfica de usuario.', correct: true },
+        { text: 'Para forzar que la imagen sea en alta resolución 4K.', correct: false },
+        { text: 'Para convertir la imagen a formato PNG automáticamente.', correct: false },
+        { text: 'Para habilitar el zoom interactivo con la rueda del ratón.', correct: false }
+      ]"
+      explanation="Correcto. Si backgroundLoading es false, el hilo de JavaFX espera la respuesta HTTP de internet, congelando toda la ventana."
+      hint="En JavaFX, nunca debes bloquear el Application Thread con operaciones de red o disco.">
+    </quiz-question>
+
+    <!-- ACTIVIDAD 3 -->
+    <quiz-question
+      level="avanzado"
+      question="Si en el futuro reemplazamos <code>MaterialManager</code> por una base de datos SQLite con el patrón <strong>DAO / Repository</strong>, ¿qué cambios requiere la clase <code>MaterialView</code>?"
+      :options="[
+        { text: 'Ningún cambio (0 líneas de código modificadas en la vista), porque MaterialView solo interactúa con MaterialController.', correct: true },
+        { text: 'Debe reescribirse toda la tabla para cambiar TableView por SqlTableView.', correct: false },
+        { text: 'Se debe eliminar la clase Material y crear una tabla SQL en el método materialScene().', correct: false },
+        { text: 'Hay que importar drivers JDBC dentro de HomeView.', correct: false }
+      ]"
+      explanation="¡Exacto! Esa es la magia de MVC y la inversión de dependencias: la interfaz gráfica permanece completamente agnóstica a la base de datos."
+      hint="Recuerda la regla de oro: la vista nunca debe saber de dónde vienen los datos.">
+    </quiz-question>
+
+    <!-- ACTIVIDAD 4: ORDEN DE PASOS -->
+    <order-steps
+      level="inter"
+      instruction="Ordena la secuencia lógica que ocurre desde que el usuario hace clic en «Ver materiales» hasta que la portada aparece en pantalla:"
+      :steps="[
+        'El usuario hace clic en btn_materiales en la pantalla HomeView.',
+        'Se instancia MaterialView y su constructor crea el MaterialController.',
+        'MaterialController pide getMateriales() a MaterialManager, que lee biblioteca.json.',
+        'Se construye la TableView y se enlaza la ObservableList de Materiales.',
+        'updateItem() de cada TableCell descarga la portada con Image asíncrono y la asigna a setGraphic(vistaImagen).'
+      ]"
+      explanation="¡Secuencia impecable! Ese es el ciclo de vida completo del clic a través de las 3 capas del patrón MVC.">
+    </order-steps>
+
+    <!-- ============================================================ -->
+    <!-- REFERENCIA FINAL -->
+    <!-- ============================================================ -->
+    <h2 class="phase-title" id="referencia-final">
+      ★ Código de Referencia Completo y Limpio
+      <small>Todos los archivos del proyecto BiblioApp organizados por paquete</small>
+    </h2>
+
+    <pre class="tree"><span class="folder">src/main</span>
+├── <span class="folder">java/com/hachimakidev/biblioapp</span>
+│   ├── <span class="folder">model/</span>
+│   │   ├── <span class="file">Material.java</span>
+│   │   ├── <span class="file">Libro.java</span>
+│   │   ├── <span class="file">Revista.java</span>
+│   │   └── <span class="file">MaterialManager.java</span>
+│   ├── <span class="folder">controller/</span>
+│   │   └── <span class="file">MaterialController.java</span>
+│   └── <span class="folder">view/</span>
+│       ├── <span class="file">HomeView.java</span>
+│       └── <span class="file">MaterialView.java</span>
+└── <span class="folder">resources/</span>
+    └── <span class="file">biblioteca.json</span></pre>
+
+    <div class="card" style="margin-top:20px;">
+      <h3 style="margin-top:0;">1. Dependencia Maven (pom.xml)</h3>
+      <pre class="code-block"><code class="language-xml">&lt;dependency&gt;
+    &lt;groupId&gt;com.google.code.gson&lt;/groupId&gt;
+    &lt;artifactId&gt;gson&lt;/artifactId&gt;
+    &lt;version&gt;2.14.0&lt;/version&gt;
+&lt;/dependency&gt;</code></pre>
+    </div>
+
+    <div class="card" style="margin-top:20px;">
+      <h3 style="margin-top:0;">2. MaterialView.java Completo Definitivo</h3>
+      <pre class="code-block"><code class="language-java">package com.hachimakidev.biblioapp.view;
+
+import com.hachimakidev.biblioapp.controller.MaterialController;
+import com.hachimakidev.biblioapp.model.Material;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.control.TableCell;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.VBox;
+
+public class MaterialView {
+
+    private TableView&lt;Material&gt; tablaMateriales;
+    private MaterialController materialController;
+
+    public MaterialView() {
+        materialController = new MaterialController();
+
+        configurarTabla();
+        cargarMateriales();
+    }
+
+    private void configurarTabla() {
+
+        tablaMateriales = new TableView&lt;&gt;();
+        tablaMateriales.setFixedCellSize(110);
+
+        TableColumn&lt;Material, String&gt; columnaTitulo =
+                new TableColumn&lt;&gt;("Título");
+
+        columnaTitulo.setCellValueFactory(
+                new PropertyValueFactory&lt;&gt;("titulo"));
+        columnaTitulo.setPrefWidth(300);
+
+        TableColumn&lt;Material, String&gt; columnaImagen =
+                new TableColumn&lt;&gt;("Portada");
+
+        columnaImagen.setCellValueFactory(
+                new PropertyValueFactory&lt;&gt;("imagen"));
+        columnaImagen.setPrefWidth(120);
+
+        columnaImagen.setCellFactory(columna -> {
+
+            return new TableCell&lt;Material, String&gt;() {
+
+                private final ImageView vistaImagen = new ImageView();
+
+                {
+                    vistaImagen.setFitWidth(70);
+                    vistaImagen.setFitHeight(100);
+                    vistaImagen.setPreserveRatio(true);
+                }
+
+                @Override
+                protected void updateItem(String rutaImagen, boolean vacio) {
+
+                    super.updateItem(rutaImagen, vacio);
+
+                    if (vacio || rutaImagen == null || rutaImagen.isBlank()) {
+
+                        setGraphic(null);
+                        setText(null);
+
+                    } else {
+
+                        Image imagen = new Image(rutaImagen, true);
+
+                        vistaImagen.setImage(imagen);
+
+                        setGraphic(vistaImagen);
+                        setText(null);
+                    }
+                }
+            };
+        });
+
+        tablaMateriales.getColumns().add(columnaTitulo);
+        tablaMateriales.getColumns().add(columnaImagen);
+    }
+
+    private void cargarMateriales() {
+
+        ObservableList&lt;Material&gt; materiales =
+                FXCollections.observableArrayList(
+                        materialController.getMateriales());
+
+        tablaMateriales.setItems(materiales);
+    }
+
+    public Scene materialScene() {
+
+        VBox contenedor = new VBox(tablaMateriales);
+
+        Scene escena = new Scene(contenedor, 800, 600);
+
+        return escena;
+    }
+}</code></pre>
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS COMPONENTES Y ACTIVIDADES -->
+  <script src="../../shared/activity-engine.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      data() {
+        return {
+          simVistaActual: 'home',
+          simModoCelda: 'portadas',
+          simPasoMvc: 1,
+          simRutInput: '12.345.678-9',
+          simUser: {
+            rut: '12.345.678-9',
+            nombre: 'Carlos Hachimaki',
+            email: 'carlos.docente@duoc.cl'
+          },
+          simMateriales: [
+            {
+              tipo: 'Libro',
+              titulo: 'El Hobbit',
+              autor: 'J. R. R. Tolkien',
+              paginas: 282,
+              imagen: 'https://m.media-amazon.com/images/I/710+bqAxbNL._AC_UF1000,1000_QL80_.jpg'
+            },
+            {
+              tipo: 'Revista',
+              titulo: 'National Geographic',
+              editorial: 'RBA Revistas',
+              periodicidad: 'Mensual',
+              imagen: 'https://static.wikia.nocookie.net/disney/images/e/e0/National_Geographic_Magazine_Cover.jpg'
+            },
+            {
+              tipo: 'Libro',
+              titulo: 'Cien años de soledad',
+              autor: 'Gabriel García Márquez',
+              paginas: 471,
+              imagen: 'https://images.cdn1.buscalibre.com/fit-in/360x360/61/8d/618d227e8967274093da711e614fba25.jpg'
+            },
+            {
+              tipo: 'Revista',
+              titulo: 'Wired',
+              editorial: 'Condé Nast',
+              periodicidad: 'Bimestral',
+              imagen: 'https://media.wired.com/photos/5932576b58b0d64bb35d14cd/master/w_2560%2Cc_limit/wired_cover_sept_2016.jpg'
+            }
+          ]
+        };
+      },
+      methods: {
+        simularBuscarRut() {
+          this.simUser = {
+            rut: this.simRutInput || '11.111.111-1',
+            nombre: 'Estudiante JavaFX',
+            email: 'alumno@duocuc.cl'
+          };
+          this.simPasoMvc = 1;
+        },
+        navegarA(vista) {
+          this.simVistaActual = vista;
+          if (vista === 'materiales') {
+            this.simPasoMvc = 5;
+          } else {
+            this.simPasoMvc = 1;
+          }
+        }
+      }
+    });
+
+    ActivityEngine.register(app);
+    app.mount('#app');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+      }
+    });
+  </script>
+</body>
+
+</html>

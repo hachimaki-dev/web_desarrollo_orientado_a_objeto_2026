@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Evaluación Preparatoria — Forma B: GameVault · Profe Carlitos</title>
+  <meta name="description"
+    content="Evaluación formativa preparatoria Forma B: Sistema GameVault con JavaFX, Maven, arquitectura MVC pura, lectura de 2 archivos JSON y TableView polimórfica en pantalla única.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    .guide-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 40px 24px 80px;
+    }
+
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .action-bar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .btn-nav-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+
+    .btn-nav-top:hover {
+      color: var(--ink);
+      border-color: var(--ink-muted);
+      background: var(--bg-muted);
+    }
+
+    .eval-badge-forma {
+      display: inline-block;
+      background: #0284c7;
+      color: white;
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 999px;
+      margin-bottom: 12px;
+    }
+
+    .req-block {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 24px;
+      margin-bottom: 24px;
+      background: var(--bg);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+    }
+
+    .req-block h3 {
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 18px;
+    }
+
+    pre.tree {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.8;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      white-space: pre !important;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid #313244;
+    }
+
+    .tree .folder { color: #89b4fa; font-weight: 700; }
+    .tree .file { color: #a6e3a1; }
+    .tree .note { color: #a6adc8; font-family: var(--font-body); font-size: 12px; }
+
+    pre.arch-diagram {
+      background: #11111b;
+      color: #cdd6f4;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      line-height: 1.5;
+      padding: 20px 24px;
+      border-radius: var(--radius-md);
+      white-space: pre !important;
+      overflow-x: auto;
+      margin: 16px 0 24px;
+      border: 1px solid #313244;
+    }
+
+    pre.code-block {
+      background: #1e1e2e !important;
+      color: #cdd6f4 !important;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.55;
+      white-space: pre !important;
+      overflow-x: auto;
+      border: 1px solid #313244;
+    }
+
+    pre.code-block code {
+      background: transparent !important;
+      padding: 0 !important;
+      color: inherit;
+    }
+
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 12px;
+      font-size: 14.5px;
+    }
+
+    .checklist-item input {
+      margin-top: 4px;
+      transform: scale(1.2);
+    }
+  </style>
+</head>
+
+<body>
+  <aside class="top-action-bar">
+    <div class="action-bar-inner">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <a href="../../index.html" class="btn-nav-top">← Volver al Portal</a>
+        <span style="font-size:13px; font-weight:700; color:var(--ink-soft);">
+          👽 Evaluación Preparatoria · Forma B (GameVault)
+        </span>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <a href="EP2_Preparatoria_Forma_A_StreamHub.html" class="btn-nav-top" style="background:var(--pastel-celeste); color:var(--accent-celeste); font-weight:700;">
+          ← Ver Forma A (StreamHub)
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="guide-container">
+    <header class="guide-header">
+      <span class="eval-badge-forma">FORMA B — EVALUACIÓN FORMATIVA PREPARATORIA</span>
+      <h1>GameVault: Sistema de Gestión de Videojuegos y Socios Gamer</h1>
+      <p class="lead">
+        Construye una aplicación de escritorio completa en <strong>JavaFX y Maven</strong> bajo la arquitectura <strong>MVC</strong> que permita consultar socios del club gamer por su RUT y explorar el inventario de juegos físicos y digitales con sus portadas en una pantalla única.
+      </p>
+
+      <div class="card" style="background:var(--bg-soft); border-left:4px solid #0284c7; margin-top:20px;">
+        <h4 style="margin-top:0;">Ficha de la Evaluación</h4>
+        <ul style="margin:0; padding-left:20px; font-size:14px; line-height:1.7;">
+          <li><strong>Asignatura:</strong> Desarrollo Orientado a Objetos (DSY1102).</li>
+          <li><strong>Objetivo:</strong> Demostrar dominio del patrón MVC, herencia polimórfica en Java, persistencia con Gson desde 2 archivos JSON y diseño de interfaces con JavaFX (búsqueda + TableView).</li>
+          <li><strong>Modalidad:</strong> Pantalla única (Single Screen) dividida en panel de socio gamer y panel de inventario.</li>
+          <li><strong>Nivel:</strong> Entrenamiento práctico individual o en duplas.</li>
+        </ul>
+      </div>
+    </header>
+
+    <!-- CONTEXTO DEL CASO -->
+    <div class="req-block">
+      <h3>🎮 1. Contexto de Negocio</h3>
+      <p>
+        La tienda especializada <strong>GameVault</strong> necesita un software de escritorio para sus locales comerciales. El sistema debe operar con dos fuentes de datos independientes:
+      </p>
+      <ol style="font-size:14.5px; line-height:1.7; padding-left:20px;">
+        <li><strong>Consulta de Socios Gamer:</strong> El vendedor busca a un cliente por su RUT para verificar sus datos y su nivel de membresía (Bronce, Plata o Leyenda).</li>
+        <li><strong>Inventario de Videojuegos:</strong> La tienda comercializa juegos en dos formatos polimórficos:
+          <ul>
+            <li><strong>Juego Físico:</strong> Incluye disco o cartucho, por lo que tiene <code>stockTienda</code> (unidades disponibles en mostrador) y <code>pesoGramos</code> (para envíos).</li>
+            <li><strong>Juego Digital:</strong> Código de descarga que incluye <code>tamanoGB</code> (espacio requerido en disco) y <code>codigoActivacion</code> (clave alfanumérica).</li>
+          </ul>
+          Ambos formatos comparten los atributos base <code>titulo</code>, <code>plataforma</code> y <code>portada</code>.
+        </li>
+      </ol>
+    </div>
+
+    <!-- WIREFRAME DE PANTALLA ÚNICA -->
+    <div class="req-block">
+      <h3>🖥️ 2. Diseño de la Interfaz (Pantalla Única)</h3>
+      <p>
+        La ventana debe presentar la información en dos paneles ordenados verticalmente dentro de un <code>VBox</code> principal:
+      </p>
+
+      <pre class="arch-diagram">┌─────────────────────────────────────────────────────────────────────────────┐
+│ GAMEVAULT — GESTIÓN DE INVENTARIO Y SOCIOS GAMER                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [PANEL SUPERIOR: CONSULTA DE SOCIO GAMER]                                   │
+│ Ingrese RUT: [ 19.876.543-2            ]  [ Buscar Socio ]                  │
+│                                                                             │
+│ RUT: 19.876.543-2  |  Socio: Felipe Macías  |  Nivel: Leyenda Gamer          │
+│ Email: felipe.gamer@gamevault.cl                                            │
+├─────────────────────────────────────────────────────────────────────────────┤
+│ [PANEL INFERIOR: INVENTARIO DE VIDEOJUEGOS EN TABLEVIEW]                    │
+│ ┌──────────┬─────────────────────────┬──────────┬──────────────┬──────────┐ │
+│ │ Formato  │ Título                  │ Consola  │ Detalle      │ Portada  │ │
+│ ├──────────┼─────────────────────────┼──────────┼──────────────┼──────────┤ │
+│ │ Físico   │ Zelda: Tears of Kingdom │ Switch   │ 14 unid.     │ [Imagen] │ │
+│ │ Digital  │ Cyberpunk 2077          │ PC       │ 70.0 GB      │ [Imagen] │ │
+│ │ Físico   │ Elden Ring              │ PS5      │ 8 unid.      │ [Imagen] │ │
+│ │ Digital  │ Hollow Knight           │ PC/Xbox  │ 9.0 GB       │ [Imagen] │ │
+│ └──────────┴─────────────────────────┴──────────┴──────────────┴──────────┘ │
+└─────────────────────────────────────────────────────────────────────────────┘</pre>
+    </div>
+
+    <!-- ESTRUCTURA DE PAQUETES MVC -->
+    <div class="req-block">
+      <h3>📁 3. Arquitectura de Paquetes Requerida</h3>
+      <p>
+        El proyecto Maven debe estructurarse estrictamente bajo el patrón MVC en el paquete <code>com.gamevault</code>:
+      </p>
+
+      <pre class="tree"><span class="folder">src/main</span>
+├── <span class="folder">java/com/gamevault</span>
+│   ├── <span class="folder">model/</span>
+│   │   ├── <span class="file">Usuario.java</span>             <span class="note">Entidad Socio (rut, nombre, email, nivelGamer)</span>
+│   │   ├── <span class="file">Videojuego.java</span>          <span class="note">Clase base (titulo, plataforma, portadaUrl)</span>
+│   │   ├── <span class="file">JuegoFisico.java</span>         <span class="note">Subclase (stockTienda, pesoGramos)</span>
+│   │   ├── <span class="file">JuegoDigital.java</span>        <span class="note">Subclase (tamanoGB, codigoActivacion)</span>
+│   │   ├── <span class="file">UsuarioManager.java</span>      <span class="note">Carga usuarios.json con Gson</span>
+│   │   └── <span class="file">InventarioManager.java</span>   <span class="note">Carga inventario.json con Gson y switch</span>
+│   ├── <span class="folder">controller/</span>
+│   │   ├── <span class="file">UsuarioController.java</span>   <span class="note">Método buscarPorRut(rut)</span>
+│   │   └── <span class="file">InventarioController.java</span><span class="note">Método obtenerInventario()</span>
+│   └── <span class="folder">view/</span>
+│       └── <span class="file">GameVaultView.java</span>       <span class="note">Construye la Scene con búsqueda y TableView</span>
+└── <span class="folder">resources/</span>
+    ├── <span class="file">usuarios.json</span>
+    └── <span class="file">inventario.json</span></pre>
+    </div>
+
+    <!-- DATOS JSON LISTOS PARA COPIAR -->
+    <div class="req-block">
+      <h3>📄 4. Archivos de Datos JSON (Listos para copiar)</h3>
+      <p>Copia y guarda estos dos archivos dentro de la carpeta <code>src/main/resources/</code>:</p>
+
+      <h4>A. <code>src/main/resources/usuarios.json</code></h4>
+      <pre class="code-block"><code class="language-json">[
+  {
+    "rut": "18.111.222-3",
+    "nombre": "Diego Alarcón",
+    "email": "diego.gamer@gamevault.cl",
+    "nivelGamer": "Bronce"
+  },
+  {
+    "rut": "19.333.444-5",
+    "nombre": "Javiera Pinto",
+    "email": "javi.pinto@gamevault.cl",
+    "nivelGamer": "Plata"
+  },
+  {
+    "rut": "20.555.666-7",
+    "nombre": "Matías Cárdenas",
+    "email": "matias.pro@gamevault.cl",
+    "nivelGamer": "Leyenda Gamer"
+  }
+]</code></pre>
+
+      <h4 style="margin-top:24px;">B. <code>src/main/resources/inventario.json</code></h4>
+      <pre class="code-block"><code class="language-json">[
+  {
+    "tipo": "fisico",
+    "titulo": "The Legend of Zelda: Tears of the Kingdom",
+    "plataforma": "Nintendo Switch",
+    "stockTienda": 14,
+    "pesoGramos": 75,
+    "portada": "https://m.media-amazon.com/images/I/81xU-7l2fWL._AC_UF1000,1000_QL80_.jpg"
+  },
+  {
+    "tipo": "digital",
+    "titulo": "Cyberpunk 2077: Phantom Liberty",
+    "plataforma": "PC / Steam",
+    "tamanoGB": 70.0,
+    "codigoActivacion": "CP77-PL-9948-DUOC",
+    "portada": "https://m.media-amazon.com/images/I/71rIuR2w71L._AC_UF1000,1000_QL80_.jpg"
+  },
+  {
+    "tipo": "fisico",
+    "titulo": "Elden Ring",
+    "plataforma": "PlayStation 5",
+    "stockTienda": 8,
+    "pesoGramos": 90,
+    "portada": "https://m.media-amazon.com/images/I/81mS8b1kF3L._AC_UF1000,1000_QL80_.jpg"
+  },
+  {
+    "tipo": "digital",
+    "titulo": "Hollow Knight",
+    "plataforma": "PC / Xbox",
+    "tamanoGB": 9.0,
+    "codigoActivacion": "HK-VOID-2026-XBOX",
+    "portada": "https://m.media-amazon.com/images/I/71rE5r820bL._AC_UF1000,1000_QL80_.jpg"
+  }
+]</code></pre>
+    </div>
+
+    <!-- REQUERIMIENTOS TÉCNICOS DETALLADOS -->
+    <div class="req-block">
+      <h3>⚙️ 5. Requerimientos Técnicos Paso a Paso</h3>
+      <ol style="font-size:14.5px; line-height:1.7; padding-left:20px;">
+        <li><strong>Modelo POO con Herencia:</strong>
+          <ul>
+            <li>Crear clase base <code>Videojuego</code> con constructor y getters JavaBeans.</li>
+            <li>Crear <code>JuegoFisico</code> y <code>JuegoDigital</code> heredando de <code>Videojuego</code> e invocando <code>super(titulo, plataforma, portada)</code> en el constructor.</li>
+          </ul>
+        </li>
+        <li><strong>Persistencia Desacoplada con Gson:</strong>
+          <ul>
+            <li><code>UsuarioManager</code> debe leer <code>/usuarios.json</code> usando <code>getResourceAsStream</code> y parsearlo a <code>ArrayList&lt;Usuario&gt;</code>.</li>
+            <li><code>InventarioManager</code> debe leer <code>/inventario.json</code> como <code>JsonObject[]</code> y usar un <code>switch (tipo)</code> para poblar un <code>ArrayList&lt;Videojuego&gt;</code> polimórfico.</li>
+          </ul>
+        </li>
+        <li><strong>Controladores MVC:</strong>
+          <ul>
+            <li><code>UsuarioController</code> debe proveer <code>Usuario buscarPorRut(String rut)</code>.</li>
+            <li><code>InventarioController</code> debe proveer <code>ArrayList&lt;Videojuego&gt; obtenerInventario()</code>.</li>
+          </ul>
+        </li>
+        <li><strong>Vista e Interfaz JavaFX:</strong>
+          <ul>
+            <li>El panel superior debe tener un campo de texto y botón. Al presionar el botón o presionar Enter, se llama al controlador y se actualizan los <code>Label</code> con la información del socio encontrado (o mensaje de advertencia si no existe).</li>
+            <li>El panel inferior debe tener un <code>TableView&lt;Videojuego&gt;</code> poblado mediante <code>FXCollections.observableArrayList()</code>.</li>
+            <li>Configurar columnas con <code>PropertyValueFactory</code>.</li>
+            <li><strong>Desafío de Distinción (Opcional):</strong> Personalizar la columna de portada con <code>setCellFactory</code>, <code>TableCell</code> e <code>ImageView</code> asíncrono (<code>new Image(url, true)</code>) para mostrar las carátulas reales de los videojuegos.</li>
+          </ul>
+        </li>
+      </ol>
+    </div>
+
+    <!-- CHECKLIST DE AUTOEVALUACIÓN -->
+    <div class="card" style="background:#f1f5f9; border:2px solid #cbd5e1; margin-top:32px;">
+      <h3 style="margin-top:0;">✅ Checklist de Verificación para el Estudiante</h3>
+      <p style="font-size:14px; color:#475569;">Usa esta lista para comprobar que tu solución cumple con todos los estándares antes de dar por terminada tu práctica:</p>
+
+      <div class="checklist-item">
+        <input type="checkbox" />
+        <span>El proyecto compila sin errores usando <code>mvn clean compile javafx:run</code>.</span>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" />
+        <span>Los paquetes respetan estrictamente la separación MVC (nada de Gson dentro de la vista).</span>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" />
+        <span>Al ingresar el RUT <code>"20.555.666-7"</code> y presionar el botón, se muestran el nombre y nivel de Matías Cárdenas.</span>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" />
+        <span>Si el RUT no existe, la aplicación no se cae con error, sino que muestra un mensaje amigable.</span>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" />
+        <span>La <code>TableView</code> carga los 4 videojuegos polimórficos desde <code>inventario.json</code>.</span>
+      </div>
+      <div class="checklist-item">
+        <input type="checkbox" />
+        <span>Las subclases <code>JuegoFisico</code> y <code>JuegoDigital</code> reutilizan los atributos del padre mediante <code>super(...)</code>.</span>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>
