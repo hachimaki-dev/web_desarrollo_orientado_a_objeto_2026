@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Desafío 2.2.3 — TechStore: Práctica Pre-Evaluación (MVC, Gson y TableView) · Profe Carlitos</title>
+  <meta name="description"
+    content="Desafío práctico tipo evaluación: clona el scaffold de TechStore, completa el Manager con JsonObject[], conecta el Controlador, muestra los dispositivos en una TableView y programa el formulario para agregar nuevos equipos.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/json.min.js"></script>
+  <style>
+    body {
+      overflow-y: auto;
+      background: var(--bg);
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    .guide-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 48px 24px 80px;
+    }
+
+    .guide-header {
+      margin-bottom: 40px;
+      padding-bottom: 24px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .guide-header h1 {
+      font-size: clamp(1.85rem, 1.2rem + 2.5vw, 2.75rem);
+      line-height: 1.15;
+    }
+
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 24px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    }
+
+    .action-bar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .btn-nav-top {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+      transition: all 0.15s ease;
+    }
+
+    .btn-nav-top:hover {
+      color: var(--ink);
+      border-color: var(--ink-muted);
+      background: var(--bg-muted);
+    }
+
+    .section-divider {
+      margin: 48px 0 32px;
+      border-top: 2px solid var(--line);
+    }
+
+    .phase-title {
+      font-size: clamp(1.2rem, 1rem + 0.8vw, 1.45rem);
+      font-weight: 800;
+      margin: 56px 0 22px;
+      padding: 14px 18px;
+      background: var(--pastel-lavanda);
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--ink);
+      scroll-margin-top: 60px;
+    }
+
+    .phase-title small {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--ink-soft);
+      margin-top: 4px;
+    }
+
+    h3.sub {
+      font-size: 19px;
+      margin: 32px 0 12px;
+      font-weight: 700;
+    }
+
+    .checkpoint {
+      background: var(--pastel-menta);
+      border: 2px solid #40a02b;
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      margin: 28px 0;
+    }
+
+    .checkpoint strong {
+      color: #2d6a1f;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .checkpoint p {
+      margin: 6px 0 0;
+      line-height: 1.6;
+    }
+
+    .lego-step {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: var(--bg);
+      margin: 24px 0 32px;
+      overflow: hidden;
+      box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+    }
+
+    .lego-step-header {
+      background: var(--bg-muted);
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .lego-step-header .meta-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .lego-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 10px;
+      border-radius: 999px;
+    }
+
+    .lego-file-loc {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      background: var(--bg);
+      border: 1px solid var(--line);
+      padding: 3px 8px;
+      border-radius: 4px;
+      color: var(--ink);
+    }
+
+    .lego-step-body {
+      padding: 22px;
+    }
+
+    .ly {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .ly-v { background: var(--pastel-lavanda); color: var(--accent-lavanda); }
+    .ly-c { background: var(--pastel-celeste); color: var(--accent-celeste); }
+    .ly-m { background: var(--pastel-menta); color: var(--accent-menta); }
+    .ly-d { background: var(--pastel-durazno); color: var(--accent-durazno); }
+
+    pre.tree {
+      font-family: var(--font-mono);
+      font-size: 13.5px;
+      line-height: 1.8;
+      background: var(--bg-muted);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 16px 0;
+      border: 1px solid var(--line);
+    }
+
+    .tree .done {
+      color: #2d6a1f;
+      font-weight: 700;
+    }
+
+    .tree .todo {
+      color: #d20f39;
+      font-weight: 700;
+    }
+
+    .toc {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 10px;
+      margin: 16px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .toc a {
+      display: block;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 14.5px;
+      transition: background 0.15s, border-color 0.15s, transform 0.15s;
+    }
+
+    .toc a:hover {
+      background: var(--bg-soft);
+      border-color: var(--ink);
+      transform: translateX(3px);
+    }
+
+    .toc a span {
+      color: var(--ink-muted);
+      font-weight: 700;
+      margin-right: 6px;
+    }
+
+    /* Responsive Accessible Data Table */
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      max-block-size: min(500px, 80dvh);
+      container-type: inline-size;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      margin: 16px 0;
+    }
+
+    .tbl {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      font-size: 14.5px;
+      margin: 0;
+    }
+
+    .tbl thead {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 1;
+    }
+
+    .tbl th,
+    .tbl td {
+      border-bottom: 1px solid var(--line);
+      border-right: 1px solid var(--line);
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .tbl th:last-child,
+    .tbl td:last-child {
+      border-right: none;
+    }
+
+    .tbl tbody tr:last-child td,
+    .tbl tbody tr:last-child th {
+      border-bottom: none;
+    }
+
+    .tbl thead th {
+      background: var(--bg-muted);
+      font-size: 12.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-soft);
+    }
+
+    .tbl tbody th {
+      position: sticky;
+      inset-inline-start: 0;
+      background: var(--bg);
+      font-weight: 700;
+    }
+
+    details.hint-box {
+      background: var(--bg-muted);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin: 14px 0;
+      font-size: 14px;
+    }
+
+    details.hint-box summary {
+      cursor: pointer;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    details.hint-box[open] summary {
+      margin-bottom: 10px;
+    }
+
+    /* Simulador Desktop JavaFX */
+    .fx-window {
+      max-width: 860px;
+      margin: 24px auto;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, 0.16);
+      border: 1px solid #c8c8c8;
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      background: #fbfbfb;
+    }
+
+    .fx-titlebar {
+      background: #e6e6e6;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      justify-content: space-between;
+      color: #333;
+      border-bottom: 1px solid #d0d0d0;
+    }
+
+    .fx-mode-bar {
+      display: flex;
+      gap: 8px;
+      padding: 10px 16px;
+      background: #0f172a;
+      color: #f8fafc;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      font-size: 13px;
+    }
+
+    .fx-mode-btn {
+      padding: 5px 12px;
+      border-radius: 999px;
+      border: 1px solid #475569;
+      background: transparent;
+      color: #cbd5e1;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .fx-mode-btn.active {
+      background: #38bdf8;
+      color: #0f172a;
+      border-color: #38bdf8;
+    }
+
+    .fx-body {
+      padding: 20px;
+    }
+
+    .fx-row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .fx-input, .fx-select {
+      padding: 6px 10px;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      font-size: 13px;
+      background: white;
+    }
+
+    .fx-btn {
+      padding: 7px 16px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .fx-btn:hover {
+      background: #1d4ed8;
+    }
+
+    .fx-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+      border: 1px solid #d4d4d4;
+      background: white;
+    }
+
+    .fx-table th {
+      background: #f1f5f9;
+      text-align: left;
+      padding: 8px 10px;
+      border-bottom: 2px solid #cbd5e1;
+      color: #475569;
+      font-weight: 700;
+    }
+
+    .fx-table td {
+      padding: 7px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      color: #1e293b;
+    }
+
+    .xray-tracker {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 6px;
+      padding: 12px 16px;
+      margin-top: 14px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      line-height: 1.6;
+      border: 1px solid #334155;
+    }
+
+    .xray-step {
+      opacity: 0.35;
+      transition: opacity 0.2s;
+    }
+
+    .xray-step.active {
+      opacity: 1;
+      color: #38bdf8;
+      font-weight: 700;
+    }
+
+    .activity-zone {
+      margin: 32px 0 12px;
+      padding-top: 8px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app">
+    <!-- BARRA SUPERIOR DE NAVEGACIÓN -->
+    <div class="top-action-bar">
+      <div class="action-bar-inner">
+        <a href="../../index.html" class="btn-nav-top">
+          ← Volver al Portal
+        </a>
+        <div style="font-size:13px; font-weight:700; color:var(--ink-soft);">
+          👽 Unidad 2.2 · Desafío 2.2.3 · TechStore
+        </div>
+        <a href="2.2.2_Guia_BiblioTech_Parte_2_Catalogo_Prestamos_MVC.html" class="btn-nav-top">
+          ← Guía 2.2.2 (Referencia)
+        </a>
+      </div>
+    </div>
+
+    <div class="guide-container">
+
+      <!-- ENCABEZADO -->
+      <header class="guide-header">
+        <div style="font-size:40px; margin-bottom:10px;">🛸</div>
+        <div class="kicker">Desafío Pre-Evaluación · 2.2.3 · JavaFX + MVC + Gson</div>
+        <h1>Caso TechStore: Completar el Sistema de Inventario con TableView y Formulario</h1>
+        <p class="lead">
+          En esta actividad trabajarás igual que en la Evaluación Parcial 2: recibirás un <strong>proyecto base (scaffold)</strong> que ya compila y levanta una ventana básica en JavaFX, con el <code>pom.xml</code>, el archivo <code>dispositivos.json</code> y las clases del modelo (<code>Dispositivo</code>, <code>Notebook</code> y <code>Smartphone</code>) listas. Tu objetivo es programar el <strong>Manager</strong>, el <strong>Controller</strong>, la <strong>TableView</strong> y el <strong>formulario para registrar nuevos dispositivos</strong>.
+        </p>
+      </header>
+
+      <!-- ÍNDICE -->
+      <div class="card">
+        <strong>Hoja de ruta del desafío</strong>
+        <ul class="toc">
+          <li><a href="#fase-0"><span>0</span>Clonar el proyecto base y meta interactiva</a></li>
+          <li><a href="#fase-1"><span>1</span>Qué viene hecho: Modelo POO y JSON</a></li>
+          <li><a href="#fase-2"><span>2</span>Misión 1: Cargar el JSON en DispositivoManager</a></li>
+          <li><a href="#fase-3"><span>3</span>Misión 2: Conectar DispositivoController</a></li>
+          <li><a href="#fase-4"><span>4</span>Misión 3: Mostrar datos en el TableView</a></li>
+          <li><a href="#fase-5"><span>5</span>Misión 4: Formulario para agregar dispositivos</a></li>
+          <li><a href="#fase-6"><span>6</span>Checklist de evaluación y verificación DUA</a></li>
+        </ul>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- FASE 0 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-0">Fase 0 — Clonar el proyecto base y explorar la meta
+        <small>Obtener el scaffold desde GitHub y comparar el estado inicial con el resultado esperado</small></h2>
+
+      <p>El proyecto base se encuentra en el repositorio de la asignatura dentro de la rama <code>profe/techstore</code>. Abre la terminal en tu carpeta de trabajo y ejecuta los siguientes comandos para clonarlo y crear tu propia rama de desarrollo:</p>
+
+      <div class="lego-step">
+        <div class="lego-step-header">
+          <div class="meta-left">
+            <span class="lego-badge ly-d">Terminal · Git + Maven</span>
+            <span class="lego-file-loc">Rama base: profe/techstore</span>
+          </div>
+        </div>
+        <div class="lego-step-body">
+          <pre v-pre class="code-block"><code class="language-bash"># 1. Clonar directamente la rama profe/techstore según tu sección:
+# Sección 002D:
+git clone -b profe/techstore https://github.com/hachimaki-dev/002D_desarrollo_orientado_a_objeto_2026.git
+
+# Sección 004D:
+git clone -b profe/techstore https://github.com/hachimaki-dev/004D_Desarrollo_orientado_a_Objeto_2026.git
+
+# 2. Entrar a la carpeta del repositorio y crear tu rama personal
+cd 002D_desarrollo_orientado_a_objeto_2026   # (o 004D_Desarrollo_orientado_a_Objeto_2026)
+git checkout -b techstore/Nombre_Apellido
+
+# 3. En laboratorios Windows puedes iniciar el entorno automáticamente con:
+.\setup-javafx.ps1
+
+# O entrar manualmente al proyecto Maven y ejecutarlo:
+cd techstore
+mvn clean compile
+mvn javafx:run</code></pre>
+          <p style="margin:12px 0 0; font-size:13.5px; color:var(--ink-soft);">
+            <strong>Nota si ya tenías clonado el repositorio:</strong> ejecuta <code>git fetch origin</code> y luego <code>git checkout -b techstore/Nombre_Apellido origin/profe/techstore</code>.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="sub">Mapa de archivos del Scaffold: ¿qué viene listo y qué debes programar?</h3>
+
+      <pre class="tree">techstore/
+├── <span class="done">pom.xml</span>                                   ✅ Listo (JavaFX 21.0.1 + Gson 2.14.0)
+└── src/main/
+    ├── resources/
+    │   └── <span class="done">dispositivos.json</span>                 ✅ Listo (10 notebooks y smartphones con campo "tipo")
+    └── java/com/hachimakidev/techstore/
+        ├── <span class="done">Main.java</span>                         ✅ Listo (Punto de entrada)
+        ├── <span class="done">TechStoreApp.java</span>                 ✅ Listo (Levanta el Stage principal)
+        ├── model/
+        │   ├── <span class="done">Dispositivo.java</span>              ✅ Listo (Clase padre abstracta con getters/setters)
+        │   ├── <span class="done">Notebook.java</span>                 ✅ Listo (Hija 1: ramGb y procesador)
+        │   ├── <span class="done">Smartphone.java</span>               ✅ Listo (Hija 2: almacenamientoGb y camaraMp)
+        │   └── <span class="todo">DispositivoManager.java</span>       🛠️ POR COMPLETAR (Leer JSON y guardar en ArrayList)
+        ├── controller/
+        │   └── <span class="todo">DispositivoController.java</span>    🛠️ POR COMPLETAR (Intermediario MVC)
+        └── view/
+            ├── <span class="done">HomeView.java</span>                 ✅ Listo (Crea la Scene de 820x560)
+            └── <span class="todo">CatalogoView.java</span>             🛠️ POR COMPLETAR (TableView + Formulario de creación)</pre>
+
+      <h3 class="sub">Simulador interactivo: compara el Scaffold inicial vs. la Meta final</h3>
+      <p>Alterna entre el botón <strong>Estado Inicial (Scaffold)</strong> y <strong>Meta Final Completada</strong> en el simulador inferior. Prueba agregando un nuevo Notebook o Smartphone desde el formulario para observar cómo debe actualizarse la tabla:</p>
+
+      <techstore-sim></techstore-sim>
+
+      <!-- ============================================================ -->
+      <!-- FASE 1 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-1">Fase 1 — Qué viene hecho: Modelo POO y archivo JSON
+        <small>Analizar las clases entregadas antes de escribir código en el Manager</small></h2>
+
+      <p>En este proyecto <strong>no debes modificar</strong> <code>Dispositivo.java</code>, <code>Notebook.java</code> ni <code>Smartphone.java</code>, pero necesitas conocer sus constructores y métodos <em>getter</em> porque los utilizarás tanto en el Manager como en las columnas del <code>TableView</code>.</p>
+
+      <div tabindex="0" role="region" aria-labelledby="tabla-modelo-caption" class="table-wrapper">
+        <table class="tbl">
+          <caption id="tabla-modelo-caption" style="text-align:left; padding:10px 14px; font-weight:700; background:var(--bg-soft); border-bottom:1px solid var(--line);">
+            Resumen de la jerarquía entregada en el paquete model
+          </caption>
+          <thead>
+            <tr>
+              <th>Clase</th>
+              <th>Atributos privados</th>
+              <th>Constructor con parámetros</th>
+              <th>Getters clave para TableView</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th><code>Dispositivo</code><br><span class="ly ly-m">Abstracta</span></th>
+              <td><code>int id</code><br><code>String marca</code><br><code>String modelo</code><br><code>int precio</code><br><code>boolean disponible</code></td>
+              <td><code>Dispositivo(int id, String marca, String modelo, int precio, boolean disponible)</code></td>
+              <td>
+                <code>getId()</code> → <code>"id"</code><br>
+                <code>getTipo()</code> → <code>"tipo"</code><br>
+                <code>getMarca()</code> → <code>"marca"</code><br>
+                <code>getModelo()</code> → <code>"modelo"</code><br>
+                <code>getPrecio()</code> → <code>"precio"</code><br>
+                <code>getEspecificacion()</code> → <code>"especificacion"</code><br>
+                <code>isDisponible()</code> → <code>"disponible"</code>
+              </td>
+            </tr>
+            <tr>
+              <th><code>Notebook</code><br><span class="ly ly-c">Hija 1</span></th>
+              <td><code>int ramGb</code><br><code>String procesador</code></td>
+              <td><code>Notebook(int id, String marca, String modelo, int precio, boolean disponible, int ramGb, String procesador)</code></td>
+              <td>
+                <code>getTipo()</code> retorna <code>"Notebook"</code><br>
+                <code>getEspecificacion()</code> retorna ej: <code>"16 GB RAM · Intel Core i7"</code>
+              </td>
+            </tr>
+            <tr>
+              <th><code>Smartphone</code><br><span class="ly ly-v">Hija 2</span></th>
+              <td><code>int almacenamientoGb</code><br><code>int camaraMp</code></td>
+              <td><code>Smartphone(int id, String marca, String modelo, int precio, boolean disponible, int almacenamientoGb, int camaraMp)</code></td>
+              <td>
+                <code>getTipo()</code> retorna <code>"Smartphone"</code><br>
+                <code>getEspecificacion()</code> retorna ej: <code>"256 GB · 50 MP"</code>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Por su parte, el archivo <code>src/main/resources/dispositivos.json</code> contiene un arreglo JSON donde cada objeto incluye el campo <code>"tipo"</code> con valor <code>"notebook"</code> o <code>"smartphone"</code>:</p>
+
+      <pre v-pre class="code-block"><code class="language-json">[
+  {
+    "tipo": "notebook",
+    "id": 1,
+    "marca": "Lenovo",
+    "modelo": "ThinkPad T14 Gen 4",
+    "precio": 890000,
+    "disponible": true,
+    "ramGb": 16,
+    "procesador": "Intel Core i7"
+  },
+  {
+    "tipo": "smartphone",
+    "id": 2,
+    "marca": "Samsung",
+    "modelo": "Galaxy S24",
+    "precio": 799990,
+    "disponible": true,
+    "almacenamientoGb": 256,
+    "camaraMp": 50
+  }
+]</code></pre>
+
+      <!-- ============================================================ -->
+      <!-- FASE 2 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-2">Fase 2 — Misión 1: Cargar el JSON en DispositivoManager
+        <small>Deserializar un arreglo polimórfico con JsonObject[] y almacenar los objetos en memoria</small></h2>
+
+      <p>Abre <code>model/DispositivoManager.java</code>. Como <code>Dispositivo</code> es una clase abstracta, Gson no puede hacer <code>gson.fromJson(lector, Dispositivo[].class)</code> directamente. En su lugar, usamos la estrategia vista en clases con <code>JsonObject[]</code>:</p>
+
+      <ol style="line-height:1.75; padding-left:22px;">
+        <li>Declara un atributo <code>private ArrayList&lt;Dispositivo&gt; dispositivos = new ArrayList&lt;&gt;();</code>.</li>
+        <li>En el constructor <code>public DispositivoManager()</code>, invoca a tu método <code>cargarDatos()</code>.</li>
+        <li>Dentro de <code>cargarDatos()</code>:
+          <ul>
+            <li>Abre el flujo hacia <code>"/dispositivos.json"</code> con <code>getClass().getResourceAsStream("/dispositivos.json")</code> e <code>InputStreamReader</code>.</li>
+            <li>Convierte el archivo en un arreglo <code>JsonObject[] arregloJson = gson.fromJson(reader, JsonObject[].class);</code>.</li>
+            <li>Recorre cada <code>JsonObject</code> con un ciclo <code>for</code> y evalúa <code>jObject.get("tipo").getAsString()</code>:
+              <ul>
+                <li>Si es igual a <code>"notebook"</code>, deserialízalo con <code>gson.fromJson(jObject, Notebook.class)</code> y agrégalo a <code>dispositivos</code>.</li>
+                <li>Si es igual a <code>"smartphone"</code>, deserialízalo con <code>gson.fromJson(jObject, Smartphone.class)</code> y agrégalo a <code>dispositivos</code>.</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+        <li>Agrega dos métodos públicos:
+          <ul>
+            <li><code>public ArrayList&lt;Dispositivo&gt; getDispositivos()</code> que retorne la lista.</li>
+            <li><code>public void agregarDispositivo(Dispositivo nuevo)</code> que haga <code>dispositivos.add(nuevo)</code>.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <details class="hint-box">
+        <summary>💡 Pista de sintaxis: ¿Cómo se lee el campo "tipo" desde un JsonObject?</summary>
+        <pre v-pre class="code-block"><code class="language-java">Gson gson = new Gson();
+JsonObject[] arregloJson = gson.fromJson(reader, JsonObject[].class);
+
+for (JsonObject obj : arregloJson) {
+    String tipo = obj.get("tipo").getAsString();
+    if (tipo.equals("notebook")) {
+        Notebook nb = gson.fromJson(obj, Notebook.class);
+        dispositivos.add(nb);
+    } else if (tipo.equals("smartphone")) {
+        Smartphone sp = gson.fromJson(obj, Smartphone.class);
+        dispositivos.add(sp);
+    }
+}</code></pre>
+      </details>
+
+      <!-- ============================================================ -->
+      <!-- FASE 3 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-3">Fase 3 — Misión 2: Conectar DispositivoController
+        <small>Mantener la separación de responsabilidades entre la Vista y el Modelo</small></h2>
+
+      <p>Abre <code>controller/DispositivoController.java</code>. Recuerda la regla de oro de MVC: <strong>la vista nunca instancia ni llama directamente al Manager</strong>; siempre se comunica a través del Controlador.</p>
+
+      <p>Tu clase <code>DispositivoController</code> debe incluir:</p>
+      <ol style="line-height:1.75; padding-left:22px;">
+        <li>Un atributo <code>private DispositivoManager manager = new DispositivoManager();</code>.</li>
+        <li>Un método <code>public ArrayList&lt;Dispositivo&gt; obtenerDispositivos()</code> que retorne <code>manager.getDispositivos()</code>.</li>
+        <li>Un método (o dos métodos específicos) para registrar un nuevo equipo en el manager. Por ejemplo:
+          <ul>
+            <li><code>public void agregarDispositivo(Dispositivo nuevo)</code> que llame a <code>manager.agregarDispositivo(nuevo);</code>, o bien</li>
+            <li>Un método que reciba los datos del formulario, calcule el nuevo <code>id</code> (por ejemplo, <code>manager.getDispositivos().size() + 1</code>), instancie <code>Notebook</code> o <code>Smartphone</code> según corresponda y lo envíe al manager.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <!-- ============================================================ -->
+      <!-- FASE 4 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-4">Fase 4 — Misión 3: Mostrar datos en el TableView
+        <small>Configurar las columnas en CatalogoView.java y poblar la tabla con ObservableList</small></h2>
+
+      <p>Abre <code>view/CatalogoView.java</code>. En el bloque marcado con <code>// TODO 2</code> debes reemplazar el <code>Label</code> provisional por un <code>TableView&lt;Dispositivo&gt;</code>.</p>
+
+      <div tabindex="0" role="region" aria-labelledby="tabla-columnas-caption" class="table-wrapper">
+        <table class="tbl">
+          <caption id="tabla-columnas-caption" style="text-align:left; padding:10px 14px; font-weight:700; background:var(--bg-soft); border-bottom:1px solid var(--line);">
+            Columnas recomendadas para TableView&lt;Dispositivo&gt;
+          </caption>
+          <thead>
+            <tr>
+              <th>Título de Columna</th>
+              <th>Tipo de TableColumn</th>
+              <th>Cadena en PropertyValueFactory</th>
+              <th>Método que invoca internamente</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>ID</th>
+              <td><code>TableColumn&lt;Dispositivo, Integer&gt;</code></td>
+              <td><code>new PropertyValueFactory&lt;&gt;("id")</code></td>
+              <td><code>getId()</code></td>
+            </tr>
+            <tr>
+              <th>Tipo</th>
+              <td><code>TableColumn&lt;Dispositivo, String&gt;</code></td>
+              <td><code>new PropertyValueFactory&lt;&gt;("tipo")</code></td>
+              <td><code>getTipo()</code> (polimórfico)</td>
+            </tr>
+            <tr>
+              <th>Marca</th>
+              <td><code>TableColumn&lt;Dispositivo, String&gt;</code></td>
+              <td><code>new PropertyValueFactory&lt;&gt;("marca")</code></td>
+              <td><code>getMarca()</code></td>
+            </tr>
+            <tr>
+              <th>Modelo</th>
+              <td><code>TableColumn&lt;Dispositivo, String&gt;</code></td>
+              <td><code>new PropertyValueFactory&lt;&gt;("modelo")</code></td>
+              <td><code>getModelo()</code></td>
+            </tr>
+            <tr>
+              <th>Precio</th>
+              <td><code>TableColumn&lt;Dispositivo, Integer&gt;</code></td>
+              <td><code>new PropertyValueFactory&lt;&gt;("precio")</code></td>
+              <td><code>getPrecio()</code></td>
+            </tr>
+            <tr>
+              <th>Especificación</th>
+              <td><code>TableColumn&lt;Dispositivo, String&gt;</code></td>
+              <td><code>new PropertyValueFactory&lt;&gt;("especificacion")</code></td>
+              <td><code>getEspecificacion()</code> (polimórfico)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <details class="hint-box">
+        <summary>💡 Pista de sintaxis: ¿Cómo se crea una columna y se cargan los ítems en la TableView?</summary>
+        <pre v-pre class="code-block"><code class="language-java">TableView&lt;Dispositivo&gt; tabla = new TableView&lt;&gt;();
+
+TableColumn&lt;Dispositivo, String&gt; colTipo = new TableColumn&lt;&gt;("Tipo");
+colTipo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("tipo"));
+
+TableColumn&lt;Dispositivo, String&gt; colMarca = new TableColumn&lt;&gt;("Marca");
+colMarca.setCellValueFactory(new PropertyValueFactory&lt;&gt;("marca"));
+
+// ... agregar el resto de las columnas ...
+tabla.getColumns().addAll(colId, colTipo, colMarca, colModelo, colPrecio, colEspecificacion);
+
+// Poblar con la lista proveniente del controlador:
+tabla.setItems(FXCollections.observableArrayList(controller.obtenerDispositivos()));</code></pre>
+      </details>
+
+      <!-- ============================================================ -->
+      <!-- FASE 5 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-5">Fase 5 — Misión 4: Formulario para agregar un nuevo Dispositivo
+        <small>Capturar los datos del usuario, instanciar la clase hija y refrescar el TableView</small></h2>
+
+      <p>En la parte inferior de <code>CatalogoView.java</code> (bloque <code>// TODO 3</code>), construye un formulario que permita agregar un nuevo <code>Notebook</code> o <code>Smartphone</code> y verlo reflejado de inmediato en el <code>TableView</code>.</p>
+
+      <h3 class="sub">Requisitos del formulario</h3>
+      <ul style="line-height:1.75; padding-left:22px;">
+        <li><strong>Selector de tipo:</strong> un <code>ComboBox&lt;String&gt;</code> con las opciones <code>"Notebook"</code> y <code>"Smartphone"</code> (o un <code>TextField</code> donde se escriba el tipo).</li>
+        <li><strong>Campos comunes:</strong> <code>TextField</code> para <strong>Marca</strong>, <strong>Modelo</strong> y <strong>Precio</strong>.</li>
+        <li><strong>Campos específicos:</strong>
+          <ul>
+            <li>Si es <strong>Notebook</strong>: <code>ramGb</code> (<code>int</code>) y <code>procesador</code> (<code>String</code>).</li>
+            <li>Si es <strong>Smartphone</strong>: <code>almacenamientoGb</code> (<code>int</code>) y <code>camaraMp</code> (<code>int</code>).</li>
+          </ul>
+        </li>
+        <li><strong>Botón "Agregar Dispositivo":</strong> al hacer clic (<code>setOnAction</code>):
+          <ol>
+            <li>Lee los valores de los controles y convierte los valores numéricos usando <code>Integer.parseInt(...)</code> dentro de un bloque <code>try-catch</code>.</li>
+            <li>Crea la instancia de <code>Notebook</code> o <code>Smartphone</code> y pásala al controlador.</li>
+            <li>Actualiza los elementos de la tabla con <code>tabla.setItems(FXCollections.observableArrayList(controller.obtenerDispositivos()));</code> (o añadiendo el objeto a la lista observable de la tabla).</li>
+            <li>Limpia los <code>TextField</code> con <code>.clear()</code> para dejar listo el siguiente ingreso.</li>
+          </ol>
+        </li>
+      </ul>
+
+      <details class="hint-box">
+        <summary>💡 Pista: ¿Cómo usar un ComboBox&lt;String&gt; en JavaFX para elegir entre Notebook y Smartphone?</summary>
+        <pre v-pre class="code-block"><code class="language-java">ComboBox&lt;String&gt; cmbTipo = new ComboBox&lt;&gt;();
+cmbTipo.getItems().addAll("Notebook", "Smartphone");
+cmbTipo.setValue("Notebook"); // Valor seleccionado por defecto
+
+// Luego, dentro del setOnAction del botón:
+String tipoSeleccionado = cmbTipo.getValue();</code></pre>
+      </details>
+
+      <!-- ============================================================ -->
+      <!-- FASE 6 -->
+      <!-- ============================================================ -->
+      <h2 class="phase-title" id="fase-6">Fase 6 — Checklist de Autoevaluación y Verificación DUA
+        <small>Comprueba que tu solución cumple todos los criterios antes de hacer push</small></h2>
+
+      <div class="checkpoint">
+        <strong>✅ Lista de chequeo final</strong>
+        <p>1. <strong>Compilación limpia:</strong> <code>mvn clean compile</code> termina con <code>BUILD SUCCESS</code>.</p>
+        <p>2. <strong>Carga de JSON polimórfico:</strong> <code>DispositivoManager</code> lee los 10 equipos de <code>dispositivos.json</code> usando <code>JsonObject[]</code> y los guarda en un único <code>ArrayList&lt;Dispositivo&gt;</code>.</p>
+        <p>3. <strong>Respeto del patrón MVC:</strong> <code>CatalogoView</code> se comunica únicamente con <code>DispositivoController</code>, y este delega en <code>DispositivoManager</code>.</p>
+        <p>4. <strong>TableView operativa:</strong> al abrir la ventana se visualizan los 10 dispositivos iniciales con sus columnas pobladas.</p>
+        <p>5. <strong>Formulario funcional:</strong> al ingresar un nuevo equipo y presionar el botón, el nuevo objeto se agrega a la colección y aparece inmediatamente como una nueva fila en la <code>TableView</code>.</p>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Actividad 1 · Términos Pareados (Nivel Base)</h4>
+        <matching-pairs v-bind="a.mvcPairs"></matching-pairs>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Actividad 2 · Completar Código de Carga Polimórfica (Nivel Intermedio)</h4>
+        <code-fill v-bind="a.gsonFill"></code-fill>
+      </div>
+
+      <div class="activity-zone">
+        <h4>Actividad 3 · Orden del Flujo al Agregar un Dispositivo (Nivel Avanzado)</h4>
+        <order-steps v-bind="a.addSteps"></order-steps>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="../../shared/activity-engine.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      data() {
+        return {
+          a: {
+            mvcPairs: {
+              instruction: "Conecta cada elemento del proyecto TechStore con su función exacta:",
+              level: "base",
+              pairs: [
+                { term: "JsonObject[]", definition: "Permite leer cada elemento del JSON y revisar su campo 'tipo' antes de instanciar Notebook o Smartphone." },
+                { term: "PropertyValueFactory<>(\"especificacion\")", definition: "Llama automáticamente al método getEspecificacion() de cada fila en la TableView." },
+                { term: "DispositivoController", definition: "Intermediario que recibe las peticiones de CatalogoView y consulta a DispositivoManager." },
+                { term: "FXCollections.observableArrayList(...)", definition: "Transforma el ArrayList del modelo en una lista observable compatible con TableView." }
+              ]
+            },
+            gsonFill: {
+              instruction: "Completa los fragmentos faltantes en DispositivoManager para deserializar dispositivos.json:",
+              level: "inter",
+              hint: "Primero leemos el archivo como JsonObject[], obtenemos el String del campo 'tipo', y luego convertimos a Notebook.class.",
+              explanation: "Como Dispositivo es abstracta, leemos primero un arreglo de JsonObject y luego usamos gson.fromJson(obj, Notebook.class) según el valor de 'tipo'.",
+              segments: [
+                { text: "JsonObject[] datos = gson.fromJson(reader, ", isBlank: false },
+                { text: "", isBlank: true, answer: "JsonObject[].class", options: ["JsonObject[].class", "Dispositivo[].class", "Notebook[].class"] },
+                { text: ");\nfor (JsonObject obj : datos) {\n    String tipo = obj.get(", isBlank: false },
+                { text: "", isBlank: true, answer: "\"tipo\"", options: ["\"tipo\"", "\"id\"", "\"clase\""] },
+                { text: ").getAsString();\n    if (tipo.equals(\"notebook\")) {\n        Notebook nb = gson.fromJson(obj, ", isBlank: false },
+                { text: "", isBlank: true, answer: "Notebook.class", options: ["Notebook.class", "Dispositivo.class", "String.class"] },
+                { text: ");\n        dispositivos.add(nb);\n    }\n}", isBlank: false }
+              ]
+            },
+            addSteps: {
+              instruction: "Ordena los pasos que ocurren cuando el usuario llena el formulario y presiona 'Agregar Dispositivo':",
+              level: "avanzado",
+              explanation: "La Vista captura y convierte las entradas del formulario, pide al Controlador registrar el nuevo Dispositivo en el Manager y finalmente actualiza los ítems de la TableView.",
+              steps: [
+                { text: "CatalogoView lee los TextField y el ComboBox dentro del evento setOnAction del botón.", correctOrder: 1 },
+                { text: "Se instancia el objeto Notebook o Smartphone y se envía a DispositivoController.", correctOrder: 2 },
+                { text: "DispositivoController delega en DispositivoManager.agregarDispositivo() para guardarlo en el ArrayList.", correctOrder: 3 },
+                { text: "CatalogoView actualiza la lista de la TableView y limpia los campos del formulario.", correctOrder: 4 }
+              ]
+            }
+          }
+        };
+      }
+    });
+
+    app.component('techstore-sim', {
+      data() {
+        return {
+          modo: 'final',
+          xrayStep: 0,
+          form: {
+            tipo: 'Notebook',
+            marca: '',
+            modelo: '',
+            precio: '',
+            extra1: '',
+            extra2: ''
+          },
+          msgError: '',
+          msgOk: '',
+          dispositivos: [
+            { id: 1, tipo: 'Notebook', marca: 'Lenovo', modelo: 'ThinkPad T14 Gen 4', precio: 890000, especificacion: '16 GB RAM · Intel Core i7', disponible: true },
+            { id: 2, tipo: 'Smartphone', marca: 'Samsung', modelo: 'Galaxy S24', precio: 799990, especificacion: '256 GB · 50 MP', disponible: true },
+            { id: 3, tipo: 'Notebook', marca: 'Apple', modelo: 'MacBook Air M3', precio: 1150000, especificacion: '16 GB RAM · Apple M3', disponible: true },
+            { id: 4, tipo: 'Smartphone', marca: 'Apple', modelo: 'iPhone 15', precio: 849990, especificacion: '128 GB · 48 MP', disponible: true },
+            { id: 5, tipo: 'Notebook', marca: 'ASUS', modelo: 'ROG Zephyrus G14', precio: 1390000, especificacion: '32 GB GB RAM · AMD Ryzen 9', disponible: false },
+            { id: 6, tipo: 'Smartphone', marca: 'Xiaomi', modelo: '14T Pro', precio: 629990, especificacion: '512 GB · 50 MP', disponible: true }
+          ]
+        };
+      },
+      methods: {
+        agregarEquipo() {
+          this.msgError = '';
+          this.msgOk = '';
+          this.xrayStep = 1;
+
+          const marca = this.form.marca.trim();
+          const modelo = this.form.modelo.trim();
+          const precioNum = parseInt(this.form.precio, 10);
+          const extra1Num = parseInt(this.form.extra1, 10);
+
+          if (!marca || !modelo || isNaN(precioNum) || isNaN(extra1Num) || !String(this.form.extra2).trim()) {
+            this.msgError = 'Completa todos los campos (Precio y capacidades deben ser numéricos).';
+            return;
+          }
+
+          this.xrayStep = 2;
+          const nuevoId = this.dispositivos.length + 1;
+          let espec = '';
+          if (this.form.tipo === 'Notebook') {
+            espec = extra1Num + ' GB RAM · ' + String(this.form.extra2).trim();
+          } else {
+            const camNum = parseInt(this.form.extra2, 10);
+            if (isNaN(camNum)) {
+              this.msgError = 'Los megapíxeles de la cámara deben ser un número entero.';
+              return;
+            }
+            espec = extra1Num + ' GB · ' + camNum + ' MP';
+          }
+
+          this.xrayStep = 3;
+          this.dispositivos.push({
+            id: nuevoId,
+            tipo: this.form.tipo,
+            marca,
+            modelo,
+            precio: precioNum,
+            especificacion: espec,
+            disponible: true
+          });
+
+          this.xrayStep = 4;
+          this.msgOk = 'Dispositivo agregado correctamente a la TableView (ID #' + nuevoId + ').';
+          this.form.marca = '';
+          this.form.modelo = '';
+          this.form.precio = '';
+          this.form.extra1 = '';
+          this.form.extra2 = '';
+        }
+      },
+      template: `
+        <div class="fx-window">
+          <div class="fx-titlebar">
+            <span>TechStore — Inventario de Dispositivos</span>
+            <span style="color:#888;">― □ ✕</span>
+          </div>
+
+          <div class="fx-mode-bar">
+            <span>Vista previa interactiva:</span>
+            <div style="display:flex; gap:8px;">
+              <button class="fx-mode-btn" :class="{ active: modo === 'scaffold' }" @click="modo = 'scaffold'">
+                1. Estado Inicial (Scaffold clonado)
+              </button>
+              <button class="fx-mode-btn" :class="{ active: modo === 'final' }" @click="modo = 'final'">
+                2. Meta Final Completada
+              </button>
+            </div>
+          </div>
+
+          <!-- MODO SCAFFOLD INICIAL -->
+          <div v-if="modo === 'scaffold'" class="fx-body">
+            <div style="font-size:17px; font-weight:700; margin-bottom:16px; color:#1e293b;">
+              TechStore — Catálogo de Notebooks y Smartphones
+            </div>
+            <div style="padding:20px; border:1px solid #cbd5e1; border-radius:6px; background:#f8fafc; margin-bottom:16px; color:#475569; font-size:13.5px;">
+              [ TODO: Construir aquí el TableView&lt;Dispositivo&gt; con los datos de dispositivos.json ]
+            </div>
+            <div style="padding:16px; border:1px solid #cbd5e1; border-radius:6px; background:#ffffff; color:#475569; font-size:13.5px;">
+              [ TODO: Construir aquí el formulario para agregar un nuevo Dispositivo a la TableView ]
+            </div>
+          </div>
+
+          <!-- MODO META FINAL -->
+          <div v-else class="fx-body">
+            <div style="font-size:16px; font-weight:700; margin-bottom:12px; color:#1e293b;">
+              TechStore — Catálogo de Notebooks y Smartphones
+            </div>
+
+            <table class="fx-table">
+              <thead>
+                <tr>
+                  <th style="width:45px;">ID</th>
+                  <th style="width:95px;">Tipo</th>
+                  <th>Marca</th>
+                  <th>Modelo</th>
+                  <th style="width:95px;">Precio</th>
+                  <th>Especificación</th>
+                  <th style="width:85px;">Disponible</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="d in dispositivos" :key="d.id">
+                  <td>{{ d.id }}</td>
+                  <td><span class="ly" :class="d.tipo === 'Notebook' ? 'ly-c' : 'ly-v'">{{ d.tipo }}</span></td>
+                  <td>{{ d.marca }}</td>
+                  <td><strong>{{ d.modelo }}</strong></td>
+                  <td>\${{ d.precio.toLocaleString('es-CL') }}</td>
+                  <td>{{ d.especificacion }}</td>
+                  <td>{{ d.disponible ? 'Sí' : 'No' }}</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!-- FORMULARIO DE CREACIÓN -->
+            <div style="margin-top:16px; padding:14px; background:#f1f5f9; border-radius:6px; border:1px solid #cbd5e1;">
+              <div style="font-size:12.5px; font-weight:700; color:#334155; margin-bottom:8px;">
+                Agregar nuevo Dispositivo al inventario:
+              </div>
+              <div class="fx-row">
+                <select class="fx-select" v-model="form.tipo">
+                  <option value="Notebook">Notebook</option>
+                  <option value="Smartphone">Smartphone</option>
+                </select>
+                <input class="fx-input" v-model="form.marca" placeholder="Marca (ej: Dell)" style="width:120px;" />
+                <input class="fx-input" v-model="form.modelo" placeholder="Modelo (ej: XPS 13)" style="width:140px;" />
+                <input class="fx-input" v-model="form.precio" placeholder="Precio (ej: 990000)" style="width:130px;" />
+              </div>
+              <div class="fx-row" style="margin-bottom:0;">
+                <input class="fx-input" v-model="form.extra1"
+                  :placeholder="form.tipo === 'Notebook' ? 'RAM GB (ej: 16)' : 'Almacenamiento GB (ej: 256)'"
+                  style="width:190px;" />
+                <input class="fx-input" v-model="form.extra2"
+                  :placeholder="form.tipo === 'Notebook' ? 'Procesador (ej: Core i7)' : 'Cámara MP (ej: 50)'"
+                  style="width:190px;" />
+                <button class="fx-btn" @click="agregarEquipo">Agregar Dispositivo</button>
+              </div>
+              <div v-if="msgError" style="margin-top:8px; font-size:12.5px; color:#dc2626; font-weight:600;">
+                ⚠️ {{ msgError }}
+              </div>
+              <div v-if="msgOk" style="margin-top:8px; font-size:12.5px; color:#15803d; font-weight:600;">
+                ✓ {{ msgOk }}
+              </div>
+            </div>
+
+            <!-- TRAZADOR MVC -->
+            <div class="xray-tracker">
+              <div style="display:flex; justify-content:space-between; margin-bottom:4px;">
+                <span style="color:#94a3b8; text-transform:uppercase; font-size:11px;">⚡ Trazador MVC en vivo</span>
+                <span style="font-size:11px; color:#38bdf8;">Prueba agregando un equipo arriba</span>
+              </div>
+              <div style="display:flex; gap:12px; flex-wrap:wrap;">
+                <span class="xray-step" :class="{ active: xrayStep >= 1 }">1. Vista (lee TextFields)</span>
+                <span class="xray-step" :class="{ active: xrayStep >= 2 }">2. Controller (instancia {{ form.tipo }})</span>
+                <span class="xray-step" :class="{ active: xrayStep >= 3 }">3. Manager (dispositivos.add)</span>
+                <span class="xray-step" :class="{ active: xrayStep >= 4 }">4. Vista (refresca TableView)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `
+    });
+
+    ActivityEngine.register(app);
+    app.mount('#app');
+
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+      }
+    });
+  </script>
+</body>
+
+</html>
+
