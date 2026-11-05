@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cheat Sheet: Estrategias para Eliminar en TableView (JavaFX + MVC) · Profe Carlitos</title>
+  <meta name="description"
+    content="Cheat Sheet en formato slides: métodos, lógica y código directo al grano para eliminar registros en JavaFX bajo arquitectura MVC.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/base16/catppuccin-mocha.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <style>
+    body {
+      overflow: hidden;
+      background: var(--bg);
+      color: var(--ink);
+    }
+
+    .slide {
+      display: none;
+      height: 100%;
+      width: 100%;
+      padding: 24px 6vw 24px;
+      flex-direction: column;
+      justify-content: flex-start;
+      overflow-y: auto;
+      animation: fadeSlide 0.25s ease;
+    }
+
+    .slide.slide-active {
+      display: flex;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide h2 {
+      font-size: clamp(22px, 2.5vw, 32px);
+      margin: 0 0 10px;
+      line-height: 1.2;
+    }
+
+    .slide-subtitle {
+      font-size: 15px;
+      color: var(--ink-soft);
+      margin: 0 0 16px;
+    }
+
+    /* Tarjeta de lógica y métodos */
+    .cheat-grid {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      align-items: stretch;
+      max-width: 1100px;
+    }
+
+    .logic-card {
+      background: var(--bg-soft);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .logic-card h4 {
+      margin: 0;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--ink-muted);
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+
+    .logic-step {
+      font-size: 13.5px;
+      line-height: 1.45;
+      margin: 0;
+    }
+
+    .logic-step strong {
+      color: var(--ink);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .methods-pill-box {
+      margin-top: auto;
+      padding-top: 10px;
+      border-top: 1px dashed var(--line);
+    }
+
+    .methods-pill-box span {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-muted);
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .method-badge {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      background: var(--pastel-celeste);
+      color: var(--accent-celeste);
+      padding: 3px 7px;
+      border-radius: 4px;
+      margin: 2px 2px 2px 0;
+      font-weight: 600;
+    }
+
+    /* Caja de código con selector de capa */
+    .code-container {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background: #1e1e2e;
+    }
+
+    .code-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 14px;
+      background: #181825;
+      color: #cdd6f4;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      font-weight: 600;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .code-top .badge-layer {
+      font-size: 10px;
+      padding: 2px 8px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      font-weight: 700;
+      background: #3b82f6;
+      color: #fff;
+    }
+
+    .code-container pre {
+      margin: 0;
+      padding: 12px 14px;
+      background: transparent;
+      overflow-x: auto;
+    }
+
+    .code-container code {
+      font-size: 12.5px;
+      line-height: 1.45;
+      font-family: var(--font-mono);
+    }
+
+    /* Selector de contexto en la barra superior */
+    .ctx-pill-btn {
+      border: 1px solid var(--line);
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 11.5px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .ctx-pill-btn.active {
+      background: var(--ink);
+      color: var(--bg);
+      border-color: var(--ink);
+    }
+
+    /* Tablas limpias */
+    .simple-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13.5px;
+      margin-top: 10px;
+      max-width: 1050px;
+    }
+
+    .simple-table th {
+      background: var(--bg-soft);
+      padding: 8px 12px;
+      text-align: left;
+      border: 1px solid var(--line);
+      font-weight: 700;
+    }
+
+    .simple-table td {
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+    }
+
+    .simple-table tr:nth-child(even) td {
+      background: var(--bg-soft);
+    }
+
+    @media (max-width: 860px) {
+      .cheat-grid {
+        grid-template-columns: 1fr;
+      }
+      .slide {
+        padding: 16px;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4 landscape;
+        margin: 10mm 15mm;
+      }
+      *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+      }
+      body {
+        overflow: visible !important;
+        background: #ffffff !important;
+        color: #1a1a2e !important;
+      }
+      .app {
+        height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+      }
+      .slide-area {
+        overflow: visible !important;
+        height: auto !important;
+        position: static !important;
+        display: block !important;
+      }
+      .topbar, .controls-bar {
+        display: none !important;
+      }
+      .slide {
+        display: block !important;
+        visibility: visible !important;
+        page-break-after: always !important;
+        break-after: page !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+        height: auto !important;
+        min-height: 0 !important;
+        padding: 0 0 10mm 0 !important;
+      }
+      .cheat-grid {
+        display: grid !important;
+        grid-template-columns: 280px 1fr !important;
+        gap: 14px !important;
+      }
+      .code-container code {
+        font-size: 10px !important;
+        line-height: 1.35 !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app" class="app">
+
+    <!-- BARRA SUPERIOR -->
+    <header class="topbar">
+      <div class="topbar-brand">
+        <a href="../../index.html" style="text-decoration:none; color:inherit; display:flex; align-items:center; gap:6px;">
+          <span class="alien">👽</span> TableView Cheat Sheet
+        </a>
+      </div>
+
+      <!-- Selector de contexto rápido (AutoMarket / MusicStore) -->
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span style="font-size:11px; font-weight:700; color:var(--ink-muted); text-transform:uppercase;">Contexto:</span>
+        <button class="ctx-pill-btn" :class="{ active: ctx === 'auto' }" @click="ctx = 'auto'">
+          🚗 AutoMarket (002D)
+        </button>
+        <button class="ctx-pill-btn" :class="{ active: ctx === 'music' }" @click="ctx = 'music'">
+          🎸 MusicStore (004D)
+        </button>
+      </div>
+
+      <div class="topbar-counter">{{ current + 1 }} / {{ total }}</div>
+      <div class="progress-bar" :style="{ width: ((current + 1) / total * 100) + '%' }"></div>
+    </header>
+
+    <!-- AREA DE SLIDES -->
+    <main class="slide-area">
+
+      <!-- ============================================== -->
+      <!-- SLIDE 0: PORTADA Y FLUJO GENERAL -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 0 }]">
+        <div class="kicker">Cheat Sheet Técnico · JavaFX + MVC</div>
+        <h2 style="font-size:clamp(28px, 4vw, 42px);">Estrategias para Eliminar Registros</h2>
+        <p class="slide-subtitle">
+          Guía directa y concisa: lógica, métodos nativos de JavaFX y código exacto por capas.
+        </p>
+
+        <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; max-width:960px; margin: 16px 0 24px;">
+          <div class="card card-celeste" style="padding:16px;">
+            <strong style="font-size:15px;">1. Vista (View)</strong>
+            <p style="font-size:13.5px;">Detecta la interacción (fila seleccionada, clic en botón o tecla) y se la pasa al Controlador.</p>
+          </div>
+          <div class="card card-lavanda" style="padding:16px;">
+            <strong style="font-size:15px;">2. Controlador (Controller)</strong>
+            <p style="font-size:13.5px;">Valida que el objeto no sea <code>null</code> y le ordena al Manager ejecutar la baja.</p>
+          </div>
+          <div class="card card-menta" style="padding:16px;">
+            <strong style="font-size:15px;">3. Manager (Model)</strong>
+            <p style="font-size:13.5px;">Ejecuta <code>lista.remove(objeto)</code>. Al ser <code>ObservableList</code>, la tabla se actualiza sola.</p>
+          </div>
+        </div>
+
+        <div class="callout callout-amarillo" style="max-width:960px;">
+          <p style="margin:0; font-size:13px;">
+            💡 <strong>Navegación:</strong> Usa las teclas <strong>←</strong> y <strong>→</strong> o los botones inferiores para revisar cada estrategia.
+          </p>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 1: EL SECRETO DE OBSERVABLELIST -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 1 }]">
+        <div class="kicker">Fundamento de Datos</div>
+        <h2>0. El Secreto: ¿Por qué la TableView se refresca sola?</h2>
+        <p class="slide-subtitle">
+          Si usas <code>ObservableList</code>, no necesitas recargar escenas ni redibujar ventanas manualmente.
+        </p>
+
+        <div class="cheat-grid">
+          <div class="logic-card">
+            <h4>Lógica a Implementar</h4>
+            <div class="logic-step">
+              <strong>1. Enlace en la Vista</strong>
+              <code>tabla.setItems(controller.obtenerLista())</code> conecta la vista directamente con la lista observable.
+            </div>
+            <div class="logic-step">
+              <strong>2. Mutación en el Manager</strong>
+              Al hacer <code>lista.remove(objeto)</code>, JavaFX dispara un evento interno de redibujo automático.
+            </div>
+            <div class="methods-pill-box">
+              <span>Métodos indispensables:</span>
+              <span class="method-badge">FXCollections.observableArrayList()</span>
+              <span class="method-badge">lista.remove(item)</span>
+              <span class="method-badge">tabla.setItems(lista)</span>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-top">
+              <span>{{ ctx === 'auto' ? 'VehiculoManager.java & VehiculoController.java' : 'InstrumentoManager.java & InstrumentoController.java' }}</span>
+              <span class="badge-layer">Manager & Controller</span>
+            </div>
+            <pre><code class="language-java">// --- EN EL MANAGER (Capa Modelo) ---
+public class {{ ctx === 'auto' ? 'VehiculoManager' : 'InstrumentoManager' }} {
+    private ObservableList&lt;{{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }}&gt; lista;
+
+    public {{ ctx === 'auto' ? 'VehiculoManager' : 'InstrumentoManager' }}() {
+        this.lista = FXCollections.observableArrayList();
+    }
+
+    // Método que elimina de la memoria: ¡dispara el redibujo automático!
+    public boolean eliminar({{ ctx === 'auto' ? 'Vehiculo item' : 'Instrumento item' }}) {
+        return this.lista.remove(item);
+    }
+}
+
+// --- EN EL CONTROLADOR (Capa Controller) ---
+public boolean {{ ctx === 'auto' ? 'eliminarVehiculo(Vehiculo item)' : 'eliminarInstrumento(Instrumento item)' }} {
+    if (item == null) return false;
+    return manager.eliminar(item);
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 2: ESTRATEGIA 1 (RECOMENDADA) -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 2 }]">
+        <div class="kicker">Estrategia 1 · Recomendada para la Evaluación</div>
+        <h2>Fila Seleccionada en Tabla + Botón Exterior</h2>
+        <p class="slide-subtitle">
+          El usuario pincha una fila en la tabla y presiona el botón <code>[ Eliminar ]</code>.
+        </p>
+
+        <div class="cheat-grid">
+          <div class="logic-card">
+            <h4>Lógica Paso a Paso</h4>
+            <div class="logic-step">
+              <strong>1. Capturar selección</strong>
+              Usa <code>getSelectionModel().getSelectedItem()</code> de la tabla.
+            </div>
+            <div class="logic-step">
+              <strong>2. Validar que no sea null</strong>
+              Si el usuario pulsó el botón sin seleccionar fila, avisa con una alerta o ignora sin caídas.
+            </div>
+            <div class="logic-step">
+              <strong>3. Delegar al Controlador</strong>
+              Envía el objeto obtenido al controlador.
+            </div>
+            <div class="methods-pill-box">
+              <span>Métodos clave:</span>
+              <span class="method-badge">tabla.getSelectionModel().getSelectedItem()</span>
+              <span class="method-badge">controller.eliminar...(item)</span>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-top">
+              <span>{{ ctx === 'auto' ? 'CatalogoView.java' : 'CatalogoView.java' }}</span>
+              <span class="badge-layer">Vista</span>
+            </div>
+            <pre><code class="language-java">Button btnEliminar = new Button("🗑️ Eliminar Seleccionado");
+
+btnEliminar.setOnAction(e -> {
+    // 1. Obtener el registro de la fila seleccionada
+    {{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }} seleccionado = tabla.getSelectionModel().getSelectedItem();
+
+    // 2. Validación preventiva contra NullPointerException
+    if (seleccionado == null) {
+        Alert alerta = new Alert(Alert.AlertType.WARNING);
+        alerta.setTitle("Atención");
+        alerta.setHeaderText(null);
+        alerta.setContentText("Debes seleccionar una fila en la tabla primero.");
+        alerta.showAndWait();
+        return;
+    }
+
+    // 3. Ejecución a través del flujo MVC
+    controller.{{ ctx === 'auto' ? 'eliminarVehiculo' : 'eliminarInstrumento' }}(seleccionado);
+});</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 3: ESTRATEGIA 2 (BOTON POR FILA TABLECELL) -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 3 }]">
+        <div class="kicker">Estrategia 2 · Avanzada</div>
+        <h2>Botón "Eliminar" en Cada Fila (TableCell)</h2>
+        <p class="slide-subtitle">
+          Una columna con un botón rojo por cada celda. No requiere seleccionar la fila previamente.
+        </p>
+
+        <div class="cheat-grid">
+          <div class="logic-card">
+            <h4>Lógica Paso a Paso</h4>
+            <div class="logic-step">
+              <strong>1. Columna tipo Void</strong>
+              La columna no contiene texto, contendrá un botón.
+            </div>
+            <div class="logic-step">
+              <strong>2. CellFactory personalizada</strong>
+              Se crea un botón en el constructor de la celda y se le asigna el evento.
+            </div>
+            <div class="logic-step">
+              <strong>3. getIndex() para la fila</strong>
+              <code>getTableView().getItems().get(getIndex())</code> obtiene el objeto de esa fila exacta.
+            </div>
+            <div class="methods-pill-box">
+              <span>Métodos clave:</span>
+              <span class="method-badge">col.setCellFactory(...)</span>
+              <span class="method-badge">getIndex()</span>
+              <span class="method-badge">setGraphic(empty ? null : btn)</span>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-top">
+              <span>CatalogoView.java — Columna con botón</span>
+              <span class="badge-layer">Vista</span>
+            </div>
+            <pre><code class="language-java">TableColumn&lt;{{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }}, Void&gt; colAccion = new TableColumn&lt;&gt;("Acción");
+
+colAccion.setCellFactory(param -> new TableCell&lt;&gt;() {
+    private final Button btnFila = new Button("🗑️");
+
+    {
+        btnFila.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; -fx-cursor: hand;");
+        btnFila.setOnAction(event -> {
+            // Obtener el objeto perteneciente a la celda clickeada
+            {{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }} item = getTableView().getItems().get(getIndex());
+            controller.{{ ctx === 'auto' ? 'eliminarVehiculo' : 'eliminarInstrumento' }}(item);
+        });
+    }
+
+    @Override
+    protected void updateItem(Void item, boolean empty) {
+        super.updateItem(item, empty);
+        setGraphic(empty ? null : btnFila);
+    }
+});
+
+tabla.getColumns().add(colAccion);</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 4: ESTRATEGIA 3 (COMBOBOX) -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 4 }]">
+        <div class="kicker">Estrategia 3 · Formulario Alternativo</div>
+        <h2>Selector Desplegable (ComboBox / ChoiceBox)</h2>
+        <p class="slide-subtitle">
+          El usuario elige el registro desde un <code>ComboBox</code> y pulsa <code>[ Dar de Baja ]</code>.
+        </p>
+
+        <div class="cheat-grid">
+          <div class="logic-card">
+            <h4>Lógica Paso a Paso</h4>
+            <div class="logic-step">
+              <strong>1. Enlazar ComboBox a la lista</strong>
+              Se le pasa la misma lista del controlador al constructor del <code>ComboBox</code>.
+            </div>
+            <div class="logic-step">
+              <strong>2. Formatear texto visible</strong>
+              Usa <code>setConverter</code> o <code>setCellFactory</code> para mostrar marca/modelo en vez de <code>toString()</code>.
+            </div>
+            <div class="logic-step">
+              <strong>3. Capturar con getValue()</strong>
+              Lee <code>combo.getValue()</code> y limpia la selección tras eliminar.
+            </div>
+            <div class="methods-pill-box">
+              <span>Métodos clave:</span>
+              <span class="method-badge">combo.getValue()</span>
+              <span class="method-badge">combo.setConverter(...)</span>
+              <span class="method-badge">combo.getSelectionModel().clearSelection()</span>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-top">
+              <span>CatalogoView.java — Selector de baja</span>
+              <span class="badge-layer">Vista</span>
+            </div>
+            <pre><code class="language-java">// 1. ComboBox que comparte la misma ObservableList
+ComboBox&lt;{{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }}&gt; combo = new ComboBox&lt;&gt;(controller.obtenerLista());
+combo.setPromptText("Selecciona para eliminar...");
+
+// 2. Personalizar la etiqueta en el desplegable
+combo.setConverter(new StringConverter&lt;&gt;() {
+    @Override
+    public String toString({{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }} item) {
+        return (item == null) ? "" : "#" + item.getId() + " - " + item.getMarca() + " " + item.getModelo();
+    }
+    @Override
+    public {{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }} fromString(String s) { return null; }
+});
+
+// 3. Botón que lee la opción seleccionada
+btnEliminarCombo.setOnAction(e -> {
+    {{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }} seleccionado = combo.getValue();
+    if (seleccionado != null) {
+        controller.{{ ctx === 'auto' ? 'eliminarVehiculo' : 'eliminarInstrumento' }}(seleccionado);
+        combo.getSelectionModel().clearSelection();
+    }
+});</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 5: ESTRATEGIA 4 (MENÚ CONTEXTUAL CLIC DERECHO) -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 5 }]">
+        <div class="kicker">Estrategia 4 · Profesional de Escritorio</div>
+        <h2>Menú Contextual (Clic Derecho en Fila)</h2>
+        <p class="slide-subtitle">
+          Clic derecho sobre la fila abre un <code>ContextMenu</code> flotante con la acción de eliminar.
+        </p>
+
+        <div class="cheat-grid">
+          <div class="logic-card">
+            <h4>Lógica Paso a Paso</h4>
+            <div class="logic-step">
+              <strong>1. Configurar RowFactory</strong>
+              Se define cómo se comporta cada fila (<code>TableRow</code>) de la tabla.
+            </div>
+            <div class="logic-step">
+              <strong>2. Crear ContextMenu</strong>
+              Se crea el menú con un <code>MenuItem("Eliminar")</code>.
+            </div>
+            <div class="logic-step">
+              <strong>3. Enlazar a row.emptyProperty()</strong>
+              Evita que el menú aparezca si el usuario hace clic derecho en el espacio vacío de la tabla.
+            </div>
+            <div class="methods-pill-box">
+              <span>Métodos clave:</span>
+              <span class="method-badge">tabla.setRowFactory(...)</span>
+              <span class="method-badge">row.getItem()</span>
+              <span class="method-badge">row.emptyProperty()</span>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-top">
+              <span>CatalogoView.java — RowFactory con ContextMenu</span>
+              <span class="badge-layer">Vista</span>
+            </div>
+            <pre><code class="language-java">tabla.setRowFactory(tv -> {
+    TableRow&lt;{{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }}&gt; row = new TableRow&lt;&gt;();
+    ContextMenu menu = new ContextMenu();
+    MenuItem itemEliminar = new MenuItem("🗑️ Eliminar este registro");
+
+    itemEliminar.setOnAction(e -> {
+        {{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }} item = row.getItem();
+        if (item != null) {
+            controller.{{ ctx === 'auto' ? 'eliminarVehiculo' : 'eliminarInstrumento' }}(item);
+        }
+    });
+
+    menu.getItems().add(itemEliminar);
+
+    // Asignar el menú únicamente si la fila contiene datos reales
+    row.contextMenuProperty().bind(
+        Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu)
+    );
+
+    return row;
+});</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 6: ESTRATEGIA 5 (ATAJO DE TECLADO SUPR) -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 6 }]">
+        <div class="kicker">Estrategia 5 · Teclado / Productividad</div>
+        <h2>Atajo de Teclado (Tecla Supr / DELETE)</h2>
+        <p class="slide-subtitle">
+          El usuario selecciona la fila y presiona la tecla <code>Delete</code> (o <code>Backspace</code>) para borrar.
+        </p>
+
+        <div class="cheat-grid">
+          <div class="logic-card">
+            <h4>Lógica Paso a Paso</h4>
+            <div class="logic-step">
+              <strong>1. Escuchar eventos de tecla</strong>
+              Se asigna <code>setOnKeyPressed</code> al componente <code>TableView</code>.
+            </div>
+            <div class="logic-step">
+              <strong>2. Evaluar KeyCode</strong>
+              Se compara <code>event.getCode() == KeyCode.DELETE</code>.
+            </div>
+            <div class="logic-step">
+              <strong>3. Tomar selección y borrar</strong>
+              Si hay un elemento seleccionado, se delega al controlador.
+            </div>
+            <div class="methods-pill-box">
+              <span>Métodos clave:</span>
+              <span class="method-badge">tabla.setOnKeyPressed(...)</span>
+              <span class="method-badge">event.getCode() == KeyCode.DELETE</span>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-top">
+              <span>CatalogoView.java — Listener de Tecla</span>
+              <span class="badge-layer">Vista</span>
+            </div>
+            <pre><code class="language-java">import javafx.scene.input.KeyCode;
+
+tabla.setOnKeyPressed(event -> {
+    // Detectar si el usuario presionó la tecla Supr o Backspace
+    if (event.getCode() == KeyCode.DELETE || event.getCode() == KeyCode.BACK_SPACE) {
+        {{ ctx === 'auto' ? 'Vehiculo' : 'Instrumento' }} seleccionado = tabla.getSelectionModel().getSelectedItem();
+        
+        if (seleccionado != null) {
+            controller.{{ ctx === 'auto' ? 'eliminarVehiculo' : 'eliminarInstrumento' }}(seleccionado);
+        }
+    }
+});</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 7: DIÁLOGO DE CONFIRMACIÓN -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 7 }]">
+        <div class="kicker">Buena Práctica UX</div>
+        <h2>Confirmación Previa con Alert</h2>
+        <p class="slide-subtitle">
+          Evita que el usuario borre registros por error. Compatible con cualquiera de las 5 estrategias.
+        </p>
+
+        <div class="cheat-grid">
+          <div class="logic-card">
+            <h4>Lógica Paso a Paso</h4>
+            <div class="logic-step">
+              <strong>1. Alert CONFIRMATION</strong>
+              Crea una ventana modal nativa con botones Aceptar y Cancelar.
+            </div>
+            <div class="logic-step">
+              <strong>2. showAndWait()</strong>
+              Pausa la ejecución de forma síncrona esperando la respuesta del usuario.
+            </div>
+            <div class="logic-step">
+              <strong>3. Comparar con ButtonType.OK</strong>
+              Solo procede con la baja si el usuario confirmó con Aceptar.
+            </div>
+            <div class="methods-pill-box">
+              <span>Métodos clave:</span>
+              <span class="method-badge">new Alert(AlertType.CONFIRMATION)</span>
+              <span class="method-badge">alert.showAndWait()</span>
+              <span class="method-badge">respuesta.get() == ButtonType.OK</span>
+            </div>
+          </div>
+
+          <div class="code-container">
+            <div class="code-top">
+              <span>Snippet reutilizable con confirmación</span>
+              <span class="badge-layer">UX / Vista</span>
+            </div>
+            <pre><code class="language-java">import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import java.util.Optional;
+
+// Crear cuadro de confirmación
+Alert confirm = new Alert(Alert.AlertType.CONFIRMATION);
+confirm.setTitle("Confirmar Eliminación");
+confirm.setHeaderText("¿Estás seguro de eliminar este registro?");
+confirm.setContentText("Se eliminará: " + seleccionado.getMarca() + " " + seleccionado.getModelo());
+
+// Esperar respuesta del usuario
+Optional&lt;ButtonType&gt; respuesta = confirm.showAndWait();
+
+if (respuesta.isPresent() && respuesta.get() == ButtonType.OK) {
+    controller.{{ ctx === 'auto' ? 'eliminarVehiculo' : 'eliminarInstrumento' }}(seleccionado);
+}</code></pre>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SLIDE 8: TABLA COMPARATIVA RESUMEN -->
+      <!-- ============================================== -->
+      <section data-slide :class="['slide', { 'slide-active': current === 8 }]">
+        <div class="kicker">Resumen Técnico</div>
+        <h2>Tabla Comparativa de las 5 Estrategias</h2>
+        <p class="slide-subtitle">
+          Elige la opción adecuada según los requerimientos de tu proyecto o evaluación.
+        </p>
+
+        <table class="simple-table">
+          <thead>
+            <tr>
+              <th>Estrategia</th>
+              <th>Método Principal JavaFX</th>
+              <th>Líneas en Vista</th>
+              <th>Dificultad</th>
+              <th>Recomendada para</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>1. Fila + Botón Exterior</strong></td>
+              <td><code>tabla.getSelectionModel().getSelectedItem()</code></td>
+              <td>~6 líneas</td>
+              <td>⭐ Baja</td>
+              <td><strong>Pruebas y Evaluaciones (EP2)</strong></td>
+            </tr>
+            <tr>
+              <td><strong>2. Botón en cada Fila</strong></td>
+              <td><code>TableColumn.setCellFactory(TableCell)</code></td>
+              <td>~20 líneas</td>
+              <td>⭐⭐⭐ Media</td>
+              <td>Dashboards y paneles de administración</td>
+            </tr>
+            <tr>
+              <td><strong>3. ComboBox Selector</strong></td>
+              <td><code>combo.getValue()</code></td>
+              <td>~12 líneas</td>
+              <td>⭐⭐ Media</td>
+              <td>Formularios de bajas independientes</td>
+            </tr>
+            <tr>
+              <td><strong>4. Menú Contextual (Clic Derecho)</strong></td>
+              <td><code>tabla.setRowFactory(TableRow & ContextMenu)</code></td>
+              <td>~15 líneas</td>
+              <td>⭐⭐⭐ Media</td>
+              <td>Aplicaciones de escritorio avanzadas</td>
+            </tr>
+            <tr>
+              <td><strong>5. Tecla Supr / DELETE</strong></td>
+              <td><code>tabla.setOnKeyPressed(KeyCode.DELETE)</code></td>
+              <td>~8 líneas</td>
+              <td>⭐ Baja</td>
+              <td>Atajo de teclado rápido (complemento a 1)</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+    </main>
+
+    <!-- BARRA INFERIOR DE CONTROLES -->
+    <footer class="controls-bar">
+      <button class="btn" @click="prev" :disabled="current === 0">← Anterior</button>
+      <div class="dots">
+        <span v-for="i in total" :key="i" class="dot" :class="{ active: current === i - 1 }" @click="goTo(i - 1)"></span>
+      </div>
+      <button class="btn" @click="next" :disabled="current === total - 1">Siguiente →</button>
+    </footer>
+
+  </div>
+
+  <script src="../../shared/activity-engine.js"></script>
+  <script>
+    const { createApp } = Vue;
+
+    const app = createApp({
+      data() {
+        return {
+          current: 0,
+          total: 9,
+          ctx: 'auto' // 'auto' o 'music'
+        };
+      },
+      methods: {
+        next() {
+          if (this.current < this.total - 1) this.current++;
+        },
+        prev() {
+          if (this.current > 0) this.current--;
+        },
+        goTo(index) {
+          if (index >= 0 && index < this.total) this.current = index;
+        },
+        highlightCode() {
+          this.$nextTick(() => {
+            if (typeof hljs !== 'undefined') {
+              document.querySelectorAll('pre code').forEach((block) => {
+                delete block.dataset.highlighted;
+                hljs.highlightElement(block);
+              });
+            }
+          });
+        }
+      },
+      watch: {
+        current() {
+          this.highlightCode();
+        },
+        ctx() {
+          this.highlightCode();
+        }
+      },
+      mounted() {
+        this.highlightCode();
+        window.addEventListener('keydown', (e) => {
+          if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+            e.preventDefault();
+            this.next();
+          }
+          if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            e.preventDefault();
+            this.prev();
+          }
+          if (e.key === 'Home') {
+            e.preventDefault();
+            this.current = 0;
+          }
+          if (e.key === 'End') {
+            e.preventDefault();
+            this.current = this.total - 1;
+          }
+        });
+      }
+    });
+
+    if (typeof ActivityEngine !== 'undefined') {
+      ActivityEngine.register(app);
+    }
+    app.mount('#app');
+  </script>
+</body>
+
+</html>

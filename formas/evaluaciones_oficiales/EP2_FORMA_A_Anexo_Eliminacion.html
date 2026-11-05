@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EP2 FORMA A (Sección 002D) — Anexo: Eliminación de Vehículos</title>
+  <meta name="description" content="Anexo Parte 2 Evaluación Parcial 2 FORMA A: Eliminación de Vehículos en Tiempo Real - AutoMarket">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <style>
+    body { overflow-y: auto; background: var(--bg); color: var(--ink); }
+    .eval-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 36px 24px 72px;
+    }
+    .eval-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .eval-header .logo {
+      display: block;
+      max-width: 300px;
+      aspect-ratio: auto;
+      margin-bottom: 14px;
+    }
+    .eval-header h1 {
+      font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.1rem);
+      margin: 0 0 4px;
+    }
+    .eval-badge {
+      display: inline-block;
+      background: #0f766e;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin: 10px 0;
+    }
+    h2 {
+      font-size: 17px;
+      margin: 20px 0 10px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+    p, li {
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      container-type: inline-size;
+      margin: 10px 0 16px;
+    }
+    .info-table, .ref-table, .rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .info-table th, .ref-table th, .rubric-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 7px 10px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+    }
+    .info-table td, .ref-table td, .rubric-table td {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    .rubric-table th {
+      background: #1a1a2e;
+      color: #ffffff;
+      font-size: 11.5px;
+      text-align: center;
+    }
+    .rubric-table th:first-child {
+      text-align: left;
+      width: 22%;
+    }
+    .rubric-table td {
+      font-size: 11.5px;
+    }
+    .rubric-table td:last-child {
+      text-align: center;
+      font-weight: 700;
+      width: 8%;
+    }
+    pre.code-block {
+      margin: 8px 0 12px;
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+      overflow-x: visible !important;
+    }
+    pre.code-block code {
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+    }
+    .req-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .req-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      background: var(--bg);
+    }
+    .req-card h4 {
+      margin: 0 0 6px;
+      font-size: 13.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .req-card p {
+      margin: 0;
+      font-size: 12.5px;
+      color: var(--ink-soft);
+    }
+    .pts-badge {
+      background: #ccfbf1;
+      color: #0f766e;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    /* Mockup visual con botón de eliminación */
+    .fx-mockup {
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f8fafc;
+      margin: 12px 0 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .fx-mockup-bar {
+      background: #e2e8f0;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #cbd5e1;
+    }
+    .fx-mockup-body {
+      padding: 12px 14px;
+    }
+    .fx-mockup-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-bottom: 8px;
+    }
+    .fx-mockup-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      margin-bottom: 10px;
+    }
+    .fx-mockup-table th {
+      background: #f1f5f9;
+      padding: 5px 8px;
+      text-align: left;
+      border-bottom: 1px solid #cbd5e1;
+      border-right: 1px solid #e2e8f0;
+      color: #334155;
+    }
+    .fx-mockup-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+      color: #1e293b;
+      white-space: nowrap;
+    }
+    .fx-mockup-table tr.selected-row {
+      background: #e0f2fe !important;
+      outline: 2px solid #0284c7;
+    }
+    .fx-mockup-table tr.selected-row td {
+      font-weight: 600;
+      color: #0369a1;
+    }
+    .fx-table-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      padding: 8px 10px;
+      background: #ffffff;
+      border: 1px dashed #cbd5e1;
+      border-radius: 4px;
+    }
+    .btn-delete-fake {
+      background: #dc2626;
+      color: #ffffff;
+      border: none;
+      border-radius: 4px;
+      padding: 5px 14px;
+      font-size: 11.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .fx-mockup-form {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 8px 12px;
+      opacity: 0.85;
+    }
+    .fx-mockup-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .fx-fake-input {
+      border: 1px solid #94a3b8;
+      border-radius: 3px;
+      padding: 3px 8px;
+      font-size: 11px;
+      color: #64748b;
+      background: #f8fafc;
+    }
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 24px;
+    }
+    .action-bar-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+    }
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #0f766e;
+      color: #ffffff;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        background: #ffffff !important;
+        color: #1a1a2e !important;
+        margin: 0 !important;
+        padding: 7mm 11mm !important;
+        font-size: 10.5px !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .eval-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .eval-header {
+        margin-bottom: 10px !important;
+        padding-bottom: 8px !important;
+      }
+      .eval-header .logo {
+        max-width: 220px !important;
+        margin-bottom: 6px !important;
+      }
+      .eval-header h1 {
+        font-size: 16px !important;
+        margin: 0 0 2px !important;
+      }
+      .eval-badge {
+        margin: 4px 0 6px !important;
+        padding: 2px 10px !important;
+        font-size: 10px !important;
+      }
+      .table-wrapper {
+        overflow: visible !important;
+        max-block-size: none !important;
+        margin: 4px 0 8px !important;
+      }
+      .info-table th, .info-table td {
+        padding: 4px 6px !important;
+        font-size: 10.5px !important;
+      }
+      .fx-mockup, .req-card, .info-table, .ref-table, .rubric-table tr, pre.code-block {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .rubric-table th, .rubric-table td {
+        padding: 3.5px 5px !important;
+        font-size: 8.8px !important;
+        line-height: 1.22 !important;
+      }
+      .fx-mockup {
+        margin: 4px 0 6px !important;
+      }
+      .fx-mockup-body {
+        padding: 4px 8px !important;
+      }
+      .fx-mockup-title {
+        font-size: 11.5px !important;
+        margin-bottom: 3px !important;
+      }
+      .fx-mockup-table {
+        margin-bottom: 3px !important;
+        font-size: 10px !important;
+      }
+      .fx-mockup-table th, .fx-mockup-table td {
+        padding: 2px 5px !important;
+      }
+      .fx-table-actions {
+        padding: 3px 6px !important;
+        margin-bottom: 4px !important;
+      }
+      .btn-delete-fake {
+        padding: 3px 10px !important;
+        font-size: 10.5px !important;
+      }
+      .req-grid {
+        gap: 4px !important;
+        margin: 4px 0 !important;
+      }
+      .req-card {
+        padding: 4px 7px !important;
+      }
+      .req-card h4 {
+        margin: 0 0 2px !important;
+        font-size: 11.5px !important;
+      }
+      .req-card p {
+        font-size: 10.2px !important;
+        line-height: 1.25 !important;
+      }
+      h2 {
+        margin: 8px 0 3px !important;
+        font-size: 13px !important;
+      }
+      pre.code-block {
+        margin: 4px 0 !important;
+        padding: 6px 10px !important;
+        font-size: 10px !important;
+      }
+      h1, h2, h3, h4 {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+      .page-break-before {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-action-bar no-print">
+  <div class="action-bar-inner">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="../../index.html" class="btn-back">← Volver al Portal</a>
+      <a href="EP2_FORMA_A_Automotora.html" class="btn-back">← Volver a Forma A Principal</a>
+      <a href="../../contenidos/2.2_mvc_json_gson/2.2.4_CheatSheet_Estrategias_Eliminacion_TableView.html" class="btn-back" style="background:#fef3c7; color:#b45309; border-color:#fde68a;">Cheat Sheet de Estrategias 💡</a>
+    </div>
+    <span style="font-size:13px; font-weight:700; color:#0f766e;">EP2 Oficial — ANEXO PARTE 2 · AutoMarket (002D)</span>
+    <div style="display:flex; gap:8px;">
+      <button onclick="window.print()" class="btn-print">Imprimir / Guardar PDF</button>
+      <a href="EP2_FORMA_A_Anexo_Eliminacion.pdf" download="EP2_FORMA_A_Anexo_Eliminacion.pdf" class="btn-back">Descargar PDF Anexo</a>
+    </div>
+  </div>
+</div>
+
+<div class="eval-container">
+
+  <header class="eval-header">
+    <img src="logo_escuela.png" alt="Duoc UC - Escuela de Informática y Telecomunicaciones" class="logo">
+    <h1>Evaluación Parcial 2 — Anexo Técnico (Parte 2)</h1>
+    <p class="lead" style="margin:0; font-size:14px;">Requerimiento Adicional: Eliminación de Vehículos en Tiempo Real · Caso AutoMarket</p>
+    <span class="eval-badge">ANEXO PARTE 2 · FORMA A · SECCIÓN 002D</span>
+
+    <div tabindex="0" role="region" aria-labelledby="ficha-anexo-a" class="table-wrapper">
+      <table class="info-table" id="ficha-anexo-a">
+        <thead>
+          <tr>
+            <th>Sigla</th>
+            <th>Nombre Asignatura</th>
+            <th>Tiempo Asignado</th>
+            <th>% Ponderación Indicador</th>
+            <th>Experiencia de Aprendizaje</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DSY1102</td>
+            <td>Programación Orientada a Objetos</td>
+            <td>Bloque de Evaluación</td>
+            <td><strong>15% de la EP2</strong> (Indicador IE 5)</td>
+            <td>EA2 — Interfaz Gráfica JavaFX, MVC y JSON</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </header>
+
+  <h2>1. Contexto General y Requerimiento de la Parte 2</h2>
+  <p style="margin:0 0 8px;">
+    Para completar el ciclo de gestión del inventario de <strong>AutoMarket</strong>, la administración requiere poder <strong>dar de baja o eliminar vehículos</strong> vendidos o retirados directamente desde la interfaz de usuario.
+  </p>
+  <p style="margin:0 0 8px;">
+    El estudiante debe habilitar la eliminación a través de un botón en la interfaz, capturando el vehículo seleccionado en la tabla y coordinando su remoción mediante el flujo arquitectónico <strong>MVC</strong> (sin saltos de capa).
+  </p>
+
+  <h2>2. Vista Objetivo con Botón de Eliminación</h2>
+  <p style="margin:0 0 6px;">La ventana debe permitir al usuario seleccionar una fila del catálogo y pulsar el botón de eliminación para retirarla de la colección y de la tabla:</p>
+
+  <div class="fx-mockup">
+    <div class="fx-mockup-bar">
+      <span>AutoMarket — Inventario de Vehículos</span>
+      <span>— □ ✕</span>
+    </div>
+    <div class="fx-mockup-body">
+      <div class="fx-mockup-title">AutoMarket — Catálogo de Automóviles y Motocicletas</div>
+      <table class="fx-mockup-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Precio</th>
+            <th>Especificación</th>
+            <th>Disponible</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Automóvil</td>
+            <td>Toyota</td>
+            <td>Corolla Hybrid</td>
+            <td>18990000</td>
+            <td>4 puertas · Automática</td>
+            <td>true</td>
+          </tr>
+          <tr class="selected-row">
+            <td>2</td>
+            <td>Motocicleta</td>
+            <td>Yamaha</td>
+            <td>MT-07</td>
+            <td>8490000</td>
+            <td>689 cc · 210 km/h</td>
+            <td>true (Fila Seleccionada)</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Automóvil</td>
+            <td>Mazda</td>
+            <td>Mazda 3 Sport</td>
+            <td>17490000</td>
+            <td>5 puertas · Mecánica</td>
+            <td>true</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Barra de acción de tabla: botón de eliminación -->
+      <div class="fx-table-actions">
+        <span style="font-size:11.5px; color:#475569; font-weight:600;">Acción sobre la fila seleccionada:</span>
+        <span class="btn-delete-fake">🗑️ [ Eliminar Vehículo Seleccionado ]</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>3. Criterios Técnicos Solicitados</h2>
+  <div class="req-grid">
+    <div class="req-card">
+      <h4><span>1. Captura de Selección</span> <span class="pts-badge">Obligatorio</span></h4>
+      <p>Obtener la instancia de <code>Vehiculo</code> actualmente seleccionada en el <code>TableView</code> al momento de pulsar el botón de eliminación.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>2. Validación de Selección Nula</span> <span class="pts-badge">Obligatorio</span></h4>
+      <p>Verificar si el usuario presiona el botón sin tener ninguna fila seleccionada. La aplicación debe continuar operando normalmente sin lanzar <code>NullPointerException</code> ni interrumpir la interfaz.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>3. Flujo Arquitectónico MVC</span> <span class="pts-badge">Obligatorio</span></h4>
+      <p>La vista no debe modificar la colección interna del Manager de forma directa. La acción debe pasar por <code>VehiculoController</code>, y este debe delegar la remoción a <code>VehiculoManager</code>.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>4. Refresco en Tiempo Real</span> <span class="pts-badge">Obligatorio</span></h4>
+      <p>Al completarse la eliminación en memoria, la <code>TableView</code> debe actualizarse de inmediato reflejando la salida del vehículo sin reiniciar la aplicación ni la ventana.</p>
+    </div>
+  </div>
+
+  <!-- PÁGINA 2 PARA IMPRESIÓN LIMPIA -->
+  <h2 class="page-break-before">4. Pauta de Evaluación Específica (Indicador IE 5 — 15%)</h2>
+  <div tabindex="0" role="region" aria-labelledby="rubrica-anexo-a" class="table-wrapper">
+    <table class="rubric-table" id="rubrica-anexo-a">
+      <thead>
+        <tr>
+          <th>Indicador Evaluado</th>
+          <th>Muy buen desempeño<br>(100%)</th>
+          <th>Buen desempeño<br>(80%)</th>
+          <th>Desempeño aceptable<br>(60%)</th>
+          <th>Desempeño incipiente<br>(30%)</th>
+          <th>No logrado<br>(0%)</th>
+          <th>Pond.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>IE 5. Eliminación de registros y actualización en tiempo real</strong><br>Elimina el registro seleccionado del TableView y de la colección en memoria respetando el patrón MVC.</td>
+          <td>Permite seleccionar un vehículo en el <code>TableView</code>, delega la eliminación a través de <code>VehiculoController</code> hacia <code>VehiculoManager</code>, remueve el registro de memoria, refresca la tabla al instante y maneja de forma segura pulsaciones sin selección activa sin caídas de la aplicación.</td>
+          <td>Elimina el vehículo seleccionado respetando el flujo MVC y actualiza la tabla, pero no previene el caso de pulsar el botón sin una fila seleccionada (provocando alertas residuales en consola).</td>
+          <td>Remueve la fila visualmente de la tabla pero no de la colección en el Manager, o la vista realiza la remoción saltándose el Controlador.</td>
+          <td>Dibuja el control de eliminación en la vista, pero su evento no logra obtener el elemento seleccionado o lanza <code>NullPointerException</code> que detiene la interacción.</td>
+          <td>No implementa la funcionalidad de eliminación de registros.</td>
+          <td>15%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3 style="font-size:14px; margin:14px 0 8px;">Matriz de Ponderación Global de la Evaluación (EP2)</h3>
+  <div tabindex="0" role="region" aria-labelledby="resumen-ep2-a" class="table-wrapper">
+    <table class="ref-table" id="resumen-ep2-a" style="font-size:12px;">
+      <thead>
+        <tr>
+          <th>Indicador</th>
+          <th>Alcance Evaluado</th>
+          <th style="width:14%; text-align:center;">Ponderación</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>IE 1</strong></td>
+          <td>Lectura de JSON con Gson y transformación polimórfica en memoria</td>
+          <td style="text-align:center;">20%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 2</strong></td>
+          <td>Arquitectura y separación de responsabilidades MVC (Vista → Controller → Manager)</td>
+          <td style="text-align:center;">15%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 3</strong></td>
+          <td>Construcción de TableView y enlace con atributos/métodos polimórficos</td>
+          <td style="text-align:center;">20%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 4</strong></td>
+          <td>Formulario de registro, inserción de nuevos subtipos y refresco en tiempo real</td>
+          <td style="text-align:center;">20%</td>
+        </tr>
+        <tr style="background:#f0fdf4; font-weight:600;">
+          <td><strong>IE 5 (Este Anexo)</strong></td>
+          <td>Eliminación de vehículo seleccionado, flujo MVC y consistencia visual</td>
+          <td style="text-align:center; color:#15803d;">15%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 6</strong></td>
+          <td>Validación de entradas, control de excepciones (try-catch) y estabilidad</td>
+          <td style="text-align:center;">10%</td>
+        </tr>
+        <tr style="font-weight:700; background:#f8fafc;">
+          <td colspan="2" style="text-align:right;">Ponderación Total Evaluación Parcial 2:</td>
+          <td style="text-align:center;">100%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>5. Entrega de la Solución</h2>
+  <pre class="code-block"><code># Guardar los cambios implementados en la Parte 1 y Parte 2
+git add .
+git commit -m "Entrega EP2 (Partes 1 y 2) - Nombre Apellido"
+git push origin evaluacion2/Nombre_Apellido</code></pre>
+
+</div>
+
+</body>
+</html>

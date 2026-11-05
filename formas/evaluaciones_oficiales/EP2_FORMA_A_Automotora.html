@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EP2 FORMA A (Sección 002D) — AutoMarket</title>
+  <meta name="description" content="Evaluación Parcial 2 FORMA A: Sistema de Inventario Automotriz AutoMarket">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet" href="../../shared/styles.css">
+  <style>
+    body { overflow-y: auto; background: var(--bg); color: var(--ink); }
+    .eval-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 36px 24px 72px;
+    }
+    .eval-header {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 2px solid var(--ink);
+    }
+    .eval-header .logo {
+      display: block;
+      max-width: 300px;
+      aspect-ratio: auto;
+      margin-bottom: 14px;
+    }
+    .eval-header h1 {
+      font-size: clamp(1.6rem, 1.1rem + 1.8vw, 2.2rem);
+      margin: 0 0 4px;
+    }
+    .eval-badge {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--bg);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 14px;
+      border-radius: 999px;
+      margin: 10px 0;
+    }
+    h2 {
+      font-size: 18px;
+      margin: 22px 0 10px;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 6px;
+    }
+    p, li {
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .table-wrapper {
+      overflow: auto;
+      max-inline-size: 100%;
+      container-type: inline-size;
+      margin: 10px 0 16px;
+    }
+    .info-table, .ref-table, .rubric-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12.5px;
+    }
+    .info-table th, .ref-table th, .rubric-table th {
+      background: var(--bg-muted);
+      text-align: left;
+      padding: 7px 10px;
+      font-weight: 700;
+      border: 1px solid var(--line);
+    }
+    .info-table td, .ref-table td, .rubric-table td {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      vertical-align: top;
+      line-height: 1.45;
+    }
+    .rubric-table th {
+      background: #1a1a2e;
+      color: #ffffff;
+      font-size: 11.5px;
+      text-align: center;
+    }
+    .rubric-table th:first-child {
+      text-align: left;
+      width: 22%;
+    }
+    .rubric-table td {
+      font-size: 11.5px;
+    }
+    .rubric-table td:last-child {
+      text-align: center;
+      font-weight: 700;
+      width: 7%;
+    }
+    /* Bloques de código con ajuste automático de línea para no cortarse en PDF */
+    pre.code-block {
+      margin: 8px 0 12px;
+      padding: 10px 14px;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+      overflow-x: visible !important;
+    }
+    pre.code-block code {
+      white-space: pre-wrap !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+    }
+    .req-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 12px 0;
+    }
+    .req-card {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      background: var(--bg);
+    }
+    .req-card h4 {
+      margin: 0 0 6px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .req-card p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--ink-soft);
+    }
+    .pts-badge {
+      background: var(--pastel-celeste);
+      color: var(--accent-celeste);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    /* Mockup visual de la ventana JavaFX esperada */
+    .fx-mockup {
+      border: 1px solid #94a3b8;
+      border-radius: 6px;
+      overflow: hidden;
+      background: #f8fafc;
+      margin: 12px 0 18px;
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    .fx-mockup-bar {
+      background: #e2e8f0;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1e293b;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px solid #cbd5e1;
+    }
+    .fx-mockup-body {
+      padding: 14px;
+    }
+    .fx-mockup-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      color: #0f172a;
+    }
+    .fx-mockup-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11.5px;
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      margin-bottom: 12px;
+    }
+    .fx-mockup-table th {
+      background: #f1f5f9;
+      padding: 5px 8px;
+      text-align: left;
+      border-bottom: 1px solid #cbd5e1;
+      border-right: 1px solid #e2e8f0;
+      color: #334155;
+    }
+    .fx-mockup-table td {
+      padding: 5px 8px;
+      border-bottom: 1px solid #f1f5f9;
+      border-right: 1px solid #f1f5f9;
+      color: #1e293b;
+      white-space: nowrap;
+    }
+    .fx-mockup-form {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 4px;
+      padding: 10px 12px;
+    }
+    .fx-mockup-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .fx-fake-input {
+      border: 1px solid #94a3b8;
+      border-radius: 3px;
+      padding: 4px 8px;
+      font-size: 11px;
+      color: #64748b;
+      background: #f8fafc;
+    }
+    .fx-fake-btn {
+      background: #1e293b;
+      color: #ffffff;
+      border-radius: 3px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .top-action-bar {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 24px;
+    }
+    .action-bar-inner {
+      max-width: 920px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .btn-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--ink-soft);
+      text-decoration: none;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 7px 14px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--line);
+      background: var(--bg);
+    }
+    .btn-print {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--ink);
+      color: var(--bg);
+      border: none;
+      padding: 8px 16px;
+      border-radius: 4px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media print {
+      @page {
+        size: A4 portrait;
+        margin: 0;
+      }
+      *, *::before, *::after {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      html, body {
+        background: #ffffff !important;
+        color: #1a1a2e !important;
+        margin: 0 !important;
+        padding: 8mm 12mm !important;
+        font-size: 11px !important;
+      }
+      .no-print {
+        display: none !important;
+      }
+      .eval-container {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+      .table-wrapper {
+        overflow: visible !important;
+        max-block-size: none !important;
+      }
+      .fx-mockup, .req-card, .info-table, .ref-table, .rubric-table tr, pre.code-block {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+      }
+      .rubric-table th, .rubric-table td {
+        padding: 3.5px 5px !important;
+        font-size: 8.8px !important;
+        line-height: 1.22 !important;
+      }
+      .fx-mockup {
+        margin: 4px 0 6px !important;
+      }
+      .fx-mockup-body {
+        padding: 5px 8px !important;
+      }
+      .fx-mockup-title {
+        font-size: 12px !important;
+        margin-bottom: 4px !important;
+      }
+      .fx-mockup-table {
+        margin-bottom: 4px !important;
+        font-size: 10px !important;
+      }
+      .fx-mockup-table th, .fx-mockup-table td {
+        padding: 2.5px 5px !important;
+      }
+      .fx-mockup-form {
+        padding: 4px 8px !important;
+      }
+      .req-grid {
+        gap: 5px !important;
+        margin: 5px 0 !important;
+      }
+      .req-card {
+        padding: 4px 7px !important;
+      }
+      .req-card h4 {
+        margin: 0 0 2px !important;
+        font-size: 11.5px !important;
+      }
+      .req-card p {
+        font-size: 10.5px !important;
+        line-height: 1.25 !important;
+      }
+      h2 {
+        margin: 8px 0 4px !important;
+        font-size: 13.5px !important;
+      }
+      pre.code-block {
+        margin: 4px 0 6px !important;
+        padding: 6px 10px !important;
+        font-size: 10px !important;
+        line-height: 1.3 !important;
+      }
+      h1, h2, h3, h4 {
+        page-break-after: avoid !important;
+        break-after: avoid !important;
+      }
+      .page-break-before {
+        page-break-before: always !important;
+        break-before: page !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="top-action-bar no-print">
+  <div class="action-bar-inner">
+    <div style="display:flex; align-items:center; gap:8px;">
+      <a href="../../index.html" class="btn-back">← Volver al Portal</a>
+      <a href="EP2_FORMA_A_Anexo_Eliminacion.html" class="btn-back" style="background:#f0fdf4; color:#15803d; border-color:#86efac; font-weight:700;">Parte 2: Anexo Eliminación →</a>
+    </div>
+    <span style="font-size:13px; font-weight:700; color:var(--ink-muted);">EP2 Oficial — FORMA A · Sección 002D (AutoMarket)</span>
+    <div style="display:flex; gap:8px;">
+      <button onclick="window.print()" class="btn-print">Imprimir / Guardar PDF</button>
+      <a href="EP2_FORMA_A_Automotora.pdf" download="EP2_FORMA_A_Automotora.pdf" class="btn-back">Descargar .PDF</a>
+    </div>
+  </div>
+</div>
+
+<div class="eval-container">
+
+  <header class="eval-header">
+    <img src="logo_escuela.png" alt="Duoc UC - Escuela de Informática y Telecomunicaciones" class="logo">
+    <h1>Evaluación Parcial 2 — Ejecución Práctica</h1>
+    <p class="lead" style="margin:0; font-size:14.5px;">Instrucciones y Pauta de Evaluación · Caso AutoMarket</p>
+    <span class="eval-badge">FORMA A · SECCIÓN 002D</span>
+
+    <div tabindex="0" role="region" aria-labelledby="ficha-ep2-a" class="table-wrapper">
+      <table class="info-table" id="ficha-ep2-a">
+        <thead>
+          <tr>
+            <th>Sigla</th>
+            <th>Nombre Asignatura</th>
+            <th>Tiempo Asignado</th>
+            <th>% Ponderación</th>
+            <th>Experiencia de Aprendizaje</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>DSY1102</td>
+            <td>Programación Orientada a Objetos</td>
+            <td>3 bloques</td>
+            <td>35%</td>
+            <td>EA2 — Interfaz Gráfica JavaFX, MVC y JSON</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </header>
+
+  <h2>1. Contexto General y Proyecto Base Entregado</h2>
+  <p style="margin:0 0 8px;">
+    La concesionaria <strong>AutoMarket</strong> requiere una aplicación de escritorio en JavaFX bajo arquitectura <strong>MVC</strong> para visualizar su inventario de vehículos (<strong>Automóviles</strong> y <strong>Motocicletas</strong>) y registrar nuevas unidades en tiempo real.
+  </p>
+  <p style="margin:0 0 8px;">
+    Se entrega un proyecto Maven base (carpeta <code>automarket</code>) que ya compila e inicia una ventana básica. El proyecto entregado ya incluye:
+  </p>
+
+  <div tabindex="0" role="region" aria-labelledby="tabla-entregado-a" class="table-wrapper">
+    <table class="ref-table" id="tabla-entregado-a">
+      <thead>
+        <tr>
+          <th style="width:28%;">Componente Entregado</th>
+          <th>Detalle Técnico</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><code>pom.xml</code> y Arranque</td>
+          <td>Dependencias configuradas (<code>javafx-controls</code> y <code>gson</code>) y clases <code>Main</code>, <code>AutoMarketApp</code> y <code>HomeView</code> operativas.</td>
+        </tr>
+        <tr>
+          <td><code>resources/vehiculos.json</code></td>
+          <td>Arreglo JSON con 10 vehículos iniciales diferenciados por el atributo <code>"tipo"</code> (<code>"automovil"</code> o <code>"motocicleta"</code>).</td>
+        </tr>
+        <tr>
+          <td><code>model/Vehiculo.java</code></td>
+          <td>Clase abstracta con atributos <code>id</code> (int), <code>marca</code> (String), <code>modelo</code> (String), <code>precio</code> (int), <code>disponible</code> (boolean), getters/setters y métodos abstractos <code>getTipo()</code> y <code>getEspecificacion()</code>.</td>
+        </tr>
+        <tr>
+          <td><code>model/Automovil.java</code></td>
+          <td>Subclase con atributos propios <code>puertas</code> (int) y <code>transmision</code> (String). Implementa <code>getTipo()</code> y <code>getEspecificacion()</code>.</td>
+        </tr>
+        <tr>
+          <td><code>model/Motocicleta.java</code></td>
+          <td>Subclase con atributos propios <code>cilindradaCc</code> (int) y <code>velocidadMaxKmh</code> (int). Implementa <code>getTipo()</code> y <code>getEspecificacion()</code>.</td>
+        </tr>
+        <tr>
+          <td><strong>Clases a completar</strong></td>
+          <td><code>model/VehiculoManager.java</code>, <code>controller/VehiculoController.java</code> y <code>view/CatalogoView.java</code>.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="page-break-before">2. Vista Objetivo a Construir</h2>
+  <p style="margin:0 0 8px;">Debes completar <code>CatalogoView.java</code> para que la ventana principal presente la tabla de inventario y el formulario de inserción siguiendo esta estructura visual:</p>
+
+  <div class="fx-mockup">
+    <div class="fx-mockup-bar">
+      <span>AutoMarket — Inventario de Vehículos</span>
+      <span>— □ ✕</span>
+    </div>
+    <div class="fx-mockup-body">
+      <div class="fx-mockup-title">AutoMarket — Catálogo de Automóviles y Motocicletas</div>
+      <table class="fx-mockup-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Tipo</th>
+            <th>Marca</th>
+            <th>Modelo</th>
+            <th>Precio</th>
+            <th>Especificación</th>
+            <th>Disponible</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1</td>
+            <td>Automóvil</td>
+            <td>Toyota</td>
+            <td>Corolla Hybrid</td>
+            <td>18990000</td>
+            <td>4 puertas · Automática</td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td>Motocicleta</td>
+            <td>Yamaha</td>
+            <td>MT-07</td>
+            <td>8490000</td>
+            <td>689 cc · 210 km/h</td>
+            <td>true</td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td>Automóvil</td>
+            <td>Mazda</td>
+            <td>Mazda 3 Sport</td>
+            <td>17490000</td>
+            <td>5 puertas · Mecánica</td>
+            <td>true</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="fx-mockup-form">
+        <div style="font-size:11.5px; font-weight:700; color:#334155;">Registrar nuevo vehículo en el catálogo:</div>
+        <div class="fx-mockup-row">
+          <span class="fx-fake-input">Tipo: [ Automóvil / Motocicleta ▼ ]</span>
+          <span class="fx-fake-input">Marca: [ ________ ]</span>
+          <span class="fx-fake-input">Modelo: [ ________ ]</span>
+          <span class="fx-fake-input">Precio: [ ________ ]</span>
+        </div>
+        <div class="fx-mockup-row">
+          <span class="fx-fake-input">Atributo 1 (Puertas / Cilindrada cc): [ ____ ]</span>
+          <span class="fx-fake-input">Atributo 2 (Transmisión / Vel. Máx): [ ________ ]</span>
+          <span class="fx-fake-btn">[ Agregar Vehículo ]</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>3. Qué se Solicita Evaluar</h2>
+  <div class="req-grid">
+    <div class="req-card">
+      <h4><span>1. Lectura y Transformación JSON</span> <span class="pts-badge">20%</span></h4>
+      <p>Leer el archivo <code>vehiculos.json</code> en <code>VehiculoManager</code>, transformar cada registro en una instancia de <code>Automovil</code> o <code>Motocicleta</code> según corresponda y almacenarlos en una colección polimórfica en memoria.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>2. Arquitectura MVC</span> <span class="pts-badge">15%</span></h4>
+      <p>Mantener la separación de responsabilidades: la vista solo interactúa con <code>VehiculoController</code>, y el controlador delega la gestión de datos en <code>VehiculoManager</code>.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>3. Visualización en TableView</span> <span class="pts-badge">20%</span></h4>
+      <p>Construir el componente <code>TableView&lt;Vehiculo&gt;</code> con sus columnas enlazadas al modelo para mostrar todos los vehículos cargados al iniciar la aplicación.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>4. Inserción desde Formulario</span> <span class="pts-badge">20%</span></h4>
+      <p>Construir el formulario que permita ingresar un nuevo vehículo, validar que los datos no rompan la ejecución, agregarlo a la colección y reflejarlo de inmediato en el <code>TableView</code>.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>5. Eliminación de Registros (Parte 2)</span> <span class="pts-badge">15%</span></h4>
+      <p>Habilitar la remoción del vehículo seleccionado en la tabla mediante un botón de eliminación, delegando la operación por MVC y actualizando la vista en tiempo real sin excepciones.</p>
+    </div>
+    <div class="req-card">
+      <h4><span>6. Validación y Excepciones</span> <span class="pts-badge">10%</span></h4>
+      <p>Controlar campos vacíos y capturar errores de formato numérico (<code>try-catch</code>) para asegurar la estabilidad total del sistema durante toda la interacción.</p>
+    </div>
+  </div>
+
+  <div style="margin: 10px 0 16px; padding: 10px 14px; background: #f0fdf4; border: 1px solid #86efac; border-radius: 6px; font-size: 12.5px;">
+    <strong>Parte 2 disponible:</strong> Para consultar el requerimiento detallado de eliminación y su diseño de interfaz, revisa el <a href="EP2_FORMA_A_Anexo_Eliminacion.html" style="font-weight:700; color:#15803d; text-decoration:underline;">Anexo: Eliminación de Registros (HTML)</a> o descarga el <a href="EP2_FORMA_A_Anexo_Eliminacion.pdf" style="font-weight:700; color:#15803d; text-decoration:underline;">Anexo en PDF</a>.
+  </div>
+
+  <h2>4. Obtención del Código Base y Forma de Entrega</h2>
+  <pre class="code-block"><code># 1. Clonar la rama base y entrar al repositorio
+git clone -b evaluacion2/base https://github.com/hachimaki-dev/002D_desarrollo_orientado_a_objeto_2026.git
+cd 002D_desarrollo_orientado_a_objeto_2026
+
+# 2. Crear tu rama personal e iniciar el entorno
+git checkout -b evaluacion2/Nombre_Apellido
+.\setup-javafx.ps1
+
+# 3. Al finalizar: guardar commit, subir tu rama y adjuntar ZIP del proyecto en AVA
+git add .
+git commit -m "Entrega EP2 - Nombre Apellido"
+git push origin evaluacion2/Nombre_Apellido</code></pre>
+
+  <!-- PAUTA DE EVALUACIÓN EN PÁGINA 3 COMPLETA -->
+  <h2 class="page-break-before">5. Pauta de Evaluación (Rúbrica)</h2>
+  <div tabindex="0" role="region" aria-labelledby="rubrica-ep2-a" class="table-wrapper">
+    <table class="rubric-table" id="rubrica-ep2-a">
+      <thead>
+        <tr>
+          <th>Indicador de Evaluación</th>
+          <th>Muy buen desempeño<br>(100%)</th>
+          <th>Buen desempeño<br>(80%)</th>
+          <th>Desempeño aceptable<br>(60%)</th>
+          <th>Desempeño incipiente<br>(30%)</th>
+          <th>No logrado<br>(0%)</th>
+          <th>Pond.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>IE 1. Lectura de JSON y transformación polimórfica</strong><br>Deserializa el archivo JSON e instancia las subclases en una colección polimórfica.</td>
+          <td>Lee <code>vehiculos.json</code> con Gson, discrimina ambos subtipos (<code>Automovil</code> y <code>Motocicleta</code>) e inserta la totalidad de los registros en una colección polimórfica <code>Vehiculo</code>.</td>
+          <td>Lee el JSON y carga ambos subtipos en la colección polimórfica, con un detalle menor en el manejo del flujo o cierre de recursos que no impide la carga.</td>
+          <td>Carga únicamente uno de los dos subtipos desde el JSON, o bien omite atributos propios de las subclases al transformar los datos.</td>
+          <td>Intenta leer el archivo JSON pero la deserialización falla o la colección queda vacía al iniciar.</td>
+          <td>No implementa la lectura del JSON o escribe los datos de forma estática en el código.</td>
+          <td>20%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 2. Aplicación del patrón MVC</strong><br>Separa responsabilidades entre Vista, Controlador y Manager.</td>
+          <td>La vista se comunica exclusivamente con <code>VehiculoController</code> y este delega el acceso a datos y operaciones sobre la colección en <code>VehiculoManager</code>.</td>
+          <td>Respeta la comunicación Vista → Controlador → Manager, con un detalle menor de acoplamiento que no rompe la separación de paquetes.</td>
+          <td>El controlador existe, pero la vista accede directamente a <code>VehiculoManager</code> en alguna de las operaciones (carga o inserción).</td>
+          <td>Concentra la lectura del JSON o la colección directamente dentro del controlador o de la vista, omitiendo el rol del Manager.</td>
+          <td>No utiliza el controlador ni el manager; toda la lógica está escrita dentro de la vista.</td>
+          <td>15%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 3. Construcción del TableView</strong><br>Configura la tabla y enlaza las columnas con el modelo.</td>
+          <td>El <code>TableView&lt;Vehiculo&gt;</code> presenta las columnas solicitadas enlazadas a los atributos y métodos polimórficos del modelo, mostrando todos los registros al iniciar.</td>
+          <td>La tabla muestra los registros de ambos subtipos correctamente, pero falta una columna solicitada o un encabezado no es descriptivo.</td>
+          <td>La tabla muestra los registros, pero dos o más columnas aparecen en blanco por errores en los nombres de las propiedades enlazadas.</td>
+          <td>El componente <code>TableView</code> se declara y agrega a la vista, pero no muestra filas al iniciar la aplicación.</td>
+          <td>No incorpora un componente <code>TableView</code> en la vista.</td>
+          <td>20%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 4. Formulario e inserción de nuevos datos</strong><br>Registra nuevas instancias y actualiza el TableView en tiempo real.</td>
+          <td>El formulario permite crear tanto un <code>Automovil</code> como una <code>Motocicleta</code>, lo agrega a la colección mediante el controlador y el nuevo registro aparece de inmediato en el <code>TableView</code>.</td>
+          <td>El nuevo vehículo se agrega y aparece en el <code>TableView</code> para ambos subtipos, pero el formulario no limpia sus campos tras el ingreso o requiere clic adicional.</td>
+          <td>El formulario solo permite insertar uno de los dos subtipos, o bien inserta el objeto en la colección sin refrescar visualmente el <code>TableView</code>.</td>
+          <td>Los controles del formulario están dibujados en la vista, pero el evento del botón no logra crear ni insertar el objeto.</td>
+          <td>No construye el formulario de ingreso ni el evento de inserción.</td>
+          <td>20%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 5. Eliminación de registros y actualización (Parte 2 — Anexo)</strong><br>Elimina el registro seleccionado del TableView y de la colección en memoria.</td>
+          <td>Permite seleccionar un vehículo en el <code>TableView</code>, delega la eliminación a través de <code>VehiculoController</code> hacia <code>VehiculoManager</code>, remueve el registro de memoria, refresca la tabla al instante y maneja de forma segura pulsaciones sin selección activa.</td>
+          <td>Elimina el vehículo seleccionado respetando el flujo MVC y actualiza la tabla, pero no previene el caso de pulsar el botón sin una fila seleccionada (provocando alertas residuales en consola).</td>
+          <td>Remueve la fila visualmente de la tabla pero no de la colección en el Manager, o la vista realiza la remoción saltándose el Controlador.</td>
+          <td>Dibuja el control de eliminación en la vista, pero su evento no logra obtener el elemento seleccionado o lanza <code>NullPointerException</code> que detiene la interacción.</td>
+          <td>No implementa la funcionalidad de eliminación de registros.</td>
+          <td>15%</td>
+        </tr>
+        <tr>
+          <td><strong>IE 6. Validación, excepciones e integración</strong><br>Controla errores de ingreso y ejecuta el flujo sin caídas.</td>
+          <td>El proyecto compila e inicia sin errores; valida campos vacíos y captura errores de conversión numérica (<code>try-catch</code>) sin que la aplicación se detenga ante entradas inválidas.</td>
+          <td>La aplicación ejecuta el flujo completo y controla conversiones numéricas, pero omite validar algún campo de texto vacío antes de registrar.</td>
+          <td>La aplicación compila y ejecuta el flujo normal, pero lanza una excepción no controlada en consola si se ingresa texto en un campo numérico.</td>
+          <td>La aplicación inicia con fallos en más de una operación principal o se bloquea durante la interacción.</td>
+          <td>El proyecto no compila o se detiene al intentar arrancar la ventana.</td>
+          <td>10%</td>
+        </tr>
+        <tr>
+          <td colspan="6" style="text-align:right; font-weight:700;">Total Evaluación Parcial 2</td>
+          <td>100%</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+</body>
+</html>
