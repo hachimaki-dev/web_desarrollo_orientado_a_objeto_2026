@@ -1,0 +1,2627 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Guía 3.1.1 — Persistencia en Oracle con JDBC, MVC y Patrón DAO · Profe Carlitos</title>
+  <meta name="description"
+    content="Guía paso a paso para implementar bases de datos Oracle en JavaFX aplicando el patrón MVC y DAO.">
+  <link rel="stylesheet" href="../../shared/fonts.css">
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/java.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/xml.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/sql.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
+  <style>
+    /* ==========================================================
+       ESTILO DOCUMENTACIÓN TÉCNICA (STRIPE / MDN)
+       Alto contraste, tipografía amplia, cero ruido visual.
+       ========================================================== */
+    :root {
+      --bg-page: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-subtle: #f1f5f9;
+      --bg-code: #0d1117;
+
+      --text-primary: #0f172a;
+      --text-secondary: #334155;
+      --text-muted: #64748b;
+
+      --border-light: #e2e8f0;
+      --border-strong: #cbd5e1;
+
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --accent-border: #bfdbfe;
+      --accent-dark: #1d4ed8;
+
+      --success-bg: #f0fdf4;
+      --success-border: #bbf7d0;
+      --success-text: #166534;
+
+      --warn-bg: #fffbeb;
+      --warn-border: #fde68a;
+      --warn-text: #92400e;
+
+      --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+      background-color: var(--bg-page);
+      color: var(--text-primary);
+      font-size: 16.5px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* --- BARRA DE NAVEGACIÓN SUPERIOR --- */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border-light);
+      padding: 12px 24px;
+    }
+
+    .topbar-inner {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .back-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border-light);
+      background: var(--bg-surface);
+      transition: all 0.15s;
+    }
+
+    .back-link:hover {
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+      background: var(--bg-subtle);
+    }
+
+    .step-nav {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .step-nav a {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      transition: all 0.15s;
+    }
+
+    .step-nav a:hover {
+      color: var(--accent);
+      background: var(--accent-soft);
+      border-color: var(--accent-border);
+    }
+
+    /* --- CONTENEDOR PRINCIPAL --- */
+    .doc-container {
+      max-width: 920px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    /* --- ENCABEZADO DEL DOCUMENTO --- */
+    .doc-header {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 36px 40px;
+      margin-bottom: 40px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .doc-kicker {
+      font-size: 12.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+
+    .doc-header h1 {
+      font-size: clamp(28px, 3.5vw, 38px);
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      margin: 0 0 16px;
+      color: var(--text-primary);
+    }
+
+    .doc-lead {
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.65;
+      margin: 0;
+    }
+
+    /* --- TIPOGRAFÍA GENERAL --- */
+    p {
+      margin: 0 0 18px;
+      color: var(--text-secondary);
+    }
+
+    strong {
+      color: var(--text-primary);
+      font-weight: 700;
+      display: inline;
+    }
+
+    ul, ol {
+      margin: 0 0 20px;
+      padding-left: 24px;
+      color: var(--text-secondary);
+    }
+
+    li {
+      margin-bottom: 8px;
+    }
+
+    /* Código inline perfectamente legible en cualquier fondo */
+    code {
+      font-family: var(--font-mono);
+      font-size: 0.88em;
+      background: var(--bg-subtle);
+      color: #0f172a;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid var(--border-light);
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+      font-size: inherit;
+    }
+
+    /* --- BLOQUES DE PASO (STEP SECTIONS) --- */
+    .step-section {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-light);
+      border-radius: 12px;
+      padding: 36px 40px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+      scroll-margin-top: 76px;
+    }
+
+    @media (max-width: 680px) {
+      .doc-header, .step-section {
+        padding: 24px 20px;
+      }
+    }
+
+    .step-header {
+      border-bottom: 1px solid var(--border-light);
+      padding-bottom: 20px;
+      margin-bottom: 28px;
+    }
+
+    .step-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .step-badge {
+      display: inline-block;
+      background: var(--text-primary);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      padding: 4px 12px;
+      border-radius: 6px;
+    }
+
+    .step-target {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent-dark);
+      background: var(--accent-soft);
+      border: 1px solid var(--accent-border);
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .step-header h2 {
+      font-size: clamp(22px, 2.6vw, 28px);
+      font-weight: 800;
+      color: var(--text-primary);
+      margin: 0;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 32px 0 12px;
+      letter-spacing: -0.01em;
+    }
+
+    h4 {
+      font-size: 16.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin: 24px 0 8px;
+    }
+
+    /* --- CONECTORES DE FLUJO ENTRE PASOS (FLECHAS DE SECUENCIA) --- */
+    .flow-connector {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin: 4px 0 16px;
+      text-align: center;
+    }
+
+    .flow-line {
+      width: 2px;
+      height: 22px;
+      background: var(--border-strong);
+    }
+
+    .flow-next-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      padding: 6px 18px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    }
+
+    .flow-next-box span.arrow {
+      color: var(--accent);
+      font-weight: 800;
+    }
+
+    /* --- BLOQUES DE CÓDIGO A ANCHO COMPLETO (PROTAGONISTAS) --- */
+    .code-window {
+      margin: 22px 0;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #30363d;
+      background: var(--bg-code);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .code-topbar {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .code-filename {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 600;
+      color: #e6edf3;
+    }
+
+    .code-lang {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: #8b949e;
+      letter-spacing: 0.06em;
+    }
+
+    .code-window pre {
+      margin: 0;
+      padding: 20px 24px;
+      font-family: var(--font-mono);
+      font-size: 14.5px;
+      line-height: 1.65;
+      color: #e6edf3;
+      overflow-x: auto;
+      tab-size: 4;
+    }
+
+    /* --- DESGLOSE TÉCNICO DEBAJO DEL CÓDIGO --- */
+    .code-breakdown {
+      background: var(--bg-subtle);
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+    }
+
+    .code-breakdown-title {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin: 0 0 12px;
+    }
+
+    .code-breakdown ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .code-breakdown li {
+      font-size: 15.5px;
+      line-height: 1.65;
+      margin-bottom: 10px;
+    }
+
+    .code-breakdown li:last-child {
+      margin-bottom: 0;
+    }
+
+    /* --- CAJAS DE ANÁLISIS DE OPCIONES Y DECISIONES --- */
+    .options-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin: 20px 0;
+    }
+
+    @media (max-width: 760px) {
+      .options-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .option-card {
+      border: 1px solid var(--border-light);
+      border-radius: 8px;
+      padding: 16px 18px;
+      background: var(--bg-page);
+    }
+
+    .option-card.chosen {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      border-width: 2px;
+    }
+
+    .option-card-head {
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+      color: var(--text-muted);
+    }
+
+    .option-card.chosen .option-card-head {
+      color: var(--accent-dark);
+    }
+
+    .option-card h4 {
+      margin: 0 0 8px;
+      font-size: 16px;
+    }
+
+    .option-card p {
+      margin: 0;
+      font-size: 14.5px;
+      line-height: 1.55;
+    }
+
+    /* --- CAJAS DE COMPROBACIÓN ("¿TE QUEDÓ ASÍ?") --- */
+    .verify-box {
+      background: var(--success-bg);
+      border: 1px solid var(--success-border);
+      border-left: 4px solid #16a34a;
+      border-radius: 8px;
+      padding: 18px 22px;
+      margin: 28px 0 8px;
+    }
+
+    .verify-title {
+      font-weight: 800;
+      font-size: 16px;
+      color: var(--success-text);
+      margin: 0 0 6px;
+    }
+
+    .verify-box p {
+      margin: 0;
+      color: #14532d;
+      font-size: 15.5px;
+    }
+
+    /* --- NOTAS PUNTUALES SOBRIAS --- */
+    .note-box {
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-left: 4px solid #d97706;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+
+    .note-title {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--warn-text);
+      margin: 0 0 6px;
+    }
+
+    .note-box p {
+      margin: 0;
+      color: #78350f;
+      font-size: 15px;
+    }
+
+    /* --- DIAGRAMAS TÉCNICOS (ARQUITECTURA, FLUJO Y WIREFRAME) --- */
+    .diagram-box {
+      border: 1px solid var(--border-strong);
+      border-radius: 10px;
+      background: var(--bg-page);
+      padding: 24px;
+      margin: 24px 0;
+      overflow-x: auto;
+    }
+
+    .diagram-caption {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      text-align: center;
+    }
+
+    /* Diagrama de Ruta de Pasos */
+    .roadmap-chain {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    @media (max-width: 780px) {
+      .roadmap-chain {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .rm-node {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      padding: 12px 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: border-color 0.15s, transform 0.15s;
+    }
+
+    .rm-node:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .rm-num {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .rm-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-primary);
+      line-height: 1.3;
+    }
+
+    .rm-file {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Diagrama de flujo horizontal de nodos */
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      min-width: 680px;
+    }
+
+    .arch-box {
+      flex: 1;
+      background: var(--bg-surface);
+      border: 2px solid var(--text-primary);
+      border-radius: 8px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+
+    .arch-box.highlight {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .arch-box-title {
+      font-weight: 800;
+      font-size: 14.5px;
+      color: var(--text-primary);
+    }
+
+    .arch-box-file {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--accent-dark);
+      margin: 4px 0;
+    }
+
+    .arch-box-desc {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .arch-arrow {
+      font-family: var(--font-mono);
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--text-muted);
+      padding: 0 2px;
+    }
+
+    /* Tablas limpias */
+    .clean-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 24px;
+      font-size: 15px;
+    }
+
+    .clean-table th,
+    .clean-table td {
+      border: 1px solid var(--border-light);
+      padding: 12px 16px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .clean-table th {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+      font-weight: 700;
+      font-size: 13.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .clean-table td {
+      color: var(--text-secondary);
+    }
+
+    /* Wireframe Técnico en Blanco y Negro para la Vista */
+    .wireframe-window {
+      border: 2px solid var(--text-primary);
+      border-radius: 8px;
+      background: var(--bg-surface);
+      overflow: hidden;
+      margin: 20px 0;
+    }
+
+    .wireframe-titlebar {
+      background: var(--bg-subtle);
+      border-bottom: 2px solid var(--text-primary);
+      padding: 8px 16px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .wireframe-hbox {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 20px;
+      padding: 20px;
+    }
+
+    @media (max-width: 740px) {
+      .wireframe-hbox {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .wf-panel {
+      border: 2px dashed var(--border-strong);
+      border-radius: 6px;
+      padding: 16px;
+      background: var(--bg-page);
+    }
+
+    .wf-label-tag {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--accent-dark);
+      margin-bottom: 10px;
+      display: block;
+    }
+
+    .wf-input {
+      border: 1px solid var(--border-strong);
+      background: var(--bg-surface);
+      border-radius: 4px;
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .wf-btn-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin: 12px 0;
+    }
+
+    .wf-btn {
+      border: 1px solid var(--text-primary);
+      background: var(--bg-surface);
+      border-radius: 4px;
+      padding: 6px 4px;
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 700;
+    }
+
+    /* Desplegable para ver archivo completo acumulado */
+    details.full-file-check {
+      border: 1px solid var(--border-strong);
+      border-radius: 8px;
+      background: var(--bg-page);
+      margin: 20px 0;
+      overflow: hidden;
+    }
+
+    details.full-file-check summary {
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text-primary);
+      cursor: pointer;
+      background: var(--bg-subtle);
+      user-select: none;
+    }
+
+    details.full-file-check summary:hover {
+      color: var(--accent);
+    }
+
+    details.full-file-check .details-body {
+      padding: 0 18px 18px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- BARRA SUPERIOR -->
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a href="../../index.html" class="back-link">← Volver al Portal</a>
+      <nav class="step-nav">
+        <a href="#arquitectura">Arquitectura</a>
+        <a href="#paso-1">Paso 1: Oracle SQL</a>
+        <a href="#paso-2">Paso 2: pom.xml</a>
+        <a href="#paso-3">Paso 3: ConexionDB</a>
+        <a href="#paso-4">Paso 4: Modelo</a>
+        <a href="#paso-5">Paso 5: UsuarioDAO</a>
+        <a href="#paso-6">Paso 6: Controller</a>
+        <a href="#paso-7">Paso 7: Vista JavaFX</a>
+        <a href="#paso-8">Paso 8: Main y Login</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="doc-container">
+
+    <!-- ENCABEZADO -->
+    <section class="doc-header">
+      <div class="doc-kicker">Unidad 3 · Guía de Laboratorio · 3.1.1</div>
+      <h1>Persistencia en Oracle Database con JDBC, Arquitectura MVC y Patrón DAO</h1>
+      <p class="doc-lead">
+        En esta guía construiremos desde cero una aplicación JavaFX conectada a <strong>Oracle Database</strong>. Configuraremos el motor en VS Code, estableceremos el puente de conexión con JDBC y aplicaremos el patrón <strong>DAO (Data Access Object)</strong> para insertar, listar, actualizar, eliminar y autenticar cuentas de usuario desde una <code>TableView</code>.
+      </p>
+
+      <!-- MAPA VISUAL DE RUTA DEL TUTORIAL -->
+      <div class="diagram-box" style="margin: 28px 0 0; background: var(--bg-subtle);">
+        <div class="diagram-caption">Ruta de Construcción Paso a Paso (Secuencia de Archivos que Editaremos)</div>
+        <div class="roadmap-chain">
+          <a href="#paso-1" class="rm-node">
+            <div class="rm-num">PASO 01 ➔</div>
+            <div class="rm-title">Usuario y Tabla SQL</div>
+            <div class="rm-file">Extensión VS Code Oracle</div>
+          </a>
+          <a href="#paso-2" class="rm-node">
+            <div class="rm-num">PASO 02 ➔</div>
+            <div class="rm-title">Driver de Oracle</div>
+            <div class="rm-file">pom.xml</div>
+          </a>
+          <a href="#paso-3" class="rm-node">
+            <div class="rm-num">PASO 03 ➔</div>
+            <div class="rm-title">Puente JDBC</div>
+            <div class="rm-file">database/ConexionDB.java</div>
+          </a>
+          <a href="#paso-4" class="rm-node">
+            <div class="rm-num">PASO 04 ➔</div>
+            <div class="rm-title">Entidad con 2 Constructores</div>
+            <div class="rm-file">model/Usuario.java</div>
+          </a>
+          <a href="#paso-5" class="rm-node">
+            <div class="rm-num">PASO 05 ➔</div>
+            <div class="rm-title">Consultas CRUD SQL</div>
+            <div class="rm-file">dao/UsuarioDAO.java</div>
+          </a>
+          <a href="#paso-6" class="rm-node">
+            <div class="rm-num">PASO 06 ➔</div>
+            <div class="rm-title">Validación de Reglas</div>
+            <div class="rm-file">controller/UsuarioController.java</div>
+          </a>
+          <a href="#paso-7" class="rm-node">
+            <div class="rm-num">PASO 07 ➔</div>
+            <div class="rm-title">Formulario + TableView</div>
+            <div class="rm-file">view/UsuarioView.java</div>
+          </a>
+          <a href="#paso-8" class="rm-node">
+            <div class="rm-num">PASO 08 ✓</div>
+            <div class="rm-title">Ejecución y Login</div>
+            <div class="rm-file">Main.java</div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         ANTES DE EMPEZAR: PLANTEAMIENTO ARQUITECTÓNICO
+         ========================================================== -->
+    <section class="step-section" id="arquitectura">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Fase Previa · Diseño</span>
+          <span class="step-target">Análisis de Arquitectura MVC + DAO</span>
+        </div>
+        <h2>¿Dónde ponemos el código SQL dentro de nuestro proyecto?</h2>
+      </div>
+
+      <p>
+        En la Unidad 2 trabajábamos con archivos <code>.json</code> locales. Ahora que daremos el salto a un motor relacional real como <strong>Oracle Database</strong>, la primera decisión ingenieril que debemos tomar antes de crear las carpetas del proyecto es: <strong>¿qué clase será la encargada de escribir y ejecutar las sentencias <code>INSERT</code>, <code>SELECT</code>, <code>UPDATE</code> y <code>DELETE</code>?</strong>
+      </p>
+      <p>
+        Si lo pensamos, existen tres alternativas posibles:
+      </p>
+
+      <div class="options-grid">
+        <div class="option-card">
+          <div class="option-card-head">Alternativa A (Descartada)</div>
+          <h4>Escribir el SQL dentro de la Vista (<code>UsuarioView</code>)</h4>
+          <p>Poner el <code>INSERT INTO</code> directo dentro del botón «Guardar». Es una mala práctica grave: mezcla código gráfico con base de datos y hace imposible mantener el proyecto.</p>
+        </div>
+        <div class="option-card">
+          <div class="option-card-head">Alternativa B (Descartada)</div>
+          <h4>Escribir el SQL dentro del Controlador</h4>
+          <p>El Controlador debe encargarse de validar reglas de negocio (por ejemplo, que no vengan campos vacíos), no de abrir conexiones de red ni recorrer cursores SQL.</p>
+        </div>
+        <div class="option-card chosen">
+          <div class="option-card-head">Alternativa C (Nuestra Elección ✓)</div>
+          <h4>Crear una capa DAO (<code>UsuarioDAO</code>)</h4>
+          <p>Aislamos todo el SQL en una clase dedicada llamada <strong>DAO (<em>Data Access Object</em>)</strong>. Si mañana cambia la base de datos, la Vista y el Controlador no se tocan.</p>
+        </div>
+      </div>
+
+      <h3>El flujo de comunicación y la estructura de paquetes</h3>
+      <p>
+        Con esta decisión tomada, el antiguo <code>Manager</code> que leía JSON en la Unidad 2 evoluciona hacia dos clases especializadas: <strong><code>ConexionDB</code></strong> (que abre la conexión con Oracle) y <strong><code>UsuarioDAO</code></strong> (que ejecuta las consultas SQL y devuelve objetos <code>Usuario</code>).
+      </p>
+
+      <div class="diagram-box">
+        <div class="diagram-caption">Secuencia de Llamadas entre Capas (De la Ventana Gráfica a Oracle Database)</div>
+        <div class="arch-flow">
+          <div class="arch-box">
+            <div class="arch-box-title">1. Vista</div>
+            <div class="arch-box-file">UsuarioView.java</div>
+            <div class="arch-box-desc">Captura clics del usuario y muestra la TableView</div>
+          </div>
+          <div class="arch-arrow">⇄</div>
+          <div class="arch-box">
+            <div class="arch-box-title">2. Controlador</div>
+            <div class="arch-box-file">UsuarioController.java</div>
+            <div class="arch-box-desc">Valida que no vengan textos vacíos</div>
+          </div>
+          <div class="arch-arrow">⇄</div>
+          <div class="arch-box highlight">
+            <div class="arch-box-title">3. Patrón DAO</div>
+            <div class="arch-box-file">UsuarioDAO.java</div>
+            <div class="arch-box-desc">Ejecuta INSERT, SELECT, UPDATE y DELETE</div>
+          </div>
+          <div class="arch-arrow">⇄</div>
+          <div class="arch-box highlight">
+            <div class="arch-box-title">4. Puente JDBC</div>
+            <div class="arch-box-file">ConexionDB.java</div>
+            <div class="arch-box-desc">Abre sesión en Oracle (puerto 1521)</div>
+          </div>
+        </div>
+      </div>
+
+      <p>
+        Si vas a partir desde cero en VS Code, crea un proyecto Maven sin arquetipo (<code>Ctrl+Shift+P</code> ➔ <strong>Java: Create Java Project</strong> ➔ <strong>Maven</strong> ➔ <strong>No Archetype</strong>) usando <code>com.hachimakidev.userapp</code> como <em>groupId</em> y <code>userapp</code> como <em>artifactId</em>. Organiza sus carpetas exactamente con esta estructura:
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">Estructura del Proyecto Maven</span>
+          <span class="code-lang">ÁRBOL DE ARCHIVOS</span>
+        </div>
+        <pre><code>userapp/
+├── pom.xml
+└── src/main/java/com/hachimakidev/userapp/
+    ├── Main.java
+    ├── UserApp.java
+    ├── database/
+    │   └── ConexionDB.java
+    ├── model/
+    │   └── Usuario.java
+    ├── dao/
+    │   └── UsuarioDAO.java
+    ├── controller/
+    │   └── UsuarioController.java
+    └── view/
+        └── UsuarioView.java</code></pre>
+      </div>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Estructura clara?</span>
+        <span class="arrow">➔</span>
+        <span>Vamos al <strong>Paso 1</strong>: Configurar Oracle Database en VS Code</span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 1: CONFIGURACIÓN DE ORACLE EN VS CODE
+         ========================================================== -->
+    <section class="step-section" id="paso-1">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 1 de 8</span>
+          <span class="step-target">Herramienta: Extensión Oracle SQL Developer en VS Code</span>
+        </div>
+        <h2>Crear el usuario de trabajo y la tabla <code>USUARIOS</code> en Oracle</h2>
+      </div>
+
+      <p>
+        Antes de escribir código Java, necesitamos que la base de datos exista y tenga nuestra tabla creada. En clases nos conectamos a Oracle mediante la extensión <strong>Oracle SQL Developer Extension for VSCode</strong>.
+      </p>
+      <p>
+        Observa la secuencia de <strong>4 sub-pasos</strong> que seguiremos en este Paso 1. Presta especial atención al cambio de conexión entre el punto 1.2 y el 1.3:
+      </p>
+
+      <div class="diagram-box">
+        <div class="diagram-caption">Secuencia Obligatoria de Configuración en VS Code</div>
+        <div class="arch-flow">
+          <div class="arch-box">
+            <div class="arch-box-title">1.1 Conectar Admin</div>
+            <div class="arch-box-file">SYS (Lab) / SYSTEM (Docker)</div>
+            <div class="arch-box-desc">Entrar con permisos de administración</div>
+          </div>
+          <div class="arch-arrow">➔</div>
+          <div class="arch-box">
+            <div class="arch-box-title">1.2 Crear Usuario</div>
+            <div class="arch-box-file">CREATE USER ...</div>
+            <div class="arch-box-desc">Crear a <code>usuario_desarrollador</code> y cerrar sesión Admin</div>
+          </div>
+          <div class="arch-arrow">➔</div>
+          <div class="arch-box highlight">
+            <div class="arch-box-title">1.3 Nueva Conexión</div>
+            <div class="arch-box-file">usuario_desarrollador</div>
+            <div class="arch-box-desc">Conectar con el usuario recién creado</div>
+          </div>
+          <div class="arch-arrow">➔</div>
+          <div class="arch-box highlight">
+            <div class="arch-box-title">1.4 Crear Tabla</div>
+            <div class="arch-box-file">CREATE TABLE usuarios</div>
+            <div class="arch-box-desc">Crear la tabla e insertar 2 filas de prueba</div>
+          </div>
+        </div>
+      </div>
+
+      <h3>1.1 Conectarse como Administrador (Laboratorio Duoc vs. Docker en Casa)</h3>
+      <p>
+        En una aplicación real jamás trabajamos ni creamos tablas directamente dentro de la cuenta <code>SYS</code> o <code>SYSTEM</code>, pero sí necesitamos entrar una primera vez como administrador para crear nuestro usuario de desarrollo. Revisa en la siguiente tabla los datos exactos según dónde estés trabajando hoy:
+      </p>
+
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>Parámetro en VS Code</th>
+            <th>Opción A: En Laboratorio Duoc</th>
+            <th>Opción B: En Casa con Docker (<code>gvenzl/oracle-free</code>)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Username (Usuario)</strong></td>
+            <td><code>SYS</code></td>
+            <td><code>SYSTEM</code></td>
+          </tr>
+          <tr>
+            <td><strong>Role (Rol)</strong></td>
+            <td><code>SYSDBA</code></td>
+            <td><code>default</code> (sin rol)</td>
+          </tr>
+          <tr>
+            <td><strong>Password</strong></td>
+            <td><code>123456</code></td>
+            <td><code>123456</code></td>
+          </tr>
+          <tr>
+            <td><strong>Host / Puerto</strong></td>
+            <td><code>localhost</code> / <code>1521</code></td>
+            <td><code>localhost</code> / <code>1521</code></td>
+          </tr>
+          <tr>
+            <td><strong>Connection Type</strong></td>
+            <td><strong>SID:</strong> <code>ORCL</code></td>
+            <td><strong>Service Name:</strong> <code>FREEPDB1</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>
+        <em>Nota para quienes trabajan desde casa con Docker:</em> si aún no has creado el contenedor de Oracle en tu computador, puedes levantarlo ejecutando en tu terminal: <code>docker run -d --name oracle-duoc -p 1521:1521 -e ORACLE_PASSWORD=123456 gvenzl/oracle-free</code>.
+      </p>
+
+      <h3>1.2 Ejecutar el script de creación de <code>usuario_desarrollador</code></h3>
+      <p>
+        Una vez conectado como administrador (<code>SYS</code> en laboratorio o <code>SYSTEM</code> en Docker), abre una hoja de trabajo SQL (<em>New SQL Worksheet</em>) y ejecuta el siguiente bloque completo:
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">Hoja SQL (Conectado como Administrador SYS o SYSTEM)</span>
+          <span class="code-lang">ORACLE SQL</span>
+        </div>
+        <pre><code class="language-sql">-- Habilita la creación de usuarios con nombres normales en Oracle 12c/19c/21c/23ai
+ALTER SESSION SET "_ORACLE_SCRIPT"=TRUE;
+
+-- Crear el usuario de trabajo con contraseña 123456
+CREATE USER usuario_desarrollador IDENTIFIED BY "123456"
+DEFAULT TABLESPACE "USERS"
+TEMPORARY TABLESPACE "TEMP";
+
+-- Asignar cuota de almacenamiento y permisos básicos
+ALTER USER usuario_desarrollador QUOTA UNLIMITED ON USERS;
+GRANT CREATE SESSION TO usuario_desarrollador;
+GRANT "RESOURCE" TO usuario_desarrollador;
+ALTER USER usuario_desarrollador DEFAULT ROLE "RESOURCE";</code></pre>
+      </div>
+
+      <div class="code-breakdown">
+        <div class="code-breakdown-title">¿Por qué hacemos esto línea por línea?</div>
+        <ul>
+          <li><code>ALTER SESSION SET "_ORACLE_SCRIPT"=TRUE;</code>: Desde Oracle 12c, el motor exige que los usuarios globales lleven el prefijo <code>C##</code>. Esta instrucción desactiva esa restricción en la sesión actual para poder llamarlo limpiamente <code>usuario_desarrollador</code>.</li>
+          <li><code>DEFAULT TABLESPACE "USERS"</code> y <code>QUOTA UNLIMITED ON USERS</code>: Define en qué espacio físico del disco se guardarán nuestras tablas y le autoriza a escribir datos sin límite de megabytes.</li>
+          <li><code>GRANT CREATE SESSION</code> y <code>GRANT "RESOURCE"</code>: Un usuario recién creado en Oracle no tiene permiso ni siquiera para iniciar sesión. <code>CREATE SESSION</code> le permite conectarse y <code>RESOURCE</code> le permite crear tablas y secuencias.</li>
+        </ul>
+      </div>
+
+      <h3>1.3 Crear una nueva conexión entrando como <code>usuario_desarrollador</code></h3>
+
+      <div class="note-box">
+        <div class="note-title">Atención antes de crear la tabla</div>
+        <p>
+          <strong>Cierra ahora mismo la hoja SQL de <code>SYS</code> / <code>SYSTEM</code>.</strong> Si ejecutas el <code>CREATE TABLE</code> dentro de la sesión del administrador, la tabla quedará guardada en el esquema de <code>SYS</code> y cuando tu programa Java se conecte como <code>usuario_desarrollador</code> fallará con el error <code>ORA-00942: la tabla o vista no existe</code>.
+        </p>
+      </div>
+
+      <p>
+        Ve al panel lateral de la extensión Oracle SQL Developer en VS Code, presiona el botón <strong>+ (Create Connection)</strong> y crea una segunda conexión con estos datos:
+      </p>
+      <ul>
+        <li><strong>Username:</strong> <code>usuario_desarrollador</code></li>
+        <li><strong>Password:</strong> <code>123456</code></li>
+        <li><strong>Role:</strong> <code>default</code></li>
+        <li><strong>Connection Type:</strong> En Laboratorio Duoc elige <strong>SID: <code>ORCL</code></strong>. En Casa con Docker elige <strong>Service Name: <code>FREEPDB1</code></strong>.</li>
+      </ul>
+
+      <h3>1.4 Diseñar y crear la tabla <code>USUARIOS</code></h3>
+      <p>
+        Ahora sí, abre una hoja SQL dentro de la conexión de <strong><code>usuario_desarrollador</code></strong>.
+      </p>
+      <p>
+        Antes de ejecutar el <code>CREATE TABLE</code>, fijémonos en cómo definiremos la clave primaria <code>id</code>. Cuando una persona crea una cuenta en un formulario, ella escribe su nombre de usuario, correo y contraseña, pero <strong>no inventa su propio número de ID</strong>. Por eso declaramos la columna <code>id</code> como <code>NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY</code>: así Oracle lleva un contador interno automático (<code>1, 2, 3...</code>) cada vez que insertamos un registro.
+      </p>
+      <p>Ejecuta este script en la hoja SQL de <code>usuario_desarrollador</code>:</p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">Hoja SQL (Conectado como usuario_desarrollador)</span>
+          <span class="code-lang">ORACLE SQL</span>
+        </div>
+        <pre><code class="language-sql">CREATE TABLE usuarios (
+    id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    username VARCHAR2(50) NOT NULL UNIQUE,
+    correo VARCHAR2(100) NOT NULL,
+    password VARCHAR2(100) NOT NULL,
+    rol VARCHAR2(30) NOT NULL
+);
+
+-- Insertamos 2 registros iniciales de prueba (observa que NO enviamos el id)
+INSERT INTO usuarios (username, correo, password, rol)
+VALUES ('admin_duoc', 'admin@duoc.cl', 'admin123', 'ADMIN');
+
+INSERT INTO usuarios (username, correo, password, rol)
+VALUES ('carlitos_dev', 'carlitos@duoc.cl', 'java2026', 'DOCENTE');
+
+-- Confirmamos la transacción para que los datos sean visibles desde Java
+COMMIT;
+
+-- Verificamos que las 2 filas existan con sus IDs 1 y 2
+SELECT * FROM usuarios;</code></pre>
+      </div>
+
+      <div class="verify-box">
+        <div class="verify-title">Comprobemos: ¿Te quedó así?</div>
+        <p>
+          Al ejecutar el <code>SELECT * FROM usuarios;</code> al final del script, deberías ver en el panel inferior de VS Code una tabla con 2 filas: <code>admin_duoc</code> con <code>ID = 1</code> y <code>carlitos_dev</code> con <code>ID = 2</code>. Recuerda ejecutar siempre <code>COMMIT;</code> cuando insertes datos manualmente en SQL Developer, o de lo contrario tu programa Java verá la tabla vacía.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Tabla creada con sus 2 filas?</span>
+        <span class="arrow">➔</span>
+        <span>Pasemos al <strong>Paso 2</strong>: Editar <code>pom.xml</code></span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 2: CONFIGURAR POM.XML
+         ========================================================== -->
+    <section class="step-section" id="paso-2">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 2 de 8</span>
+          <span class="step-target">Archivo a editar: pom.xml</span>
+        </div>
+        <h2>Agregar el Driver JDBC de Oracle (<code>ojdbc11</code>) en Maven</h2>
+      </div>
+
+      <p>
+        ¿Por qué hacemos esto? Java incluye de fábrica el paquete <code>java.sql.*</code> (conocido como <strong>JDBC</strong>), que trae interfaces estándar como <code>Connection</code>, <code>PreparedStatement</code> y <code>ResultSet</code>. Sin embargo, Java por sí solo no conoce el protocolo privado de red de Oracle Database.
+      </p>
+      <p>
+        Para que nuestro programa Java pueda hablar con Oracle en el puerto <code>1521</code> y además construir ventanas con JavaFX, nuestro archivo <code>pom.xml</code> necesita dos dependencias: <strong><code>javafx-controls</code></strong> y el driver oficial de Oracle (<strong><code>ojdbc11</code></strong>). Reemplaza el contenido de tu <code>pom.xml</code> por este archivo completo:
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">pom.xml (Archivo Completo con JavaFX y Driver Oracle JDBC)</span>
+          <span class="code-lang">XML</span>
+        </div>
+        <pre><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+    &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+    &lt;groupId&gt;com.hachimakidev.userapp&lt;/groupId&gt;
+    &lt;artifactId&gt;userapp&lt;/artifactId&gt;
+    &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;
+
+    &lt;properties&gt;
+        &lt;maven.compiler.source&gt;21&lt;/maven.compiler.source&gt;
+        &lt;maven.compiler.target&gt;21&lt;/maven.compiler.target&gt;
+        &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+    &lt;/properties&gt;
+
+    &lt;dependencies&gt;
+        &lt;!-- Librería de controles gráficos JavaFX --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;org.openjfx&lt;/groupId&gt;
+            &lt;artifactId&gt;javafx-controls&lt;/artifactId&gt;
+            &lt;version&gt;21.0.1&lt;/version&gt;
+        &lt;/dependency&gt;
+
+        &lt;!-- Driver oficial de Oracle Database para JDBC --&gt;
+        &lt;dependency&gt;
+            &lt;groupId&gt;com.oracle.database.jdbc&lt;/groupId&gt;
+            &lt;artifactId&gt;ojdbc11&lt;/artifactId&gt;
+            &lt;version&gt;23.5.0.24.07&lt;/version&gt;
+        &lt;/dependency&gt;
+    &lt;/dependencies&gt;
+
+&lt;/project&gt;</code></pre>
+      </div>
+
+      <div class="verify-box">
+        <div class="verify-title">Comprobemos: Guarda tu <code>pom.xml</code></div>
+        <p>
+          Al guardar el archivo <code>pom.xml</code> en VS Code, Maven descargará automáticamente el archivo <code>ojdbc11-23.5.0.24.07.jar</code>. Este único driver sirve exactamente igual para conectarse al Oracle del laboratorio de Duoc y al contenedor Docker de tu casa.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Dependencia lista en Maven?</span>
+        <span class="arrow">➔</span>
+        <span>Vamos al <strong>Paso 3</strong>: Crear <code>database/ConexionDB.java</code></span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 3: CREAR CONEXIONDB.JAVA
+         ========================================================== -->
+    <section class="step-section" id="paso-3">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 3 de 8</span>
+          <span class="step-target">Archivo a crear: src/main/java/com/hachimakidev/userapp/database/ConexionDB.java</span>
+        </div>
+        <h2>Construir y probar el puente de conexión (<code>ConexionDB.java</code>)</h2>
+      </div>
+
+      <p>
+        Ahora crearemos una clase encargada exclusivamente de entregar conexiones abiertas hacia Oracle.
+      </p>
+      <p>
+        Aquí hay un detalle técnico fundamental de Oracle JDBC que debes conocer: la estructura de la cadena <code>URL</code> cambia en un símbolo dependiendo de si te conectas a un <strong>SID</strong> (en el Laboratorio de Duoc) o a un <strong>Service Name</strong> (en Docker <code>gvenzl/oracle-free</code>):
+      </p>
+      <ul>
+        <li><strong>Por SID (Lab Duoc):</strong> Se escribe con <strong>dos puntos (<code>:</code>)</strong> después del puerto ➔ <code>jdbc:oracle:thin:@localhost:1521:ORCL</code></li>
+        <li><strong>Por Service Name (Docker en Casa):</strong> Se escribe con <strong>doble barra (<code>//</code>) y barra simple (<code>/</code>)</strong> ➔ <code>jdbc:oracle:thin:@//localhost:1521/FREEPDB1</code></li>
+      </ul>
+
+      <p>
+        Dejaremos ambas líneas escritas en nuestra clase para que cuando vayas del laboratorio a tu casa solo tengas que comentar una línea y descomentar la otra. Crea el archivo <code>ConexionDB.java</code> dentro del paquete <code>database</code>:
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">src/main/java/com/hachimakidev/userapp/database/ConexionDB.java</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">package com.hachimakidev.userapp.database;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class ConexionDB {
+
+    // OPCIÓN A: Para Laboratorio Duoc (Conexión por SID usa ':ORCL')
+    private static final String URL = "jdbc:oracle:thin:@localhost:1521:ORCL";
+
+    // OPCIÓN B: Para Casa con Docker gvenzl/oracle-free (Service Name usa '//' y '/FREEPDB1')
+    // private static final String URL = "jdbc:oracle:thin:@//localhost:1521/FREEPDB1";
+
+    private static final String USER = "usuario_desarrollador";
+    private static final String PASS = "123456";
+
+    public static Connection obtenerConexion() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASS);
+    }
+
+    // Método main temporal solo para comprobar que el puente funciona
+    public static void main(String[] args) {
+        try (Connection conn = obtenerConexion()) {
+            System.out.println("¡CONEXIÓN EXITOSA A ORACLE DATABASE!");
+        } catch (SQLException e) {
+            System.out.println("Error al conectar: " + e.getMessage());
+        }
+    }
+}</code></pre>
+      </div>
+
+      <div class="code-breakdown">
+        <div class="code-breakdown-title">¿Por qué escribimos este código así?</div>
+        <ul>
+          <li><code>private static final String URL / USER / PASS</code>: Son constantes (<code>final</code>) que pertenecen a la clase (<code>static</code>) y nadie desde fuera puede alterar (<code>private</code>).</li>
+          <li><code>public static Connection obtenerConexion() throws SQLException</code>: Al ser un método <code>static</code>, cuando más adelante estemos en el DAO no necesitaremos hacer <code>new ConexionDB()</code>; bastará con escribir <code>ConexionDB.obtenerConexion()</code>.</li>
+          <li><code>try (Connection conn = obtenerConexion())</code>: Esta estructura con paréntesis después del <code>try</code> se llama <strong><em>try-with-resources</em></strong>. Garantiza que Java cierre automáticamente la conexión con Oracle apenas termine el bloque <code>try</code>.</li>
+        </ul>
+      </div>
+
+      <div class="verify-box">
+        <div class="verify-title">Comprobemos antes de avanzar: Ejecuta <code>ConexionDB.java</code></div>
+        <p>
+          Regla de oro ingenieril: jamás avances a programar las demás clases sin comprobar que tu conexión responde. Haz clic en <strong>Run</strong> sobre el <code>main</code> de <code>ConexionDB.java</code>. Si en la consola aparece <code>¡CONEXIÓN EXITOSA A ORACLE DATABASE!</code>, estamos listos para continuar.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Apareció «CONEXIÓN EXITOSA» en consola?</span>
+        <span class="arrow">➔</span>
+        <span>Avancemos al <strong>Paso 4</strong>: Crear el modelo <code>model/Usuario.java</code></span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 4: CREAR EL MODELO USUARIO.JAVA
+         ========================================================== -->
+    <section class="step-section" id="paso-4">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 4 de 8</span>
+          <span class="step-target">Archivo a crear: src/main/java/com/hachimakidev/userapp/model/Usuario.java</span>
+        </div>
+        <h2>Diseñar la clase <code>Usuario.java</code> aplicando Sobrecarga de Constructores</h2>
+      </div>
+
+      <p>
+        ¿Qué prosigue ahora? Necesitamos una clase Java que represente en memoria cada fila de la tabla <code>USUARIOS</code> que creamos en Oracle. Como la tabla tiene 5 columnas (<code>id</code>, <code>username</code>, <code>correo</code>, <code>password</code>, <code>rol</code>), nuestra clase tendrá exactamente esos 5 atributos privados.
+      </p>
+
+      <h3>El problema del atributo <code>id</code> al crear vs. al leer</h3>
+      <p>
+        Detengámonos un segundo a pensar cómo se usará esta clase en dos momentos distintos del programa:
+      </p>
+      <ol>
+        <li><strong>Cuando el usuario llena el formulario y presiona «Guardar» (<code>INSERT</code>):</strong> En ese instante tenemos el <code>username</code>, el <code>correo</code>, el <code>password</code> y el <code>rol</code>, pero <strong>todavía NO existe el <code>id</code></strong>, porque recuerdas que Oracle lo genera automáticamente con <code>GENERATED ALWAYS AS IDENTITY</code> recién cuando el dato entra a la tabla.</li>
+        <li><strong>Cuando traemos las filas desde Oracle con un <code>SELECT</code> (o editamos una fila en la tabla):</strong> Ahí el registro <strong>sí trae su <code>id</code> numérico</strong> (<code>1, 2, 3...</code>) desde la base de datos, y necesitamos guardarlo dentro del objeto <code>Usuario</code> para mostrarlo en la <code>TableView</code> y saber qué fila actualizar o eliminar.</li>
+      </ol>
+      <p>
+        ¿Cómo resolvemos esto de forma limpia en Programación Orientada a Objetos? Aplicando <strong>Sobrecarga de Constructores</strong>: creamos un constructor con 5 parámetros (con <code>id</code>) y un segundo constructor con 4 parámetros (sin <code>id</code>).
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">src/main/java/com/hachimakidev/userapp/model/Usuario.java</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">package com.hachimakidev.userapp.model;
+
+public class Usuario {
+
+    private int id;
+    private String username;
+    private String correo;
+    private String password;
+    private String rol;
+
+    // Constructor 1: CON id (Lo usa el DAO al hacer SELECT y el Controlador al hacer UPDATE)
+    public Usuario(int id, String username, String correo, String password, String rol) {
+        this.id = id;
+        this.username = username;
+        this.correo = correo;
+        this.password = password;
+        this.rol = rol;
+    }
+
+    // Constructor 2: SIN id (Lo usa el Controlador cuando creamos una cuenta nueva con INSERT)
+    public Usuario(String username, String correo, String password, String rol) {
+        this.username = username;
+        this.correo = correo;
+        this.password = password;
+        this.rol = rol;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getCorreo() {
+        return correo;
+    }
+
+    public void setCorreo(String correo) {
+        this.correo = correo;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getRol() {
+        return rol;
+    }
+
+    public void setRol(String rol) {
+        this.rol = rol;
+    }
+}</code></pre>
+      </div>
+
+      <div class="verify-box">
+        <div class="verify-title">Comprobemos: ¿Por qué son tan importantes los nombres de los Getters aquí?</div>
+        <p>
+          Verifica que tus métodos se llamen exactamente <code>getId()</code>, <code>getUsername()</code>, <code>getCorreo()</code>, <code>getPassword()</code> y <code>getRol()</code>. Más adelante, las columnas de la <code>TableView</code> buscarán automáticamente esos nombres exactos para mostrar los datos en pantalla.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Listo el modelo <code>Usuario.java</code>?</span>
+        <span class="arrow">➔</span>
+        <span>Vamos al corazón de la unidad en el <strong>Paso 5</strong>: Crear <code>dao/UsuarioDAO.java</code></span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 5: CREAR USUARIODAO.JAVA (PROGRESIVO)
+         ========================================================== -->
+    <section class="step-section" id="paso-5">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 5 de 8</span>
+          <span class="step-target">Archivo a crear: src/main/java/com/hachimakidev/userapp/dao/UsuarioDAO.java</span>
+        </div>
+        <h2>Programar el Patrón DAO paso a paso (<code>INSERT</code>, <code>SELECT</code>, <code>UPDATE</code> y <code>DELETE</code>)</h2>
+      </div>
+
+      <p>
+        Llegamos a la pieza nueva más importante de la Unidad 3: la clase <strong><code>UsuarioDAO</code></strong>. Para no abrumarnos con un archivo gigante de golpe, lo iremos armando método por método y entendiendo cómo funciona cada uno.
+      </p>
+
+      <h3>Antes de empezar: ¿Cómo enviamos variables dentro de una consulta SQL?</h3>
+      <p>
+        Cuando necesitamos insertar los datos de un objeto <code>Usuario</code> en SQL, existen dos formas de armar el texto de la consulta en Java:
+      </p>
+
+      <div class="options-grid" style="grid-template-columns: 1fr 1fr;">
+        <div class="option-card">
+          <div class="option-card-head">Forma A: Concatenar con '+' (Peligrosa)</div>
+          <h4><code>Statement</code> tradicional</h4>
+          <p>Escribir <code>"INSERT INTO usuarios VALUES ('" + u.getUsername() + "')"</code>. Es propenso a errores de comillas y vulnerable a ataques de <strong>Inyección SQL</strong>.</p>
+        </div>
+        <div class="option-card chosen">
+          <div class="option-card-head">Forma B: Parámetros '?' (Estándar Profesional ✓)</div>
+          <h4><code>PreparedStatement</code></h4>
+          <p>Escribimos signos de interrogación <code>?</code> como comodines (<code>VALUES (?, ?, ?, ?)</code>) y luego los llenamos de forma segura por su posición (<code>1, 2, 3, 4</code>) usando <code>ps.setString(...)</code>.</p>
+        </div>
+      </div>
+
+      <h3>5.1 Crear el esqueleto de <code>UsuarioDAO.java</code> y el primer método: <code>guardar()</code> (<code>INSERT</code>)</h3>
+      <p>
+        Crea el archivo <code>UsuarioDAO.java</code> dentro del paquete <code>dao</code> y escribe primero el método <code>guardar(Usuario usuario)</code>:
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">src/main/java/com/hachimakidev/userapp/dao/UsuarioDAO.java (Parte 1: INSERT)</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">package com.hachimakidev.userapp.dao;
+
+import com.hachimakidev.userapp.database.ConexionDB;
+import com.hachimakidev.userapp.model.Usuario;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class UsuarioDAO {
+
+    // 1. OPERACIÓN CREAR (INSERT)
+    public boolean guardar(Usuario usuario) {
+        String sql = "INSERT INTO usuarios (username, correo, password, rol) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, usuario.getUsername());
+            ps.setString(2, usuario.getCorreo());
+            ps.setString(3, usuario.getPassword());
+            ps.setString(4, usuario.getRol());
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al guardar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+}</code></pre>
+      </div>
+
+      <div class="code-breakdown">
+        <div class="code-breakdown-title">Analicemos qué hace cada línea de <code>guardar()</code></div>
+        <ul>
+          <li><code>String sql = "INSERT INTO usuarios (username, correo, password, rol) VALUES (?, ?, ?, ?)";</code>: Declaramos las 4 columnas (sin <code>id</code>) y dejamos 4 signos de interrogación <code>?</code> esperando sus valores.</li>
+          <li><code>ps.setString(1, usuario.getUsername());</code>: En JDBC los signos <code>?</code> se numeran empezando desde el <strong><code>1</code></strong> (de izquierda a derecha). El <code>1</code> es <code>username</code>, el <code>2</code> es <code>correo</code>, el <code>3</code> es <code>password</code> y el <code>4</code> es <code>rol</code>.</li>
+          <li><code>int filasAfectadas = ps.executeUpdate();</code>: Para cualquier orden que modifique datos en la tabla (<code>INSERT</code>, <code>UPDATE</code> o <code>DELETE</code>), usamos <strong><code>executeUpdate()</code></strong>. Este método ejecuta el SQL en Oracle (con auto-commit automático en JDBC) y devuelve cuántas filas se insertaron. Si es mayor que <code>0</code>, retornamos <code>true</code>.</li>
+        </ul>
+      </div>
+
+      <h3>5.2 Agregar el segundo método: <code>obtenerTodos()</code> (<code>SELECT</code>)</h3>
+      <p>
+        Ahora necesitamos leer todas las filas guardadas en Oracle para poder mostrarlas en nuestra <code>TableView</code>.
+      </p>
+      <p>
+        Cuando ejecutamos una consulta <code>SELECT</code>, en lugar de <code>executeUpdate()</code> usamos <strong><code>ps.executeQuery()</code></strong>. Este método nos devuelve un objeto llamado <strong><code>ResultSet</code></strong>, que puedes imaginar como una hoja de cálculo donde hay un puntero que parte arriba de la primera fila. Cada vez que llamamos a <code>while (rs.next())</code>, el puntero baja una fila, extraemos sus 5 columnas, fabricamos un objeto <code>new Usuario(...)</code> y lo metemos a un <code>ArrayList</code>.
+      </p>
+      <p>Agrega este método debajo de <code>guardar()</code> dentro de <code>UsuarioDAO.java</code>:</p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">UsuarioDAO.java (Parte 2: Agregar método obtenerTodos)</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">    // 2. OPERACIÓN LEER TODOS (SELECT)
+    public ArrayList&lt;Usuario&gt; obtenerTodos() {
+        ArrayList&lt;Usuario&gt; lista = new ArrayList&lt;&gt;();
+        String sql = "SELECT id, username, correo, password, rol FROM usuarios ORDER BY id ASC";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String username = rs.getString("username");
+                String correo = rs.getString("correo");
+                String password = rs.getString("password");
+                String rol = rs.getString("rol");
+
+                Usuario u = new Usuario(id, username, correo, password, rol);
+                lista.add(u);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al listar usuarios: " + e.getMessage());
+        }
+        return lista;
+    }</code></pre>
+      </div>
+
+      <div class="code-breakdown">
+        <div class="code-breakdown-title">¿Por qué aquí usamos el constructor de 5 parámetros?</div>
+        <ul>
+          <li>Observa la línea <code>Usuario u = new Usuario(id, username, correo, password, rol);</code>. Como el registro ya viene desde Oracle, extraemos su número de <code>id</code> real con <code>rs.getInt("id")</code> y usamos el constructor que incluye el <code>id</code>.</li>
+        </ul>
+      </div>
+
+      <h3>5.3 Agregar los métodos <code>actualizar()</code> (<code>UPDATE</code>) y <code>eliminar()</code> (<code>DELETE</code>)</h3>
+      <p>
+        Para completar el CRUD en nuestro DAO, agregaremos la edición y el borrado. En ambos casos es indispensable incluir la condición <strong><code>WHERE id = ?</code></strong> para que Oracle modifique o borre únicamente la fila seleccionada y no toda la tabla.
+      </p>
+      <p>Agrega estos dos métodos al final de tu clase <code>UsuarioDAO.java</code>:</p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">UsuarioDAO.java (Parte 3: Agregar métodos actualizar y eliminar)</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">    // 3. OPERACIÓN ACTUALIZAR (UPDATE)
+    public boolean actualizar(Usuario usuario) {
+        String sql = "UPDATE usuarios SET username = ?, correo = ?, password = ?, rol = ? WHERE id = ?";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, usuario.getUsername());
+            ps.setString(2, usuario.getCorreo());
+            ps.setString(3, usuario.getPassword());
+            ps.setString(4, usuario.getRol());
+            ps.setInt(5, usuario.getId()); // El 5° signo '?' corresponde al WHERE id = ?
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+
+    // 4. OPERACIÓN ELIMINAR (DELETE)
+    public boolean eliminar(int id) {
+        String sql = "DELETE FROM usuarios WHERE id = ?";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar usuario: " + e.getMessage());
+            return false;
+        }
+    }</code></pre>
+      </div>
+
+      <!-- COMPROBACIÓN DE ARCHIVO COMPLETO ACUMULADO -->
+      <details class="full-file-check">
+        <summary>✓ Comprobemos: Haz clic aquí para verificar cómo debe verse tu archivo UsuarioDAO.java completo hasta ahora</summary>
+        <div class="details-body">
+          <div class="code-window" style="margin-bottom:0;">
+            <div class="code-topbar">
+              <span class="code-filename">src/main/java/com/hachimakidev/userapp/dao/UsuarioDAO.java (Archivo Completo)</span>
+              <span class="code-lang">JAVA</span>
+            </div>
+            <pre><code class="language-java">package com.hachimakidev.userapp.dao;
+
+import com.hachimakidev.userapp.database.ConexionDB;
+import com.hachimakidev.userapp.model.Usuario;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+
+public class UsuarioDAO {
+
+    public boolean guardar(Usuario usuario) {
+        String sql = "INSERT INTO usuarios (username, correo, password, rol) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, usuario.getUsername());
+            ps.setString(2, usuario.getCorreo());
+            ps.setString(3, usuario.getPassword());
+            ps.setString(4, usuario.getRol());
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al guardar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public ArrayList&lt;Usuario&gt; obtenerTodos() {
+        ArrayList&lt;Usuario&gt; lista = new ArrayList&lt;&gt;();
+        String sql = "SELECT id, username, correo, password, rol FROM usuarios ORDER BY id ASC";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String username = rs.getString("username");
+                String correo = rs.getString("correo");
+                String password = rs.getString("password");
+                String rol = rs.getString("rol");
+
+                Usuario u = new Usuario(id, username, correo, password, rol);
+                lista.add(u);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error al listar usuarios: " + e.getMessage());
+        }
+        return lista;
+    }
+
+    public boolean actualizar(Usuario usuario) {
+        String sql = "UPDATE usuarios SET username = ?, correo = ?, password = ?, rol = ? WHERE id = ?";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, usuario.getUsername());
+            ps.setString(2, usuario.getCorreo());
+            ps.setString(3, usuario.getPassword());
+            ps.setString(4, usuario.getRol());
+            ps.setInt(5, usuario.getId());
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al actualizar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public boolean eliminar(int id) {
+        String sql = "DELETE FROM usuarios WHERE id = ?";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            int filasAfectadas = ps.executeUpdate();
+            return filasAfectadas > 0;
+
+        } catch (SQLException e) {
+            System.out.println("Error al eliminar usuario: " + e.getMessage());
+            return false;
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Compiló sin errores tu <code>UsuarioDAO.java</code>?</span>
+        <span class="arrow">➔</span>
+        <span>Sigamos al <strong>Paso 6</strong>: Crear <code>controller/UsuarioController.java</code></span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 6: CREAR USUARIOCONTROLLER.JAVA
+         ========================================================== -->
+    <section class="step-section" id="paso-6">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 6 de 8</span>
+          <span class="step-target">Archivo a crear: src/main/java/com/hachimakidev/userapp/controller/UsuarioController.java</span>
+        </div>
+        <h2>Construir el Controlador (<code>UsuarioController.java</code>)</h2>
+      </div>
+
+      <p>
+        ¿Por qué mantenemos un Controlador si ya tenemos el DAO? Porque la Vista trabaja con cajas de texto crudas (<code>String</code>) que el usuario puede dejar en blanco por descuido. El rol del Controlador es actuar como un filtro de seguridad:
+      </p>
+      <ol>
+        <li>Recibe los datos enviados por la Vista.</li>
+        <li>Comprueba que ningún campo obligatorio venga vacío (<code>isBlank()</code>).</li>
+        <li>Si todo es válido, arma el objeto <code>new Usuario(...)</code> y llama al <code>UsuarioDAO</code>. Si algún dato falta, detiene la operación de inmediato y devuelve <code>false</code> sin molestar a Oracle.</li>
+      </ol>
+
+      <p>Crea el archivo <code>UsuarioController.java</code> dentro del paquete <code>controller</code>:</p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">src/main/java/com/hachimakidev/userapp/controller/UsuarioController.java</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">package com.hachimakidev.userapp.controller;
+
+import com.hachimakidev.userapp.dao.UsuarioDAO;
+import com.hachimakidev.userapp.model.Usuario;
+import java.util.ArrayList;
+
+public class UsuarioController {
+
+    private UsuarioDAO usuarioDAO;
+
+    public UsuarioController() {
+        this.usuarioDAO = new UsuarioDAO();
+    }
+
+    public boolean registrarUsuario(String username, String correo, String password, String rol) {
+        if (username == null || username.isBlank() ||
+            correo == null || correo.isBlank() ||
+            password == null || password.isBlank() ||
+            rol == null || rol.isBlank()) {
+            return false;
+        }
+
+        // Usamos el constructor SIN id porque es un usuario nuevo
+        Usuario nuevo = new Usuario(username.trim(), correo.trim(), password, rol);
+        return usuarioDAO.guardar(nuevo);
+    }
+
+    public ArrayList&lt;Usuario&gt; obtenerUsuarios() {
+        return usuarioDAO.obtenerTodos();
+    }
+
+    public boolean actualizarUsuario(int id, String username, String correo, String password, String rol) {
+        if (id &lt;= 0 ||
+            username == null || username.isBlank() ||
+            correo == null || correo.isBlank() ||
+            password == null || password.isBlank() ||
+            rol == null || rol.isBlank()) {
+            return false;
+        }
+
+        // Usamos el constructor CON id para indicar qué fila se está actualizando
+        Usuario editado = new Usuario(id, username.trim(), correo.trim(), password, rol);
+        return usuarioDAO.actualizar(editado);
+    }
+
+    public boolean eliminarUsuario(int id) {
+        if (id &lt;= 0) {
+            return false;
+        }
+        return usuarioDAO.eliminar(id);
+    }
+}</code></pre>
+      </div>
+
+      <div class="verify-box">
+        <div class="verify-title">Comprobemos: El backend de nuestra aplicación está completo</div>
+        <p>
+          Fíjate en lo limpio que ha quedado nuestro diseño hasta este punto: ya tenemos la conexión (<code>ConexionDB</code>), la entidad (<code>Usuario</code>), las consultas SQL (<code>UsuarioDAO</code>) y las validaciones (<code>UsuarioController</code>). Ahora solo nos falta conectar todo esto a una ventana gráfica en JavaFX.
+        </p>
+      </div>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Listo el Controlador?</span>
+        <span class="arrow">➔</span>
+        <span>Pasemos al <strong>Paso 7</strong>: Diseñar y programar <code>view/UsuarioView.java</code></span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 7: PENSAR Y CONSTRUIR LA VISTA (USUARIOVIEW.JAVA)
+         ========================================================== -->
+    <section class="step-section" id="paso-7">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 7 de 8</span>
+          <span class="step-target">Archivo a crear: src/main/java/com/hachimakidev/userapp/view/UsuarioView.java</span>
+        </div>
+        <h2>Pensar, diseñar y construir la Vista JavaFX (<code>UsuarioView.java</code>)</h2>
+      </div>
+
+      <h3>7.1 Pensar la interfaz antes de escribir código</h3>
+      <p>
+        Nunca empieces a escribir botones o cajas de texto al azar. Primero definamos qué necesitamos ver en pantalla y qué contenedor (<em>Layout</em>) de JavaFX resuelve mejor el problema:
+      </p>
+      <ul>
+        <li>Queremos que en <strong>una sola ventana</strong> el usuario pueda llenar el formulario a la izquierda y ver la <code>TableView</code> actualizada en vivo a la derecha.</li>
+        <li>Para colocar dos grandes bloques uno al lado del otro, nuestro contenedor raíz será un <strong><code>HBox</code></strong> (caja horizontal).</li>
+        <li>Dentro de ese <code>HBox</code> colocaremos dos columnas verticales (<strong><code>VBox</code></strong>):
+          <ol>
+            <li><strong>Panel Izquierdo (<code>VBox</code> — Formulario):</strong> Contiene los campos <code>txtUsername</code>, <code>txtCorreo</code>, <code>txtPassword</code>, el desplegable <code>cmbRol</code>, una fila de botones (<code>HBox</code>) con <strong>Guardar</strong>, <strong>Actualizar</strong>, <strong>Eliminar</strong> y <strong>Limpiar</strong>, y un <code>lblEstado</code> para mostrar mensajes.</li>
+            <li><strong>Panel Derecho (<code>VBox</code> — Tabla):</strong> Contiene la <code>TableView&lt;Usuario&gt;</code> con las columnas <code>ID</code>, <code>Username</code>, <code>Correo</code> y <code>Rol</code>.</li>
+          </ol>
+        </li>
+      </ul>
+
+      <!-- BOCETO TÉCNICO DE LA VENTANA -->
+      <div class="wireframe-window">
+        <div class="wireframe-titlebar">
+          <span>Boceto Estructural de UsuarioView.java</span>
+          <span>Raíz: HBox (spacing: 20, padding: 20)</span>
+        </div>
+        <div class="wireframe-hbox">
+          <div class="wf-panel">
+            <span class="wf-label-tag">1. VBox: crearPanelFormulario()</span>
+            <div style="font-weight:700; font-size:14px; margin-bottom:8px;">Gestión de Cuentas</div>
+            <div class="wf-input">txtUsername (TextField)</div>
+            <div class="wf-input">txtCorreo (TextField)</div>
+            <div class="wf-input">txtPassword (PasswordField)</div>
+            <div class="wf-input">cmbRol (ComboBox: ESTUDIANTE, DOCENTE, ADMIN)</div>
+            <div class="wf-btn-row">
+              <div class="wf-btn">Guardar</div>
+              <div class="wf-btn">Actualizar</div>
+              <div class="wf-btn">Eliminar</div>
+              <div class="wf-btn">Limpiar</div>
+            </div>
+            <div style="font-family:var(--font-mono); font-size:11.5px; color:var(--text-muted);">lblEstado: "Listo..."</div>
+          </div>
+
+          <div class="wf-panel">
+            <span class="wf-label-tag">2. VBox: crearPanelTabla()</span>
+            <div style="font-weight:700; font-size:14px; margin-bottom:8px;">Registros en Oracle Database</div>
+            <table class="clean-table" style="margin:0; background:#fff; font-size:13px;">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Correo</th>
+                  <th>Rol</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background:var(--accent-soft);">
+                  <td><strong>1</strong></td>
+                  <td><strong>admin_duoc</strong></td>
+                  <td><strong>admin@duoc.cl</strong></td>
+                  <td><strong>ADMIN</strong></td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <td>carlitos_dev</td>
+                  <td>carlitos@duoc.cl</td>
+                  <td>DOCENTE</td>
+                </tr>
+              </tbody>
+            </table>
+            <div style="margin-top:12px; font-size:13px; color:var(--accent-dark); font-weight:600;">
+              ⮑ Al hacer clic en una fila de la tabla: guardamos su ID en <code>idSeleccionado</code> y copiamos sus datos a las cajas del formulario izquierdo.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <h3>7.2 ¿Cómo resolvemos el problema de seleccionar un usuario para Editar o Eliminar?</h3>
+      <p>
+        Piensa en esto: para actualizar o borrar un registro en Oracle, el <code>UsuarioController</code> nos pide el <code>int id</code> de ese usuario. Pero en nuestro formulario izquierdo no hay ninguna caja de texto para escribir el <code>id</code> (porque no queremos que el usuario lo escriba a mano ni lo invente). ¿De dónde sacamos el <code>id</code> entonces?
+      </p>
+      <p>
+        Lo sacamos directamente de la <strong>fila que el usuario seleccione con el ratón en la <code>TableView</code></strong>:
+      </p>
+      <ol>
+        <li>Declaramos un atributo en la vista llamado <code>private int idSeleccionado = -1;</code> (vale <code>-1</code> cuando no hay nada seleccionado).</li>
+        <li>Le agregamos un escuchador (<em>Listener</em>) a la tabla: cuando el usuario hace clic sobre una fila, tomamos el objeto <code>Usuario</code> de esa fila, guardamos su <code>getId()</code> dentro de <code>idSeleccionado</code> y rellenamos automáticamente los <code>TextField</code> con sus datos actuales.</li>
+        <li>Así, cuando presione el botón <strong>«Actualizar»</strong> o <strong>«Eliminar»</strong>, le enviaremos ese <code>idSeleccionado</code> al Controlador.</li>
+      </ol>
+
+      <h3>7.3 Programar <code>UsuarioView.java</code> paso a paso</h3>
+      <p>
+        Crea el archivo <code>UsuarioView.java</code> en el paquete <code>view</code>. Primero declararemos los atributos, el constructor y el método principal <code>crearEscena()</code> que une ambos paneles:
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">src/main/java/com/hachimakidev/userapp/view/UsuarioView.java (Parte 1: Atributos y crearEscena)</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">package com.hachimakidev.userapp.view;
+
+import com.hachimakidev.userapp.controller.UsuarioController;
+import com.hachimakidev.userapp.model.Usuario;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
+public class UsuarioView {
+
+    private UsuarioController controller;
+    private TableView&lt;Usuario&gt; tablaUsuarios;
+
+    private TextField txtUsername;
+    private TextField txtCorreo;
+    private PasswordField txtPassword;
+    private ComboBox&lt;String&gt; cmbRol;
+    private Label lblEstado;
+
+    // Guarda el ID de la fila seleccionada en la tabla (-1 indica que no hay selección)
+    private int idSeleccionado = -1;
+
+    public UsuarioView() {
+        this.controller = new UsuarioController();
+    }
+
+    public Scene crearEscena() {
+        VBox panelFormulario = crearPanelFormulario();
+        VBox panelTabla = crearPanelTabla();
+
+        // Permite que el panel de la tabla se estire ocupando todo el espacio derecho
+        HBox.setHgrow(panelTabla, Priority.ALWAYS);
+
+        HBox raiz = new HBox(20, panelFormulario, panelTabla);
+        raiz.setPadding(new Insets(20));
+
+        // Apenas se construye la ventana, cargamos las filas desde Oracle
+        cargarDatosEnTabla();
+
+        return new Scene(raiz, 920, 500);
+    }</code></pre>
+      </div>
+
+      <p>
+        Ahora, justo debajo de <code>crearEscena()</code>, agregamos los dos métodos que fabrican los paneles visuales: <code>crearPanelFormulario()</code> (izquierda) y <code>crearPanelTabla()</code> (derecha):
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">UsuarioView.java (Parte 2: Métodos crearPanelFormulario y crearPanelTabla)</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">    private VBox crearPanelFormulario() {
+        Label lblTitulo = new Label("Gestión de Cuentas");
+        lblTitulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        txtUsername = new TextField();
+        txtUsername.setPromptText("Ej: carlitos_dev");
+
+        txtCorreo = new TextField();
+        txtCorreo.setPromptText("Ej: carlitos@duoc.cl");
+
+        txtPassword = new PasswordField();
+        txtPassword.setPromptText("Contraseña");
+
+        cmbRol = new ComboBox&lt;&gt;();
+        cmbRol.getItems().addAll("ESTUDIANTE", "DOCENTE", "ADMIN");
+        cmbRol.setPromptText("Seleccione un rol");
+        cmbRol.setMaxWidth(Double.MAX_VALUE);
+
+        Button btnGuardar = new Button("Guardar");
+        Button btnActualizar = new Button("Actualizar");
+        Button btnEliminar = new Button("Eliminar");
+        Button btnLimpiar = new Button("Limpiar");
+
+        btnGuardar.setOnAction(e -&gt; accionGuardar());
+        btnActualizar.setOnAction(e -&gt; accionActualizar());
+        btnEliminar.setOnAction(e -&gt; accionEliminar());
+        btnLimpiar.setOnAction(e -&gt; limpiarFormulario());
+
+        HBox filaBotones = new HBox(8, btnGuardar, btnActualizar, btnEliminar, btnLimpiar);
+
+        lblEstado = new Label("Listo. Conectado a Oracle.");
+
+        VBox panel = new VBox(10,
+                lblTitulo,
+                new Label("Username:"), txtUsername,
+                new Label("Correo:"), txtCorreo,
+                new Label("Contraseña:"), txtPassword,
+                new Label("Rol:"), cmbRol,
+                filaBotones,
+                lblEstado
+        );
+        panel.setPrefWidth(320);
+        return panel;
+    }
+
+    private VBox crearPanelTabla() {
+        Label lblSubtitulo = new Label("Registros en Oracle Database");
+        lblSubtitulo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        tablaUsuarios = new TableView&lt;&gt;();
+
+        TableColumn&lt;Usuario, Integer&gt; colId = new TableColumn&lt;&gt;("ID");
+        colId.setCellValueFactory(new PropertyValueFactory&lt;&gt;("id"));
+        colId.setPrefWidth(60);
+
+        TableColumn&lt;Usuario, String&gt; colUser = new TableColumn&lt;&gt;("Username");
+        colUser.setCellValueFactory(new PropertyValueFactory&lt;&gt;("username"));
+        colUser.setPrefWidth(140);
+
+        TableColumn&lt;Usuario, String&gt; colCorreo = new TableColumn&lt;&gt;("Correo");
+        colCorreo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("correo"));
+        colCorreo.setPrefWidth(200);
+
+        TableColumn&lt;Usuario, String&gt; colRol = new TableColumn&lt;&gt;("Rol");
+        colRol.setCellValueFactory(new PropertyValueFactory&lt;&gt;("rol"));
+        colRol.setPrefWidth(120);
+
+        tablaUsuarios.getColumns().add(colId);
+        tablaUsuarios.getColumns().add(colUser);
+        tablaUsuarios.getColumns().add(colCorreo);
+        tablaUsuarios.getColumns().add(colRol);
+
+        // Escuchador: cuando el usuario hace clic en una fila, copiamos sus datos al formulario
+        tablaUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, anterior, seleccionado) -&gt; {
+            if (seleccionado != null) {
+                idSeleccionado = seleccionado.getId();
+                txtUsername.setText(seleccionado.getUsername());
+                txtCorreo.setText(seleccionado.getCorreo());
+                txtPassword.setText(seleccionado.getPassword());
+                cmbRol.setValue(seleccionado.getRol());
+                lblEstado.setText("Editando usuario ID #" + idSeleccionado);
+            }
+        });
+
+        VBox.setVgrow(tablaUsuarios, Priority.ALWAYS);
+        return new VBox(10, lblSubtitulo, tablaUsuarios);
+    }</code></pre>
+      </div>
+
+      <p>
+        Finalmente, agregamos al final de <code>UsuarioView.java</code> los métodos que responden a los botones (<code>accionGuardar</code>, <code>accionActualizar</code>, <code>accionEliminar</code>, <code>cargarDatosEnTabla</code> y <code>limpiarFormulario</code>):
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">UsuarioView.java (Parte 3: Métodos de acción de los botones y cierre de la clase)</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">    private void accionGuardar() {
+        boolean exito = controller.registrarUsuario(
+                txtUsername.getText(),
+                txtCorreo.getText(),
+                txtPassword.getText(),
+                cmbRol.getValue()
+        );
+
+        if (exito) {
+            lblEstado.setText("Usuario guardado correctamente en Oracle.");
+            limpiarFormulario();
+            cargarDatosEnTabla();
+        } else {
+            lblEstado.setText("Error: Completa todos los campos o cambia el username.");
+        }
+    }
+
+    private void accionActualizar() {
+        if (idSeleccionado == -1) {
+            lblEstado.setText("Selecciona primero un usuario en la tabla.");
+            return;
+        }
+
+        boolean exito = controller.actualizarUsuario(
+                idSeleccionado,
+                txtUsername.getText(),
+                txtCorreo.getText(),
+                txtPassword.getText(),
+                cmbRol.getValue()
+        );
+
+        if (exito) {
+            lblEstado.setText("Usuario ID #" + idSeleccionado + " actualizado.");
+            limpiarFormulario();
+            cargarDatosEnTabla();
+        } else {
+            lblEstado.setText("Error al actualizar los datos.");
+        }
+    }
+
+    private void accionEliminar() {
+        if (idSeleccionado == -1) {
+            lblEstado.setText("Selecciona primero un usuario en la tabla.");
+            return;
+        }
+
+        boolean exito = controller.eliminarUsuario(idSeleccionado);
+
+        if (exito) {
+            lblEstado.setText("Usuario eliminado de Oracle.");
+            limpiarFormulario();
+            cargarDatosEnTabla();
+        } else {
+            lblEstado.setText("No se pudo eliminar el usuario.");
+        }
+    }
+
+    private void cargarDatosEnTabla() {
+        ObservableList&lt;Usuario&gt; datos = FXCollections.observableArrayList(
+                controller.obtenerUsuarios()
+        );
+        tablaUsuarios.setItems(datos);
+    }
+
+    private void limpiarFormulario() {
+        idSeleccionado = -1;
+        txtUsername.clear();
+        txtCorreo.clear();
+        txtPassword.clear();
+        cmbRol.setValue(null);
+        tablaUsuarios.getSelectionModel().clearSelection();
+    }
+}</code></pre>
+      </div>
+
+      <div class="code-breakdown">
+        <div class="code-breakdown-title">Observa el ciclo de refresco después de cada operación</div>
+        <ul>
+          <li>Tanto en <code>accionGuardar()</code> como en <code>accionActualizar()</code> y <code>accionEliminar()</code>, cuando el Controlador nos responde <code>true</code>, siempre ejecutamos dos llamadas seguidas: <strong><code>limpiarFormulario()</code></strong> (para vaciar las cajas y devolver <code>idSeleccionado = -1</code>) y <strong><code>cargarDatosEnTabla()</code></strong> (que vuelve a pedir un <code>SELECT</code> fresco a Oracle para que la <code>TableView</code> muestre los cambios de inmediato).</li>
+        </ul>
+      </div>
+
+      <!-- COMPROBACIÓN DE USUARIOVIEW COMPLETO -->
+      <details class="full-file-check">
+        <summary>✓ Comprobemos: Haz clic aquí para verificar cómo debe verse tu archivo UsuarioView.java completo</summary>
+        <div class="details-body">
+          <div class="code-window" style="margin-bottom:0;">
+            <div class="code-topbar">
+              <span class="code-filename">src/main/java/com/hachimakidev/userapp/view/UsuarioView.java (Archivo Completo)</span>
+              <span class="code-lang">JAVA</span>
+            </div>
+            <pre><code class="language-java">package com.hachimakidev.userapp.view;
+
+import com.hachimakidev.userapp.controller.UsuarioController;
+import com.hachimakidev.userapp.model.Usuario;
+
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+
+public class UsuarioView {
+
+    private UsuarioController controller;
+    private TableView&lt;Usuario&gt; tablaUsuarios;
+
+    private TextField txtUsername;
+    private TextField txtCorreo;
+    private PasswordField txtPassword;
+    private ComboBox&lt;String&gt; cmbRol;
+    private Label lblEstado;
+
+    private int idSeleccionado = -1;
+
+    public UsuarioView() {
+        this.controller = new UsuarioController();
+    }
+
+    public Scene crearEscena() {
+        VBox panelFormulario = crearPanelFormulario();
+        VBox panelTabla = crearPanelTabla();
+
+        HBox.setHgrow(panelTabla, Priority.ALWAYS);
+
+        HBox raiz = new HBox(20, panelFormulario, panelTabla);
+        raiz.setPadding(new Insets(20));
+
+        cargarDatosEnTabla();
+
+        return new Scene(raiz, 920, 500);
+    }
+
+    private VBox crearPanelFormulario() {
+        Label lblTitulo = new Label("Gestión de Cuentas");
+        lblTitulo.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+
+        txtUsername = new TextField();
+        txtUsername.setPromptText("Ej: carlitos_dev");
+
+        txtCorreo = new TextField();
+        txtCorreo.setPromptText("Ej: carlitos@duoc.cl");
+
+        txtPassword = new PasswordField();
+        txtPassword.setPromptText("Contraseña");
+
+        cmbRol = new ComboBox&lt;&gt;();
+        cmbRol.getItems().addAll("ESTUDIANTE", "DOCENTE", "ADMIN");
+        cmbRol.setPromptText("Seleccione un rol");
+        cmbRol.setMaxWidth(Double.MAX_VALUE);
+
+        Button btnGuardar = new Button("Guardar");
+        Button btnActualizar = new Button("Actualizar");
+        Button btnEliminar = new Button("Eliminar");
+        Button btnLimpiar = new Button("Limpiar");
+
+        btnGuardar.setOnAction(e -&gt; accionGuardar());
+        btnActualizar.setOnAction(e -&gt; accionActualizar());
+        btnEliminar.setOnAction(e -&gt; accionEliminar());
+        btnLimpiar.setOnAction(e -&gt; limpiarFormulario());
+
+        HBox filaBotones = new HBox(8, btnGuardar, btnActualizar, btnEliminar, btnLimpiar);
+
+        lblEstado = new Label("Listo. Conectado a Oracle.");
+
+        VBox panel = new VBox(10,
+                lblTitulo,
+                new Label("Username:"), txtUsername,
+                new Label("Correo:"), txtCorreo,
+                new Label("Contraseña:"), txtPassword,
+                new Label("Rol:"), cmbRol,
+                filaBotones,
+                lblEstado
+        );
+        panel.setPrefWidth(320);
+        return panel;
+    }
+
+    private VBox crearPanelTabla() {
+        Label lblSubtitulo = new Label("Registros en Oracle Database");
+        lblSubtitulo.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+
+        tablaUsuarios = new TableView&lt;&gt;();
+
+        TableColumn&lt;Usuario, Integer&gt; colId = new TableColumn&lt;&gt;("ID");
+        colId.setCellValueFactory(new PropertyValueFactory&lt;&gt;("id"));
+        colId.setPrefWidth(60);
+
+        TableColumn&lt;Usuario, String&gt; colUser = new TableColumn&lt;&gt;("Username");
+        colUser.setCellValueFactory(new PropertyValueFactory&lt;&gt;("username"));
+        colUser.setPrefWidth(140);
+
+        TableColumn&lt;Usuario, String&gt; colCorreo = new TableColumn&lt;&gt;("Correo");
+        colCorreo.setCellValueFactory(new PropertyValueFactory&lt;&gt;("correo"));
+        colCorreo.setPrefWidth(200);
+
+        TableColumn&lt;Usuario, String&gt; colRol = new TableColumn&lt;&gt;("Rol");
+        colRol.setCellValueFactory(new PropertyValueFactory&lt;&gt;("rol"));
+        colRol.setPrefWidth(120);
+
+        tablaUsuarios.getColumns().add(colId);
+        tablaUsuarios.getColumns().add(colUser);
+        tablaUsuarios.getColumns().add(colCorreo);
+        tablaUsuarios.getColumns().add(colRol);
+
+        tablaUsuarios.getSelectionModel().selectedItemProperty().addListener((obs, anterior, seleccionado) -&gt; {
+            if (seleccionado != null) {
+                idSeleccionado = seleccionado.getId();
+                txtUsername.setText(seleccionado.getUsername());
+                txtCorreo.setText(seleccionado.getCorreo());
+                txtPassword.setText(seleccionado.getPassword());
+                cmbRol.setValue(seleccionado.getRol());
+                lblEstado.setText("Editando usuario ID #" + idSeleccionado);
+            }
+        });
+
+        VBox.setVgrow(tablaUsuarios, Priority.ALWAYS);
+        return new VBox(10, lblSubtitulo, tablaUsuarios);
+    }
+
+    private void accionGuardar() {
+        boolean exito = controller.registrarUsuario(
+                txtUsername.getText(),
+                txtCorreo.getText(),
+                txtPassword.getText(),
+                cmbRol.getValue()
+        );
+
+        if (exito) {
+            lblEstado.setText("Usuario guardado correctamente en Oracle.");
+            limpiarFormulario();
+            cargarDatosEnTabla();
+        } else {
+            lblEstado.setText("Error: Completa todos los campos o cambia el username.");
+        }
+    }
+
+    private void accionActualizar() {
+        if (idSeleccionado == -1) {
+            lblEstado.setText("Selecciona primero un usuario en la tabla.");
+            return;
+        }
+
+        boolean exito = controller.actualizarUsuario(
+                idSeleccionado,
+                txtUsername.getText(),
+                txtCorreo.getText(),
+                txtPassword.getText(),
+                cmbRol.getValue()
+        );
+
+        if (exito) {
+            lblEstado.setText("Usuario ID #" + idSeleccionado + " actualizado.");
+            limpiarFormulario();
+            cargarDatosEnTabla();
+        } else {
+            lblEstado.setText("Error al actualizar los datos.");
+        }
+    }
+
+    private void accionEliminar() {
+        if (idSeleccionado == -1) {
+            lblEstado.setText("Selecciona primero un usuario en la tabla.");
+            return;
+        }
+
+        boolean exito = controller.eliminarUsuario(idSeleccionado);
+
+        if (exito) {
+            lblEstado.setText("Usuario eliminado de Oracle.");
+            limpiarFormulario();
+            cargarDatosEnTabla();
+        } else {
+            lblEstado.setText("No se pudo eliminar el usuario.");
+        }
+    }
+
+    private void cargarDatosEnTabla() {
+        ObservableList&lt;Usuario&gt; datos = FXCollections.observableArrayList(
+                controller.obtenerUsuarios()
+        );
+        tablaUsuarios.setItems(datos);
+    }
+
+    private void limpiarFormulario() {
+        idSeleccionado = -1;
+        txtUsername.clear();
+        txtCorreo.clear();
+        txtPassword.clear();
+        cmbRol.setValue(null);
+        tablaUsuarios.getSelectionModel().clearSelection();
+    }
+}</code></pre>
+          </div>
+        </div>
+      </details>
+    </section>
+
+    <!-- CONECTOR -->
+    <div class="flow-connector">
+      <div class="flow-line"></div>
+      <div class="flow-next-box">
+        <span>¿Lista la clase <code>UsuarioView.java</code>?</span>
+        <span class="arrow">➔</span>
+        <span>Vamos al último paso (<strong>Paso 8</strong>): Conectar <code>UserApp.java</code> y <code>Main.java</code></span>
+      </div>
+      <div class="flow-line"></div>
+    </div>
+
+    <!-- ==========================================================
+         PASO 8: USERAPP.JAVA, MAIN.JAVA Y CÁPSULA DE LOGIN
+         ========================================================== -->
+    <section class="step-section" id="paso-8">
+      <div class="step-header">
+        <div class="step-meta">
+          <span class="step-badge">Paso 8 de 8</span>
+          <span class="step-target">Archivos: UserApp.java y Main.java</span>
+        </div>
+        <h2>Conectar <code>UserApp.java</code> y <code>Main.java</code>, ejecutar la aplicación y agregar Login</h2>
+      </div>
+
+      <h3>8.1 Iniciar la ventana con <code>UserApp.java</code> y el lanzador <code>Main.java</code></h3>
+      <p>
+        Tal como vimos en la Unidad 2, cuando ejecutamos un proyecto JavaFX con el botón <strong>Run Java</strong> de VS Code, separamos el arranque en dos clases pequeñas:
+      </p>
+      <ol>
+        <li><strong><code>UserApp.java</code> (extiende <code>Application</code>):</strong> Recibe el <code>Stage</code> en su método <code>start()</code> y le carga la escena de <code>UsuarioView</code>.</li>
+        <li><strong><code>Main.java</code> (no extiende <code>Application</code>):</strong> Llama a <code>UserApp.main(args)</code> para evitar que la máquina virtual de Java reclame por módulos de JavaFX al arrancar.</li>
+      </ol>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">src/main/java/com/hachimakidev/userapp/UserApp.java</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">package com.hachimakidev.userapp;
+
+import com.hachimakidev.userapp.view.UsuarioView;
+import javafx.application.Application;
+import javafx.stage.Stage;
+
+public class UserApp extends Application {
+
+    @Override
+    public void start(Stage stage) {
+        UsuarioView vista = new UsuarioView();
+        stage.setTitle("Gestión de Usuarios — Oracle JDBC + MVC + DAO");
+        stage.setScene(vista.crearEscena());
+        stage.show();
+    }
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}</code></pre>
+      </div>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">src/main/java/com/hachimakidev/userapp/Main.java</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">package com.hachimakidev.userapp;
+
+public class Main {
+    public static void main(String[] args) {
+        UserApp.main(args);
+    }
+}</code></pre>
+      </div>
+
+      <div class="verify-box">
+        <div class="verify-title">¡Momento de probar tu aplicación completa!</div>
+        <p>
+          Haz clic derecho sobre <strong><code>Main.java</code> ➔ Run Java</strong>. Al abrirse la ventana deberías ver inmediatamente en la tabla derecha los 2 usuarios que insertamos en el Paso 1 (<code>admin_duoc</code> y <code>carlitos_dev</code>). Prueba:
+          <br>1. Crear un tercer usuario llenando el formulario y presionando <strong>Guardar</strong>.
+          <br>2. Hacer clic sobre ese usuario en la tabla, cambiarle el rol o correo y presionar <strong>Actualizar</strong>.
+          <br>3. Seleccionarlo nuevamente y presionar <strong>Eliminar</strong>.
+        </p>
+      </div>
+
+      <h3>8.2 Extensión Práctica: ¿Y cómo se hace un Login con este mismo DAO?</h3>
+      <p>
+        Una vez que dominas el CRUD anterior, surge una pregunta muy común: <em>«Profe, ¿y si en el proyecto nos piden una ventana de Login antes de entrar al sistema?»</em>.
+      </p>
+      <p>
+        Un Login no es más que una consulta <code>SELECT</code> con un filtro <code>WHERE username = ? AND password = ?</code> dentro de tu mismo <code>UsuarioDAO</code>. Si Oracle encuentra una fila que coincida con ambos datos, <code>rs.next()</code> devuelve <code>true</code> y retornamos el objeto <code>Usuario</code> encontrado; si no coincide ninguna fila, retornamos <code>null</code>:
+      </p>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">1. En UsuarioDAO.java: Método autenticar(...)</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">    // 5. OPERACIÓN LOGIN (SELECT CON WHERE)
+    public Usuario autenticar(String username, String password) {
+        String sql = "SELECT id, username, correo, password, rol FROM usuarios "
+                   + "WHERE username = ? AND password = ?";
+
+        try (Connection conn = ConexionDB.obtenerConexion();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, username);
+            ps.setString(2, password);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return new Usuario(
+                            rs.getInt("id"),
+                            rs.getString("username"),
+                            rs.getString("correo"),
+                            rs.getString("password"),
+                            rs.getString("rol")
+                    );
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error al autenticar: " + e.getMessage());
+        }
+        return null; // Retorna null si las credenciales son incorrectas
+    }</code></pre>
+      </div>
+
+      <div class="code-window">
+        <div class="code-topbar">
+          <span class="code-filename">2. En UsuarioController.java y UsuarioView.java: Cómo consumirlo</span>
+          <span class="code-lang">JAVA</span>
+        </div>
+        <pre><code class="language-java">// En UsuarioController.java:
+public Usuario iniciarSesion(String username, String password) {
+    if (username == null || username.isBlank() ||
+        password == null || password.isBlank()) {
+        return null;
+    }
+    return usuarioDAO.autenticar(username.trim(), password);
+}
+
+// En la Vista (por ejemplo, dentro de un botón "Iniciar Sesión"):
+Usuario logueado = controller.iniciarSesion(txtUsername.getText(), txtPassword.getText());
+if (logueado != null) {
+    lblEstado.setText("Bienvenido " + logueado.getUsername() + " (Rol: " + logueado.getRol() + ")");
+} else {
+    lblEstado.setText("Acceso denegado: Usuario o contraseña incorrectos.");
+}</code></pre>
+      </div>
+
+      <h3>8.3 Guía rápida de solución de errores frecuentes en Laboratorio</h3>
+      <p>Si al ejecutar tu programa tienes algún inconveniente en consola, revisa esta tabla de diagnóstico directo:</p>
+
+      <table class="clean-table">
+        <thead>
+          <tr>
+            <th>Error en Consola</th>
+            <th>Causa Exacta</th>
+            <th>Cómo Solucionarlo</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>ORA-00942: table or view does not exist</code></td>
+            <td>Creaste la tabla <code>USUARIOS</code> dentro de la conexión de <code>SYS</code> o <code>SYSTEM</code> en lugar de crearla en la conexión de <code>usuario_desarrollador</code>.</td>
+            <td>Conéctate en VS Code como <code>usuario_desarrollador</code> y ejecuta ahí el <code>CREATE TABLE usuarios (...)</code> del Paso 1.4.</td>
+          </tr>
+          <tr>
+            <td><code>ORA-01017: invalid username/password</code></td>
+            <td>El usuario <code>usuario_desarrollador</code> no existe aún o la clave no es <code>123456</code>.</td>
+            <td>Ejecuta el script del Paso 1.2 conectado como administrador (<code>SYS</code> o <code>SYSTEM</code>).</td>
+          </tr>
+          <tr>
+            <td><code>ORA-12505</code> o <code>ORA-12514</code></td>
+            <td>Confusión entre la URL de SID (<code>:ORCL</code>) y la de Service Name (<code>//localhost:1521/FREEPDB1</code>).</td>
+            <td>En <code>ConexionDB.java</code>, usa <code>:ORCL</code> si estás en el laboratorio de Duoc, o <code>/FREEPDB1</code> si estás en Docker en casa.</td>
+          </tr>
+          <tr>
+            <td><code>ORA-00001: unique constraint violated</code></td>
+            <td>Intentaste registrar un <code>username</code> que ya está ocupado por otra fila.</td>
+            <td>Ingresa un nombre de usuario distinto (la columna tiene la restricción <code>UNIQUE</code>).</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (typeof hljs !== 'undefined') {
+        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+      }
+    });
+  </script>
+</body>
+
+</html>
